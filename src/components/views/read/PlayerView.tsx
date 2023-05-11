@@ -2,12 +2,19 @@ import { RecordOf } from 'immutable';
 
 import React, { FC, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import { Context, LocalContext } from '@graasp/apps-query-client';
 
 import {
+  Box,
   Button,
+  CircularProgress,
   Divider,
+  LinearProgress,
+  List,
+  Menu,
+  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -29,6 +36,18 @@ import {
 import { useAppDataContext } from '../../context/AppDataContext';
 import { useAppSettingContext } from '../../context/AppSettingContext';
 import { useMembersContext } from '../../context/MembersContext';
+import Education from './cvForm/Education';
+import FormLayout from './cvForm/FormLayout';
+import Home from './cvForm/Home';
+import MotivationLetter from './cvForm/MotivationLetter';
+import PersonalInfo from './cvForm/PersonalInfo';
+import Portfolio from './cvForm/Portfolio';
+import References from './cvForm/References';
+import Review from './cvForm/Review';
+import Skills from './cvForm/Skills';
+import Template from './cvForm/Template';
+import Upload from './cvForm/Upload';
+import WorkExperience from './cvForm/WorkExperience';
 
 const SmallPre = styled('pre')(({ theme }) => ({
   fontSize: 12,
@@ -70,83 +89,116 @@ const PlayerView: FC = () => {
       postAppSetting({ data: { content: value }, name });
     }
   };
-
+  const [page, setPage] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
+  const nextPage = (): void => setPage(page + 1);
+  const prevPage = (): void => setPage(page - 1);
+  const nextStep = (): void => setActiveStep(activeStep + 1);
+  const prevStep = (): void => setActiveStep(activeStep - 1);
+  const homeStep = (): void => setActiveStep(0);
+  const steps = [
+    'Home',
+    'Personal Info',
+    'Education',
+    'Work Experience',
+    'Skills',
+    'Portfolio',
+    'Motivation Letter',
+    'References',
+    'Template',
+    'Review',
+    'Upload & Submit',
+  ];
   return (
-    <div data-cy={PLAYER_VIEW_CY}>
-      <Stack direction="row">
-        <Stack
-          direction="column"
-          spacing={2}
-          sx={{ flex: 1, height: '100vh', p: 2 }}
-        >
-          <Button
-            data-cy={NEW_APP_DATA_BUTTON_CY}
-            onClick={() =>
-              postAppData({
-                data: { content: 'New Data' },
-                type: APP_DATA_TYPES.MOCK_TYPE,
-              })
-            }
-          >
-            {t('New App Data')}
-          </Button>
-          <SmallPre data-cy={APP_DATA_CONTAINER_CY}>
-            {JSON.stringify(appDataArray, undefined, 2)}
-          </SmallPre>
-          <Divider />
-          <Stack direction="column" spacing={2}>
-            <TextField
-              label="Setting Name"
-              data-cy={SETTING_NAME_FIELD_CY}
-              value={settingName}
-              onChange={(e) => setSettingName(e.target.value)}
-            />
-            <TextField
-              label="Setting Value"
-              data-cy={SETTING_VALUE_FIELD_CY}
-              value={settingValue}
-              onChange={(e) => setSettingValue(e.target.value)}
-            />
-            <Button
-              data-cy={UPDATE_APP_SETTING_BUTTON_CY}
-              onClick={() => handleAppSetting(settingName, settingValue)}
-            >
-              {t('Update Setting')}
-            </Button>
-          </Stack>
-          <SmallPre data-cy={APP_SETTING_CONTAINER_CY}>
-            {JSON.stringify(appSettingArray, undefined, 2)}
-          </SmallPre>
-        </Stack>
-        <Divider orientation="vertical" flexItem />
-        <Stack
-          direction="column"
-          sx={{
-            flex: 1,
-            height: '100vh',
-            overflow: 'scroll',
-            p: 2,
-          }}
-          spacing={2}
-        >
-          <div>
-            <Typography variant="h6">{t('Local Context')}</Typography>
-            <SmallPre>{JSON.stringify(context.toJS(), undefined, 2)}</SmallPre>
-          </div>
-          <Divider />
-          <div>
-            <Typography variant="h6">{t('App Context')}</Typography>
-            <SmallPre>
-              {JSON.stringify(appContext?.toJS(), undefined, 2)}
-            </SmallPre>
-          </div>
-          <Divider />
-          <div>
-            <Typography variant="h6">{t('Members')}</Typography>
-            <SmallPre>{JSON.stringify(members, undefined, 2)}</SmallPre>
-          </div>
-        </Stack>
-      </Stack>
+    <div
+      style={{
+        fontFamily: 'Roboto',
+      }}
+      data-cy={PLAYER_VIEW_CY}
+    >
+      <FormLayout activeStep={activeStep} steps={steps} page={page}>
+        {activeStep === 0 && <Home nextPage={nextPage} nextStep={nextStep} />}
+        {activeStep === 1 && (
+          <PersonalInfo
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 2 && (
+          <Education
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 3 && (
+          <WorkExperience
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 4 && (
+          <Skills
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 5 && (
+          <Portfolio
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 6 && (
+          <MotivationLetter
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 7 && (
+          <References
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 8 && (
+          <Template
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 9 && (
+          <Review
+            nextPage={nextPage}
+            prevPage={prevPage}
+            nextStep={nextStep}
+            prevStep={prevStep}
+          />
+        )}
+        {activeStep === 10 && (
+          <Upload
+            nextPage={nextPage}
+            prevPage={prevPage}
+            homeStep={homeStep}
+            prevStep={prevStep}
+          />
+        )}
+      </FormLayout>
     </div>
   );
 };

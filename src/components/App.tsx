@@ -10,6 +10,7 @@ import i18n from '../config/i18n';
 import { AppDataProvider } from './context/AppDataContext';
 import { AppSettingProvider } from './context/AppSettingContext';
 import { MembersProvider } from './context/MembersContext';
+import BuilderView from './views/admin/BuilderView';
 import PlayerView from './views/read/PlayerView';
 
 const App: FC = () => {
@@ -26,8 +27,8 @@ const App: FC = () => {
   const renderContent = (): ReactElement => {
     switch (context.get('context')) {
       case Context.BUILDER:
-      // todo: add the view to show in the builder
-
+        // todo: add the view to show in the builder
+        return <BuilderView />;
       // eslint-disable-next-line no-fallthrough
       case Context.ANALYTICS:
       // todo: add the view to show in the analyzer
