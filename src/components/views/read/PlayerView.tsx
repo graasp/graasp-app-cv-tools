@@ -2,7 +2,6 @@ import { RecordOf } from 'immutable';
 
 import React, { FC, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import { Context, LocalContext } from '@graasp/apps-query-client';
 
