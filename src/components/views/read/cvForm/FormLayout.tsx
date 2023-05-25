@@ -64,16 +64,6 @@ const FormLayout: FC<Props> = ({
         <div
           style={{
             alignSelf: 'stretch',
-            position: 'relative',
-            lineHeight: '20px',
-          }}
-        >
-          $username CV - $status &quot;in [&apos;Not Submitted&apos;, &apos;In
-          Review&apos;, &apos;Evaluated&apos;]&quot;
-        </div>
-        <div
-          style={{
-            alignSelf: 'stretch',
             flex: '1',
             display: 'flex',
             flexDirection: 'column',
@@ -120,7 +110,7 @@ const FormLayout: FC<Props> = ({
             boxShadow:
               '0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2)',
             width: '1001px',
-            height: '463px',
+            height: '550px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
@@ -304,17 +294,6 @@ const FormLayout: FC<Props> = ({
                 }}
               >
                 hello, this is review
-              </p>
-            )}
-            {activeStep === 10 && (
-              <p
-                style={{
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  justifyContent: 'cetner',
-                }}
-              >
-                hello, this is Final Page
               </p>
             )}
           </div>

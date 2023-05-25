@@ -1,37 +1,15 @@
 import { RecordOf } from 'immutable';
 
-import React, { FC, useContext, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Context, LocalContext } from '@graasp/apps-query-client';
 
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  LinearProgress,
-  List,
-  Menu,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-  styled,
-} from '@mui/material';
+import { styled } from '@mui/material';
 
-import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
 import { hooks } from '../../../config/queryClient';
-import {
-  APP_DATA_CONTAINER_CY,
-  APP_SETTING_CONTAINER_CY,
-  NEW_APP_DATA_BUTTON_CY,
-  PLAYER_VIEW_CY,
-  SETTING_NAME_FIELD_CY,
-  SETTING_VALUE_FIELD_CY,
-  UPDATE_APP_SETTING_BUTTON_CY,
-} from '../../../config/selectors';
+import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import { useAppDataContext } from '../../context/AppDataContext';
 import { useAppSettingContext } from '../../context/AppSettingContext';
 import { useMembersContext } from '../../context/MembersContext';
@@ -45,7 +23,6 @@ import References from './cvForm/References';
 import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
 import Template from './cvForm/Template';
-import Upload from './cvForm/Upload';
 import WorkExperience from './cvForm/WorkExperience';
 
 const SmallPre = styled('pre')(({ theme }) => ({
@@ -106,8 +83,11 @@ const PlayerView: FC = () => {
     'References',
     'Template',
     'Review',
-    'Upload & Submit',
   ];
+  const [cvValues, setCvValues] = useState({});
+  const handleModify = (modifiedValues: any): void => {
+    setCvValues(modifiedValues);
+  };
   return (
     <div
       style={{
@@ -116,6 +96,7 @@ const PlayerView: FC = () => {
       data-cy={PLAYER_VIEW_CY}
     >
       <FormLayout activeStep={activeStep} steps={steps} page={page}>
+        {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && <Home nextPage={nextPage} nextStep={nextStep} />}
         {activeStep === 1 && (
           <PersonalInfo
@@ -123,6 +104,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 2 && (
@@ -131,6 +114,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 3 && (
@@ -139,6 +124,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 4 && (
@@ -147,6 +134,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 5 && (
@@ -155,6 +144,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 6 && (
@@ -163,6 +154,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 7 && (
@@ -171,6 +164,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 8 && (
@@ -179,22 +174,17 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            values={cvValues}
+            handleValues={handleModify}
           />
         )}
         {activeStep === 9 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        )}
-        {activeStep === 10 && (
-          <Upload
-            nextPage={nextPage}
-            prevPage={prevPage}
             homeStep={homeStep}
             prevStep={prevStep}
+            values={cvValues}
           />
         )}
       </FormLayout>
