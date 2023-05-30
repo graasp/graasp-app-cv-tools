@@ -24,14 +24,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
 const References: FC<Props> = ({
   nextPage,
@@ -45,14 +48,14 @@ const References: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [showFields, setShowFields] = useState(false);
-  // const [cardCount, setCardCount] = useState(1);
   const [cards, setCards] = useState([{ id: 1 }]);
   const handleAdd = (): void => {
     const newCard = { id: cards.length + 1 };
     setCards([...cards, newCard]);
   };
+  const [showFields, setShowFields] = useState<boolean[]>([]);
 
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
   const handleRemove = (cardId: number): void => {
     if (cards.length === 1) {
       return; // Do not allow removing the only card
@@ -61,29 +64,68 @@ const References: FC<Props> = ({
     const updatedCards = cards.filter((card) => card.id !== cardId);
     setCards(updatedCards);
   };
-  const handleEdit = (): void => {
-    setShowFields(true);
+  const handleEdit = (cardId: number): void => {
+    // Find the index of the card being edited
+    const cardIndex = cards.findIndex((card) => card.id === cardId);
+
+    // Update the active card index
+    setActiveCardIndex(cardIndex);
+    const updatedShowFields = [...showFields];
+
+    // Update the visibility for the selected card
+    updatedShowFields[cardIndex] = true;
+
+    // Update the state with the new visibility array
+    setShowFields(updatedShowFields);
   };
-  const handleDone = (): void => {
-    setShowFields(false);
+  const handleDone = (cardId: number): void => {
+    const updatedShowFields = [...showFields];
+    const cardIndex = cards.findIndex((card) => card.id === cardId);
+    updatedShowFields[cardIndex] = false; // Set the visibility for the selected card to false
+    setShowFields(updatedShowFields); // Update the state with the new visibility array
   };
-  const [refName, setRefName] = useState('');
-  const [refRelation, setRefRelation] = useState('');
-  const [refCompany, setRefCompany] = useState('');
+  const [inputValues, setInputValues] = useState<
+    { cardId: number; values: { [key: string]: string } }[]
+  >([]);
+  const handleChange = (cardId: number, field: string, value: string): void => {
+    setInputValues((prevInputValues) => {
+      const cardIndex = prevInputValues.findIndex(
+        (inputValue) => inputValue.cardId === cardId,
+      );
+
+      if (cardIndex === -1) {
+        // Card not found in the input values array, add a new entry
+        return [...prevInputValues, { cardId, values: { [field]: value } }];
+      }
+
+      // Card found in the input values array, update the existing entry
+      return prevInputValues.map((inputValue) => {
+        if (inputValue.cardId === cardId) {
+          return {
+            ...inputValue,
+            values: { ...inputValue.values, [field]: value },
+          };
+        }
+        return inputValue;
+      });
+    });
+  };
   const [refPhoneNum, setRefPhoneNum] = useState('');
-  const [refEmail, setRefEmail] = useState('');
   const handleNext = (): void => {
-    const modifiedValues = {
-      ...values,
-      References: {
-        'Reference Name': refName,
-        'Reference Relation': refRelation,
-        'Reference Company': refCompany,
-        'Reference Phone Number': refPhoneNum,
-        'Reference Email': refEmail,
-      },
-    };
-    handleValues(modifiedValues);
+    const modifiedValues = cards.map((card) => {
+      const cardInputValues = inputValues.find(
+        (inputValue) => inputValue.cardId === card.id,
+      );
+
+      return {
+        'Reference Name': cardInputValues?.values.refName || '',
+        'Reference Relation': cardInputValues?.values.refRelation || '',
+        'Reference Company': cardInputValues?.values.refCompany || '',
+        'Reference Phone Number': cardInputValues?.values.refPhoneNum || '',
+        'Reference Email': cardInputValues?.values.email || '',
+      };
+    });
+    handleValues('References', modifiedValues);
     nextPage();
     nextStep();
   };
@@ -91,7 +133,7 @@ const References: FC<Props> = ({
     <div>
       <h2>References</h2>
       <div>
-        {cards.map((card) => (
+        {cards.map((card, index) => (
           <Card
             key={card.id}
             sx={{
@@ -110,41 +152,63 @@ const References: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Reference
               </Typography>
-              {showFields && (
+              {showFields[index] && (
                 <>
                   <TextField
                     label="Reference Name"
-                    value={refName}
-                    onChange={(e) => {
-                      setRefName(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.refName || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'refName', e.target.value)
+                    }
                   />
                   <TextField
                     label="Reference Relation"
-                    value={refRelation}
-                    onChange={(e) => {
-                      setRefRelation(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.refRelation || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'refRelation', e.target.value)
+                    }
                   />
                   <TextField
                     label="Reference Company"
-                    value={refCompany}
-                    onChange={(e) => {
-                      setRefCompany(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.refCompany || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'refCompany', e.target.value)
+                    }
                   />
                   <PhoneInput
                     country="us"
-                    value={refPhoneNum}
-                    onChange={(phone: string) => setRefPhoneNum(phone)}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.refPhoneNum || ''
+                    }
+                    onChange={(e: string) =>
+                      handleChange(card.id, 'refPhoneNum', e)
+                    }
                   />
                   <TextField
                     label="Reference Email Address"
                     type="email"
-                    value={refEmail}
-                    onChange={(e) => {
-                      setRefEmail(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.refEmail || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'refEmail', e.target.value)
+                    }
                   />
                 </>
               )}
@@ -155,14 +219,14 @@ const References: FC<Props> = ({
                 <Button
                   size="small"
                   startIcon={<EditIcon />}
-                  onClick={handleEdit}
+                  onClick={() => handleEdit(card.id)}
                 >
                   Edit
                 </Button>
                 <Button
                   size="small"
                   startIcon={<DoneIcon />}
-                  onClick={handleDone}
+                  onClick={() => handleDone(card.id)}
                 >
                   Done
                 </Button>

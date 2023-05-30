@@ -21,14 +21,19 @@ interface ValuesObject {
   [key: string]: InnerObject;
 }
 
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
+
 const PersonalInfo: FC<Props> = ({
   nextPage,
   prevPage,
@@ -41,56 +46,94 @@ const PersonalInfo: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [birthDate, setBirthDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
-  const [selectedGender, setSelectedGender] = useState('');
-  const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [profileLinks, setProfileLinks] = useState('');
-  const [personalLink, setPersonalLink] = useState('');
-  const [pic, setPic] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const handleClick = (): void => {
     // 👇️ open file input box on click of another element
     inputRef.current?.click();
+  };
+  const [inputValues, setInputValues] = useState<{ [key: string]: string }[]>(
+    [],
+  );
+  const handleChange = (field: string, value: string): void => {
+    setInputValues((prevInputValues) => {
+      const updatedInputValues = [...prevInputValues];
+      const fieldValue = { [field]: value };
+      const existingFieldIndex = updatedInputValues.findIndex(
+        (inputValue) => Object.keys(inputValue)[0] === field,
+      );
+
+      if (existingFieldIndex !== -1) {
+        // Field already exists, update its value
+        updatedInputValues[existingFieldIndex] = fieldValue;
+      } else {
+        // Field doesn't exist, add it to the input values
+        updatedInputValues.push(fieldValue);
+      }
+
+      return updatedInputValues;
+    });
   };
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const { files } = event.target;
     if (files && files.length > 0) {
+      const selectedFile = files[0];
       const reader = new FileReader();
       reader.onload = () => {
-        setPic(files[0]);
-        setPreview(reader.result as string);
+        const filePreview = reader.result as string;
+        handleChange('preview', filePreview);
       };
-      reader.readAsDataURL(files[0]);
+      reader.readAsDataURL(selectedFile);
     }
   };
-  const formattedBirthDate = birthDate ? birthDate.format('YYYY-MM-DD') : '';
-  const handleChange = (event: SelectChangeEvent): void => {
-    setSelectedGender(event.target.value as string);
-  };
+
   const handleNext = (): void => {
     const modifiedValues = {
-      ...values,
-      'Personal Details': {
-        'First Name': firstName,
-        'Last Name': lastName,
-        'Birth Date': formattedBirthDate,
-        Gender: selectedGender,
-        'Email Address': email,
-        'Phone Number': phoneNumber,
-        Address: address,
-        'Profile Links': profileLinks,
-        'Personal Link': personalLink,
-        'Personal Picture': preview,
-      },
+      'First Name':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'firstName',
+        )?.firstName || '',
+      'Last Name':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'lastName',
+        )?.lastName || '',
+      'Birth Date':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'birthDate',
+        )?.birthDate || '',
+      Gender:
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'gender',
+        )?.gender || '',
+      'Email Address':
+        inputValues.find((inputValue) => Object.keys(inputValue)[0] === 'email')
+          ?.email || '',
+      'Phone Number':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'phoneNumber',
+        )?.phoneNumber || '',
+      Address:
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'address',
+        )?.address || '',
+      'Profile Links':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'profileLinks',
+        )?.profileLinks || '',
+      'Personal Link':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'personalLink',
+        )?.personalLink || '',
+      'Personal Picture':
+        inputValues.find(
+          (inputValue) => Object.keys(inputValue)[0] === 'preview',
+        )?.preview || '',
     };
-    handleValues(modifiedValues);
+
+    handleValues('Personal Info', [modifiedValues]);
     nextPage();
     nextStep();
   };
@@ -109,16 +152,24 @@ const PersonalInfo: FC<Props> = ({
           <TextField
             label="First Name"
             id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={
+              inputValues.find(
+                (inputValue) => Object.keys(inputValue)[0] === 'firstName',
+              )?.firstName || ''
+            }
+            onChange={(e) => handleChange('firstName', e.target.value)}
             required
           />
           <p>Last Name</p>
           <TextField
             label="Last Name"
             id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={
+              inputValues.find(
+                (inputValue) => Object.keys(inputValue)[0] === 'lastName',
+              )?.lastName || ''
+            }
+            onChange={(e) => handleChange('lastName', e.target.value)}
             required
           />
           <p>Date of Birth</p>
@@ -127,13 +178,28 @@ const PersonalInfo: FC<Props> = ({
               label="Birth Date"
               value={birthDate}
               maxDate={dayjs()}
-              onChange={(e) => setBirthDate(e)}
+              onChange={(date) => {
+                const formattedDate = date
+                  ? dayjs(date).format('YYYY-MM-DD')
+                  : '';
+                setBirthDate(date);
+                setInputValues((prevInputValues) => [
+                  ...prevInputValues.filter(
+                    (inputValue) => Object.keys(inputValue)[0] !== 'birthDate',
+                  ),
+                  { birthDate: formattedDate },
+                ]);
+              }}
             />
           </LocalizationProvider>
           <p>Gender</p>
           <Select
-            value={selectedGender}
-            onChange={handleChange}
+            value={
+              inputValues.find(
+                (inputValue) => Object.keys(inputValue)[0] === 'gender',
+              )?.gender || ''
+            }
+            onChange={(e) => handleChange('gender', e.target.value)}
             style={{ width: '100%' }}
             label="Gender"
           >
@@ -153,29 +219,50 @@ const PersonalInfo: FC<Props> = ({
             <TextField
               label="Email Address"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={
+                inputValues.find(
+                  (inputValue) => Object.keys(inputValue)[0] === 'email',
+                )?.email || ''
+              }
+              onChange={(e) => handleChange('email', e.target.value)}
               required
             />
             <p>Phone Number</p>
             <PhoneInput
               country="us"
               value={phoneNumber}
-              onChange={(phone: string) => setPhoneNumber(phone)}
+              onChange={(phone: string) => {
+                setPhoneNumber(phone);
+                setInputValues((prevInputValues) => [
+                  ...prevInputValues.filter(
+                    (inputValue) =>
+                      Object.keys(inputValue)[0] !== 'phoneNumber',
+                  ),
+                  { phoneNumber: phone },
+                ]);
+              }}
             />
             <p>Address</p>
             <TextField
               label="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={
+                inputValues.find(
+                  (inputValue) => Object.keys(inputValue)[0] === 'address',
+                )?.address || ''
+              }
+              onChange={(e) => handleChange('address', e.target.value)}
               required
             />
             <p>LinkedIn - Github Link</p>
             <TextField
               type="url"
               label="LinkedIn Link"
-              value={profileLinks}
-              onChange={(e) => setProfileLinks(e.target.value)}
+              value={
+                inputValues.find(
+                  (inputValue) => Object.keys(inputValue)[0] === 'profileLinks',
+                )?.profileLinks || ''
+              }
+              onChange={(e) => handleChange('profileLinks', e.target.value)}
               required
             />
           </div>
@@ -192,8 +279,12 @@ const PersonalInfo: FC<Props> = ({
             <TextField
               type="url"
               label="Personal Web Link"
-              value={personalLink}
-              onChange={(e) => setPersonalLink(e.target.value)}
+              value={
+                inputValues.find(
+                  (inputValue) => Object.keys(inputValue)[0] === 'personalLink',
+                )?.personalLink || ''
+              }
+              onChange={(e) => handleChange('personalLink', e.target.value)}
               required
             />
             <p>Image</p>
@@ -205,7 +296,19 @@ const PersonalInfo: FC<Props> = ({
               onChange={handleFileChange}
             />
 
-            {preview && <img src={preview} alt="Preview" />}
+            {inputValues.find(
+              (inputValue) => Object.keys(inputValue)[0] === 'preview',
+            )?.preview && (
+              <img
+                src={
+                  inputValues.find(
+                    (inputValue) => Object.keys(inputValue)[0] === 'preview',
+                  )?.preview
+                }
+                alt="Preview"
+              />
+            )}
+
             <Button
               style={{ position: 'absolute', top: '170px', left: '30px' }}
               sx={{ width: 165 }}

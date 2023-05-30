@@ -20,14 +20,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
 const MotivationLetter: FC<Props> = ({
   nextPage,
@@ -52,10 +55,9 @@ const MotivationLetter: FC<Props> = ({
   const [motivation, setMotivation] = useState('');
   const handleNext = (): void => {
     const modifiedValues = {
-      ...values,
-      'Motivation Letter': { Motivation: motivation },
+      Motivation: motivation,
     };
-    handleValues(modifiedValues);
+    handleValues('Motivation Letter', [modifiedValues]);
     nextPage();
     nextStep();
   };

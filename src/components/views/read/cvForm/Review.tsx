@@ -19,13 +19,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface CVValues {
+  [category: string]: {
+    [fieldName: string]: any;
+  }[];
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   homeStep: () => void;
   prevStep: () => void;
-  values: ValuesObject;
+  values: CVValues;
 }
 const Review: FC<Props> = ({
   nextPage,
@@ -54,13 +58,20 @@ const Review: FC<Props> = ({
       <Button type="button">Download .pdf file</Button>
     </a>;
   };
-  const personalInfoKeys = Object.keys(values['Personal Details']);
-  const educationKeys = Object.keys(values.Education);
-  const workExperienceKeys = Object.keys(values['Work Experience']);
-  const skillsKeys = Object.keys(values.Skills);
-  const portfolioKeys = Object.keys(values.Portfolio);
-  const motivationKeys = Object.keys(values['Motivation Letter']);
-  const referencesKeys = Object.keys(values.References);
+  // const personalInfoKeys = Object.keys(values['Personal Details']);
+  // const educationKeys = Object.keys(values.Education);
+  // const workExperienceKeys = Object.keys(values['Work Experience']);
+  // const skillsKeys = Object.keys(values.Skills);
+  // const portfolioKeys = Object.keys(values.Portfolio);
+  // const motivationKeys = Object.keys(values['Motivation Letter']);
+  // const referencesKeys = Object.keys(values.References);
+  const personalData = values['Personal Info'];
+  const educationData = values.Education;
+  const workData = values['Work Experience'];
+  const skillsData = values.Skills;
+  const portfolioData = values.Portfolio;
+  const motivationData = values['Motivation Letter'];
+  const referencesData = values.References;
   return (
     <div>
       <h2>Review</h2>
@@ -87,349 +98,141 @@ const Review: FC<Props> = ({
               </Typography>
               <p>CV Goes Here</p>
               <div>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Personal Information</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find((key) => key === 'First Name')}
-                          :{' '}
-                          {values['Personal Details']['First Name'].toString()}
-                        </Typography>
+                {personalData.map((personal, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">Personal Data</Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(personal).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}:{' '}
+                              {field === 'Personal Picture' ? (
+                                <img src={value} alt="123" />
+                              ) : (
+                                value
+                              )}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find((key) => key === 'Last Name')}:{' '}
-                          {values['Personal Details']['Last Name'].toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {educationData.map((education, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">
+                        Education {index + 1}
+                      </Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(education).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find((key) => key === 'Birth Date')}
-                          :{' '}
-                          {values['Personal Details']['Birth Date'].toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {workData.map((job, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">
+                        Work Experience {index + 1}
+                      </Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(job).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find((key) => key === 'Gender')}:{' '}
-                          {values['Personal Details'].Gender.toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {skillsData.map((skill, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">Skills</Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(skill).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find(
-                            (key) => key === 'Email Address',
-                          )}
-                          :{' '}
-                          {values['Personal Details'][
-                            'Email Address'
-                          ].toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {portfolioData.map((project, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">Project {index + 1}</Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(project).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find(
-                            (key) => key === 'Phone Number',
-                          )}
-                          :{' '}
-                          {values['Personal Details'][
-                            'Phone Number'
-                          ].toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {motivationData.map((motivation, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">Motivation Letter</Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(motivation).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find((key) => key === 'Address')}:{' '}
-                          {values['Personal Details'].Address.toString()}
-                        </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div>
+                {referencesData.map((reference, index) => (
+                  <Card key={index}>
+                    <CardContent>
+                      <Typography variant="h5">
+                        Reference {index + 1}
+                      </Typography>
+                      <Grid container spacing={2}>
+                        {Object.entries(reference).map(([field, value]) => (
+                          <Grid item xs={12} sm={6} key={field}>
+                            <Typography>
+                              {field}: {value}
+                            </Typography>
+                          </Grid>
+                        ))}
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find(
-                            (key) => key === 'Profile Links',
-                          )}
-                          :{' '}
-                          {values['Personal Details'][
-                            'Profile Links'
-                          ].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find(
-                            (key) => key === 'Personal Link',
-                          )}
-                          :{' '}
-                          {values['Personal Details'][
-                            'Personal Link'
-                          ].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {personalInfoKeys.find(
-                            (key) => key === 'Personal Picture',
-                          )}
-                          :{' '}
-                          {values['Personal Details']['Personal Picture'] && (
-                            <img
-                              src={
-                                values['Personal Details']['Personal Picture']
-                              }
-                              alt="Preview"
-                            />
-                          )}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Education</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'Degree')}:{' '}
-                          {values.Education.Degree.toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find(
-                            (key) => key === 'Institution Name',
-                          )}
-                          : {values.Education['Institution Name'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'Major')}:{' '}
-                          {values.Education.Major.toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'Start Date')}:{' '}
-                          {values.Education['Start Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'End Date')}:{' '}
-                          {values.Education['End Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'GPA')}:{' '}
-                          {values.Education.GPA.toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {educationKeys.find((key) => key === 'Country')}:{' '}
-                          {values.Education.Country.toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Work Experience</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find(
-                            (key) => key === 'Job Title',
-                          )}
-                          : {values['Work Experience']['Job Title'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find(
-                            (key) => key === 'Institution Name',
-                          )}
-                          :{' '}
-                          {values['Work Experience'][
-                            'Institution Name'
-                          ].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find(
-                            (key) => key === 'Start Date',
-                          )}
-                          : {values['Work Experience']['Start Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find((key) => key === 'End Date')}
-                          : {values['Work Experience']['End Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find((key) => key === 'Country')}:{' '}
-                          {values['Work Experience'].Country.toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find(
-                            (key) => key === 'Job Details',
-                          )}
-                          :{' '}
-                          {values['Work Experience']['Job Details'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {workExperienceKeys.find(
-                            (key) => key === 'Key Achievements',
-                          )}
-                          :{' '}
-                          {values['Work Experience'][
-                            'Key Achievements'
-                          ].toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Skills</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {skillsKeys.find((key) => key === 'Tech Skills')}:{' '}
-                          {values.Skills['Tech Skills'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {skillsKeys.find((key) => key === 'Lang Skills')}:{' '}
-                          {values.Skills['Lang Skills'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {skillsKeys.find((key) => key === 'Other Skills')}:{' '}
-                          {values.Skills['Other Skills'].toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Portfolio</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {portfolioKeys.find((key) => key === 'Project Title')}
-                          : {values.Portfolio['Project Title'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {portfolioKeys.find(
-                            (key) => key === 'Project Description',
-                          )}
-                          : {values.Portfolio['Project Description'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {portfolioKeys.find((key) => key === 'Start Date')}:{' '}
-                          {values.Portfolio['Start Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {portfolioKeys.find((key) => key === 'End Date')}:{' '}
-                          {values.Portfolio['End Date'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {portfolioKeys.find((key) => key === 'Project Link')}:{' '}
-                          {values.Portfolio['Project Link'].toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">Motivation Letter</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {motivationKeys.find((key) => key === 'Motivation')}:{' '}
-                          {values['Motivation Letter'].Motivation.toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-                <Card style={{ height: 'auto' }}>
-                  <CardContent>
-                    <Typography variant="h5">References</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {referencesKeys.find(
-                            (key) => key === 'Reference Name',
-                          )}
-                          : {values.References['Reference Name'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {referencesKeys.find(
-                            (key) => key === 'Reference Relation',
-                          )}
-                          : {values.References['Reference Relation'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {referencesKeys.find(
-                            (key) => key === 'Reference Company',
-                          )}
-                          : {values.References['Reference Company'].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {referencesKeys.find(
-                            (key) => key === 'Reference Phone Number',
-                          )}
-                          :{' '}
-                          {values.References[
-                            'Reference Phone Number'
-                          ].toString()}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography>
-                          {referencesKeys.find(
-                            (key) => key === 'Reference Email',
-                          )}
-                          : {values.References['Reference Email'].toString()}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
               <CardActions>
                 {/* <a href="./yourfile.pdf" download>

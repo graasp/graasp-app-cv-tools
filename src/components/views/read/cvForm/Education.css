@@ -1,0 +1,15 @@
+.card-item {
+  position: absolute;
+  top: 350px;
+}
+
+.card-1 {
+  left: 300px;
+}
+
+.card-2 {
+  left: 750px;
+}
+.card-3 {
+  left: 1300px;
+}

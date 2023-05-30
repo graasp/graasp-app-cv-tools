@@ -18,14 +18,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
 interface TemplateState {
   id: number;

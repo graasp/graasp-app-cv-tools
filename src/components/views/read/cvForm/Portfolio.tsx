@@ -27,14 +27,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
 const Portfolio: FC<Props> = ({
   nextPage,
@@ -48,14 +51,14 @@ const Portfolio: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [showFields, setShowFields] = useState(false);
-  // const [cardCount, setCardCount] = useState(1);
   const [cards, setCards] = useState([{ id: 1 }]);
   const handleAdd = (): void => {
     const newCard = { id: cards.length + 1 };
     setCards([...cards, newCard]);
   };
+  const [showFields, setShowFields] = useState<boolean[]>([]);
 
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
   const handleRemove = (cardId: number): void => {
     if (cards.length === 1) {
       return; // Do not allow removing the only card
@@ -64,31 +67,69 @@ const Portfolio: FC<Props> = ({
     const updatedCards = cards.filter((card) => card.id !== cardId);
     setCards(updatedCards);
   };
-  const handleEdit = (): void => {
-    setShowFields(true);
+  const handleEdit = (cardId: number): void => {
+    // Find the index of the card being edited
+    const cardIndex = cards.findIndex((card) => card.id === cardId);
+
+    // Update the active card index
+    setActiveCardIndex(cardIndex);
+    const updatedShowFields = [...showFields];
+
+    // Update the visibility for the selected card
+    updatedShowFields[cardIndex] = true;
+
+    // Update the state with the new visibility array
+    setShowFields(updatedShowFields);
   };
-  const handleDone = (): void => {
-    setShowFields(false);
+  const handleDone = (cardId: number): void => {
+    const updatedShowFields = [...showFields];
+    const cardIndex = cards.findIndex((card) => card.id === cardId);
+    updatedShowFields[cardIndex] = false; // Set the visibility for the selected card to false
+    setShowFields(updatedShowFields); // Update the state with the new visibility array
   };
-  const [projectTitle, setProjectTitle] = useState('');
-  const [projectDesc, setProjectDesc] = useState('');
-  const [projectLink, setProjectLink] = useState('');
+  const [inputValues, setInputValues] = useState<
+    { cardId: number; values: { [key: string]: string } }[]
+  >([]);
+  const handleChange = (cardId: number, field: string, value: string): void => {
+    setInputValues((prevInputValues) => {
+      const cardIndex = prevInputValues.findIndex(
+        (inputValue) => inputValue.cardId === cardId,
+      );
+
+      if (cardIndex === -1) {
+        // Card not found in the input values array, add a new entry
+        return [...prevInputValues, { cardId, values: { [field]: value } }];
+      }
+
+      // Card found in the input values array, update the existing entry
+      return prevInputValues.map((inputValue) => {
+        if (inputValue.cardId === cardId) {
+          return {
+            ...inputValue,
+            values: { ...inputValue.values, [field]: value },
+          };
+        }
+        return inputValue;
+      });
+    });
+  };
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs('2022-04-18'));
-  const formattedStartDate = startDate ? startDate.format('YYYY-MM-DD') : '';
-  const formattedEndDate = endDate ? endDate.format('YYYY-MM-DD') : '';
   const handleNext = (): void => {
-    const modifiedValues = {
-      ...values,
-      Portfolio: {
-        'Project Title': projectTitle,
-        'Project Description': projectDesc,
-        'Start Date': formattedStartDate,
-        'End Date': formattedEndDate,
-        'Project Link': projectLink,
-      },
-    };
-    handleValues(modifiedValues);
+    const modifiedValues = cards.map((card) => {
+      const cardInputValues = inputValues.find(
+        (inputValue) => inputValue.cardId === card.id,
+      );
+
+      return {
+        'Project Title': cardInputValues?.values.projectTitle || '',
+        'Project Description': cardInputValues?.values.projectDesc || '',
+        'Start Date': cardInputValues?.values.startDate || '',
+        'End Date': cardInputValues?.values.endDate || '',
+        'Project Link': cardInputValues?.values.projectLink || '',
+      };
+    });
+    handleValues('Portfolio', modifiedValues);
     nextPage();
     nextStep();
   };
@@ -96,7 +137,7 @@ const Portfolio: FC<Props> = ({
     <div>
       <h2>Portfolio</h2>
       <div>
-        {cards.map((card) => (
+        {cards.map((card, index) => (
           <Card
             key={card.id}
             sx={{
@@ -115,47 +156,84 @@ const Portfolio: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Project
               </Typography>
-              {showFields && (
+              {showFields[index] && (
                 <>
                   <TextField
                     label="Project Title"
-                    value={projectTitle}
-                    onChange={(e) => {
-                      setProjectTitle(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.projectTitle || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'projectTitle', e.target.value)
+                    }
                     required
                   />
                   <TextField
                     label="Project Description"
-                    value={projectDesc}
-                    onChange={(e) => {
-                      setProjectDesc(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.projectDesc || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'projectDesc', e.target.value)
+                    }
                     required
                   />
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="From"
-                      value={startDate}
+                      value={
+                        inputValues.find(
+                          (inputValue) => inputValue.cardId === card.id,
+                        )?.values.startDate || startDate
+                      }
                       maxDate={dayjs()}
-                      onChange={(e) => setStartDate(e)}
+                      onChange={(date) => {
+                        handleChange(
+                          card.id,
+                          'startDate',
+                          date
+                            ? dayjs(date).format('YYYY-MM-DD')
+                            : dayjs(startDate).format('YYYY-MM-DD'),
+                        );
+                        setStartDate(dayjs(date));
+                      }}
                     />
                   </LocalizationProvider>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Till"
-                      value={endDate}
+                      value={
+                        inputValues.find(
+                          (inputValue) => inputValue.cardId === card.id,
+                        )?.values.endDate || endDate
+                      }
                       minDate={startDate}
                       maxDate={dayjs()}
-                      onChange={(e) => setEndDate(e)}
+                      onChange={(date) =>
+                        handleChange(
+                          card.id,
+                          'endDate',
+                          date
+                            ? dayjs(date).format('YYYY-MM-DD')
+                            : dayjs(endDate).format('YYYY-MM-DD'),
+                        )
+                      }
                     />
                   </LocalizationProvider>
                   <TextField
                     label="Project Link"
-                    value={projectLink}
-                    onChange={(e) => {
-                      setProjectLink(e.target.value);
-                    }}
+                    value={
+                      inputValues.find(
+                        (inputValue) => inputValue.cardId === card.id,
+                      )?.values.projectLink || ''
+                    }
+                    onChange={(e) =>
+                      handleChange(card.id, 'projectLink', e.target.value)
+                    }
                   />
                 </>
               )}
@@ -166,14 +244,14 @@ const Portfolio: FC<Props> = ({
                 <Button
                   size="small"
                   startIcon={<EditIcon />}
-                  onClick={handleEdit}
+                  onClick={() => handleEdit(card.id)}
                 >
                   Edit
                 </Button>
                 <Button
                   size="small"
                   startIcon={<DoneIcon />}
-                  onClick={handleDone}
+                  onClick={() => handleDone(card.id)}
                 >
                   Done
                 </Button>

@@ -34,14 +34,17 @@ interface InnerObject {
 interface ValuesObject {
   [key: string]: InnerObject;
 }
-
+interface HandleModifyFunction {
+  (category: string, modifiedValues: any): void;
+}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  handleValues: (Values: any) => void;
+  // handleValues: (Values: any) => void;
+  handleValues: HandleModifyFunction;
 }
 interface CardState {
   id: number;
@@ -170,15 +173,15 @@ const Skills: FC<Props> = ({
       }),
       {},
     );
-    const modifiedValues = { ...values, Skills: skillsObj };
-    handleValues(modifiedValues);
+    // const modifiedValues = { ...values, Skills: skillsObj };
+    const modifiedValues = skillsObj;
+    handleValues('Skills', [modifiedValues]);
     nextPage();
     nextStep();
   };
   return (
     <div>
       <h2>Skills</h2>
-
       {cards.map((card, index) => (
         <Card
           key={card.id}

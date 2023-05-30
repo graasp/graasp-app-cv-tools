@@ -84,10 +84,19 @@ const PlayerView: FC = () => {
     'Template',
     'Review',
   ];
-  const [cvValues, setCvValues] = useState({});
-  const handleModify = (modifiedValues: any): void => {
-    setCvValues(modifiedValues);
+  const [cvValues, setCvValues] = useState<Record<string, any>>({});
+
+  const handleModify = (category: string, modifiedValues: any): void => {
+    setCvValues((prevValues) => ({
+      ...prevValues,
+      [category]: modifiedValues,
+    }));
   };
+
+  // const [cvValues, setCvValues] = useState({});
+  // const handleModify = (modifiedValues: any): void => {
+  //   setCvValues(modifiedValues);
+  // };
   return (
     <div
       style={{
