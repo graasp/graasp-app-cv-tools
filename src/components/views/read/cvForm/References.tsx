@@ -214,20 +214,23 @@ const References: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                <Button
-                  size="small"
-                  startIcon={<EditIcon />}
-                  onClick={() => handleEdit(card.id)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<DoneIcon />}
-                  onClick={() => handleDone(card.id)}
-                >
-                  Done
-                </Button>
+                {showFields[index] ? (
+                  <Button
+                    size="small"
+                    startIcon={<DoneIcon />}
+                    onClick={() => handleDone(card.id)}
+                  >
+                    Done
+                  </Button>
+                ) : (
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon />}
+                    onClick={() => handleEdit(card.id)}
+                  >
+                    Edit
+                  </Button>
+                )}
                 <Button
                   size="small"
                   disabled={cards.length === 1}

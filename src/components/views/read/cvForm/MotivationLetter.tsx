@@ -95,20 +95,23 @@ const MotivationLetter: FC<Props> = ({
                 />
               )}
               <CardActions>
-                <Button
-                  size="small"
-                  startIcon={<EditIcon />}
-                  onClick={handleEdit}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<DoneIcon />}
-                  onClick={handleDone}
-                >
-                  Done
-                </Button>
+                {showFields ? (
+                  <Button
+                    size="small"
+                    startIcon={<DoneIcon />}
+                    onClick={handleDone}
+                  >
+                    Done
+                  </Button>
+                ) : (
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon />}
+                    onClick={handleEdit}
+                  >
+                    Edit
+                  </Button>
+                )}
               </CardActions>
             </CardContent>
           </Card>

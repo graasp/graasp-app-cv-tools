@@ -61,7 +61,6 @@ const Education: FC<Props> = ({
     setCards([...cards, newCard]);
   };
   const [showFields, setShowFields] = useState<boolean[]>([]);
-
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const handleRemove = (cardId: number): void => {
     if (cards.length === 1) {
@@ -297,20 +296,23 @@ const Education: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                <Button
-                  size="small"
-                  startIcon={<EditIcon />}
-                  onClick={() => handleEdit(card.id)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<DoneIcon />}
-                  onClick={() => handleDone(card.id)}
-                >
-                  Done
-                </Button>
+                {showFields[index] ? (
+                  <Button
+                    size="small"
+                    startIcon={<DoneIcon />}
+                    onClick={() => handleDone(card.id)}
+                  >
+                    Done
+                  </Button>
+                ) : (
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon />}
+                    onClick={() => handleEdit(card.id)}
+                  >
+                    Edit
+                  </Button>
+                )}
                 <Button
                   size="small"
                   disabled={cards.length === 1}

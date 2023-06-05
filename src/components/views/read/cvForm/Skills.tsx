@@ -65,7 +65,6 @@ const Skills: FC<Props> = ({
   const [cardStates, setCardStates] = useState<CardState[]>(
     cards.map((card) => ({ id: card.id, showFields: false })),
   );
-
   const handleEdit = (cardId: number): void => {
     const updatedCardStates = cardStates.map((cardState) => {
       if (cardState.id === cardId) {
@@ -211,23 +210,26 @@ const Skills: FC<Props> = ({
                 </ul>
               </div>
             )}
+            <CardActions>
+              {cardStates[index].showFields ? (
+                <Button
+                  size="small"
+                  startIcon={<DoneIcon />}
+                  onClick={() => handleDone(card.id)}
+                >
+                  Done
+                </Button>
+              ) : (
+                <Button
+                  size="small"
+                  startIcon={<EditIcon />}
+                  onClick={() => handleEdit(card.id)}
+                >
+                  Edit
+                </Button>
+              )}
+            </CardActions>
           </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              startIcon={<EditIcon />}
-              onClick={() => handleEdit(card.id)}
-            >
-              Edit
-            </Button>
-            <Button
-              size="small"
-              startIcon={<DoneIcon />}
-              onClick={() => handleDone(card.id)}
-            >
-              Done
-            </Button>
-          </CardActions>
         </Card>
       ))}
       <Button
