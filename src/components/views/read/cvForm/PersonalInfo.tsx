@@ -8,7 +8,6 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, MenuItem, Select, TextField } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -30,7 +29,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  // handleValues: (Values: any) => void;
   handleValues: HandleModifyFunction;
 }
 
@@ -193,20 +191,24 @@ const PersonalInfo: FC<Props> = ({
             />
           </LocalizationProvider>
           <p>Gender</p>
-          <Select
+          <TextField
+            id="select-gender"
+            select
+            label="Gender"
             value={
               inputValues.find(
                 (inputValue) => Object.keys(inputValue)[0] === 'gender',
               )?.gender || ''
             }
             onChange={(e) => handleChange('gender', e.target.value)}
-            style={{ width: '100%' }}
-            label="Gender"
+            required
+            helperText="Please select your gender"
+            margin="normal"
           >
             <MenuItem value="female">Female</MenuItem>
             <MenuItem value="male">Male</MenuItem>
             <MenuItem value="noIndicate">Do not Indicate</MenuItem>
-          </Select>
+          </TextField>
           <div
             style={{
               position: 'absolute',
@@ -290,7 +292,7 @@ const PersonalInfo: FC<Props> = ({
             <p>Image</p>
             <input
               type="file"
-              accept=".png, .jpg, .jpeg"
+              accept="image/*"
               style={{ display: 'none' }}
               ref={inputRef}
               onChange={handleFileChange}

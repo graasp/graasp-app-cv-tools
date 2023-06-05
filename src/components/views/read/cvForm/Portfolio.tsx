@@ -36,7 +36,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  // handleValues: (Values: any) => void;
   handleValues: HandleModifyFunction;
 }
 const Portfolio: FC<Props> = ({
@@ -147,7 +146,7 @@ const Portfolio: FC<Props> = ({
               height: '400px',
               overflow: 'auto',
             }}
-            style={{ position: 'absolute', top: '400px', left: '720px' }}
+            className={`card-item card-${card.id}`}
           >
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">

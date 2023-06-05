@@ -29,7 +29,7 @@ interface Props {
   prevPage: () => void;
   homeStep: () => void;
   prevStep: () => void;
-  values: CVValues;
+  values: ValuesObject;
 }
 const Review: FC<Props> = ({
   nextPage,
@@ -58,13 +58,6 @@ const Review: FC<Props> = ({
       <Button type="button">Download .pdf file</Button>
     </a>;
   };
-  // const personalInfoKeys = Object.keys(values['Personal Details']);
-  // const educationKeys = Object.keys(values.Education);
-  // const workExperienceKeys = Object.keys(values['Work Experience']);
-  // const skillsKeys = Object.keys(values.Skills);
-  // const portfolioKeys = Object.keys(values.Portfolio);
-  // const motivationKeys = Object.keys(values['Motivation Letter']);
-  // const referencesKeys = Object.keys(values.References);
   const personalData = values['Personal Info'];
   const educationData = values.Education;
   const workData = values['Work Experience'];
@@ -72,6 +65,7 @@ const Review: FC<Props> = ({
   const portfolioData = values.Portfolio;
   const motivationData = values['Motivation Letter'];
   const referencesData = values.References;
+
   return (
     <div>
       <h2>Review</h2>
@@ -98,16 +92,16 @@ const Review: FC<Props> = ({
               </Typography>
               <p>CV Goes Here</p>
               <div>
-                {personalData.map((personal, index) => (
-                  <Card key={index}>
+                {Object.entries(personalData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">Personal Data</Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(personal).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}:{' '}
-                              {field === 'Personal Picture' ? (
+                              {fieldName}:{' '}
+                              {fieldName === 'Personal Picture' ? (
                                 <img src={value} alt="123" />
                               ) : (
                                 value
@@ -121,17 +115,17 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {educationData.map((education, index) => (
-                  <Card key={index}>
+                {Object.entries(educationData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">
-                        Education {index + 1}
+                        Education {category + 1}
                       </Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(education).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}
@@ -141,17 +135,17 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {workData.map((job, index) => (
-                  <Card key={index}>
+                {Object.entries(workData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">
-                        Work Experience {index + 1}
+                        Work Experience {category + 1}
                       </Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(job).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}
@@ -161,15 +155,15 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {skillsData.map((skill, index) => (
-                  <Card key={index}>
+                {Object.entries(skillsData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">Skills</Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(skill).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}
@@ -179,15 +173,17 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {portfolioData.map((project, index) => (
-                  <Card key={index}>
+                {Object.entries(portfolioData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
-                      <Typography variant="h5">Project {index + 1}</Typography>
+                      <Typography variant="h5">
+                        Portfolio - Proejcts {category + 1}
+                      </Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(project).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}
@@ -197,15 +193,15 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {motivationData.map((motivation, index) => (
-                  <Card key={index}>
+                {Object.entries(motivationData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">Motivation Letter</Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(motivation).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}
@@ -215,17 +211,17 @@ const Review: FC<Props> = ({
                 ))}
               </div>
               <div>
-                {referencesData.map((reference, index) => (
-                  <Card key={index}>
+                {Object.entries(referencesData).map(([category, fields]) => (
+                  <Card key={category}>
                     <CardContent>
                       <Typography variant="h5">
-                        Reference {index + 1}
+                        References {category + 1}
                       </Typography>
                       <Grid container spacing={2}>
-                        {Object.entries(reference).map(([field, value]) => (
-                          <Grid item xs={12} sm={6} key={field}>
+                        {Object.entries(fields).map(([fieldName, value]) => (
+                          <Grid item xs={12} sm={6} key={fieldName}>
                             <Typography>
-                              {field}: {value}
+                              {fieldName}: {value}
                             </Typography>
                           </Grid>
                         ))}

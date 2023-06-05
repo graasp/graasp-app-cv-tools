@@ -41,7 +41,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  // handleValues: (Values: any) => void;
   handleValues: HandleModifyFunction;
 }
 const Education: FC<Props> = ({
@@ -167,9 +166,10 @@ const Education: FC<Props> = ({
               </Typography>
               {showFields[index] && (
                 <>
-                  <InputLabel id="select-label-degree">Degree Type</InputLabel>
-                  <Select
-                    labelId="select-label-degree"
+                  <TextField
+                    id={`select-degree-${card.id}`}
+                    select
+                    label="Degree"
                     value={
                       inputValues.find(
                         (inputValue) => inputValue.cardId === card.id,
@@ -179,6 +179,8 @@ const Education: FC<Props> = ({
                       handleChange(card.id, 'degree', e.target.value)
                     }
                     required
+                    helperText="Please select your degree"
+                    margin="normal"
                   >
                     <MenuItem value="Diploma">Diploma</MenuItem>
                     <MenuItem value="Bachelors">Bachelors</MenuItem>
@@ -187,7 +189,7 @@ const Education: FC<Props> = ({
                     <MenuItem value="Internship - Training">
                       Internship - Training
                     </MenuItem>
-                  </Select>
+                  </TextField>
                   <TextField
                     label="Institution Name"
                     value={
@@ -265,9 +267,10 @@ const Education: FC<Props> = ({
                       handleChange(card.id, 'gpa', e.target.value)
                     }
                   />
-                  <InputLabel id="select-label-country">Country</InputLabel>
-                  <Select
-                    labelId="select-label-country"
+                  <TextField
+                    id={`select-country-${card.id}`}
+                    select
+                    label="Country"
                     value={
                       inputValues.find(
                         (inputValue) => inputValue.cardId === card.id,
@@ -277,6 +280,8 @@ const Education: FC<Props> = ({
                       handleChange(card.id, 'country', e.target.value)
                     }
                     required
+                    helperText="Please select your country"
+                    margin="normal"
                   >
                     <MenuItem value="Switzerland">Switzerland</MenuItem>
                     <MenuItem value="Europe">Europe</MenuItem>
@@ -285,7 +290,7 @@ const Education: FC<Props> = ({
                     <MenuItem value="North America">North America</MenuItem>
                     <MenuItem value="South America">South America</MenuItem>
                     <MenuItem value="Other">Other</MenuItem>
-                  </Select>
+                  </TextField>
                 </>
               )}
               <CardActions>

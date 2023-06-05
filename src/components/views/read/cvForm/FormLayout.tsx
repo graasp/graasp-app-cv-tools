@@ -37,7 +37,7 @@ const FormLayout: FC<Props> = ({
           height: '52px',
         }}
       >
-        My Items/ CV App - Student Interface
+        My Items/ CV App - Candidate Interface
       </div>
       <div
         style={{

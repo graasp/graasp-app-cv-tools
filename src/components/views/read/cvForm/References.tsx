@@ -33,7 +33,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  // handleValues: (Values: any) => void;
   handleValues: HandleModifyFunction;
 }
 const References: FC<Props> = ({
@@ -110,7 +109,6 @@ const References: FC<Props> = ({
       });
     });
   };
-  const [refPhoneNum, setRefPhoneNum] = useState('');
   const handleNext = (): void => {
     const modifiedValues = cards.map((card) => {
       const cardInputValues = inputValues.find(
@@ -143,7 +141,7 @@ const References: FC<Props> = ({
               height: '400px',
               overflow: 'auto',
             }}
-            style={{ position: 'absolute', top: '400px', left: '720px' }}
+            className={`card-item card-${card.id}`}
           >
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">

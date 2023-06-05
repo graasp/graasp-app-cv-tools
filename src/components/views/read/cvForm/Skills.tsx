@@ -18,14 +18,10 @@ import {
   Card,
   CardActions,
   CardContent,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
   Typography,
 } from '@mui/material';
 
-import './Skills.css';
+import './Styles.css';
 
 interface InnerObject {
   [key: string]: string;
@@ -43,7 +39,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   values: ValuesObject;
-  // handleValues: (Values: any) => void;
   handleValues: HandleModifyFunction;
 }
 interface CardState {
@@ -71,14 +66,6 @@ const Skills: FC<Props> = ({
     cards.map((card) => ({ id: card.id, showFields: false })),
   );
 
-  const handleRemove = (cardId: number): void => {
-    if (cards.length === 1) {
-      return; // Do not allow removing the only card
-    }
-
-    const updatedCards = cards.filter((card) => card.id !== cardId);
-    setCards(updatedCards);
-  };
   const handleEdit = (cardId: number): void => {
     const updatedCardStates = cardStates.map((cardState) => {
       if (cardState.id === cardId) {
@@ -98,9 +85,8 @@ const Skills: FC<Props> = ({
     });
     setCardStates(updatedCardStates);
   };
-  // Skills
 
-  const [skills, setSkills] = useState<string[]>(['React', 'Node js']);
+  // Skills
   const [inputRefs, setInputRefs] = useState<Record<
     number,
     RefObject<HTMLInputElement> | null
@@ -173,7 +159,6 @@ const Skills: FC<Props> = ({
       }),
       {},
     );
-    // const modifiedValues = { ...values, Skills: skillsObj };
     const modifiedValues = skillsObj;
     handleValues('Skills', [modifiedValues]);
     nextPage();

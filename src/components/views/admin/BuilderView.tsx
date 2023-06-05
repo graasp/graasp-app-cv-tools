@@ -143,7 +143,7 @@ const BuilderView: FC = () => {
             height: '52px',
           }}
         >
-          My Items/ CV App - Teacher Interface
+          My Items/ CV App - Reviewer Interface
         </div>
       </div>
     </div>

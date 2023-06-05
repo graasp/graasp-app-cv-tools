@@ -26,11 +26,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 interface InnerObject {
   [key: string]: string;
 }
-interface CVValues {
-  [category: string]: {
-    [fieldName: string]: any;
-  }[];
-}
+
 interface ValuesObject {
   [key: string]: InnerObject;
 }
@@ -42,8 +38,7 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  values: CVValues;
-  // handleValues: (Values: any) => void;
+  values: ValuesObject;
   handleValues: HandleModifyFunction;
 }
 const WorkExperience: FC<Props> = ({
@@ -156,7 +151,7 @@ const WorkExperience: FC<Props> = ({
               height: '400px',
               overflow: 'auto',
             }}
-            style={{ position: 'absolute', top: '400px', left: '720px' }}
+            className={`card-item card-${card.id}`}
           >
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -233,9 +228,10 @@ const WorkExperience: FC<Props> = ({
                       }
                     />
                   </LocalizationProvider>
-                  <InputLabel id="select-label-country">Country</InputLabel>
-                  <Select
-                    id="select-label-country"
+                  <TextField
+                    id={`select-country-${card.id}`}
+                    select
+                    label="Country"
                     value={
                       inputValues.find(
                         (inputValue) => inputValue.cardId === card.id,
@@ -245,6 +241,8 @@ const WorkExperience: FC<Props> = ({
                       handleChange(card.id, 'country', e.target.value)
                     }
                     required
+                    helperText="Please select your country"
+                    margin="normal"
                   >
                     <MenuItem value="Switzerland">Switzerland</MenuItem>
                     <MenuItem value="Europe">Europe</MenuItem>
@@ -253,7 +251,7 @@ const WorkExperience: FC<Props> = ({
                     <MenuItem value="North America">North America</MenuItem>
                     <MenuItem value="South America">South America</MenuItem>
                     <MenuItem value="Other">Other</MenuItem>
-                  </Select>
+                  </TextField>
                   <TextField
                     label="Job Deatils - Responsibilities"
                     value={
