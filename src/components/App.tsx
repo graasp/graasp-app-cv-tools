@@ -23,7 +23,6 @@ const App: FC = () => {
       i18n.changeLanguage(lang);
     }
   }, [context]);
-
   const renderContent = (): ReactElement => {
     switch (context.get('context')) {
       case Context.BUILDER:

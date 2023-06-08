@@ -2,7 +2,7 @@ import { FC, RefObject, useRef } from 'react';
 
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Button } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 
 interface Props {
   nextPage: () => void;
@@ -20,34 +20,39 @@ const Home: FC<Props> = ({ nextPage, nextStep }) => {
     inputRef.current?.click();
   };
   return (
-    <div>
-      <Button
-        style={{ position: 'absolute', top: '605px', left: '628px' }}
-        variant="contained"
-        color="primary"
-        startIcon={<Add />}
-        onClick={handleNext}
-      >
-        Create
-      </Button>
-      <input
-        type="file"
-        accept=".doc,.docx,application/pdf"
-        style={{ display: 'none' }}
-        ref={inputRef}
-      />
-      <Button
-        style={{ position: 'absolute', top: '599px', left: '1070px' }}
-        sx={{ width: 165 }}
-        variant="contained"
-        color="primary"
-        startIcon={<UploadFileIcon />}
-        onClick={handleClick}
-      >
-        Upload CV
-      </Button>
-      Main
-    </div>
+    <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
+      <Stack spacing={2}>
+        <Typography>Get Started</Typography>
+        <Typography>
+          Upload your CV/Resume if you have one, or you can create a new one and
+          upload it directly!
+        </Typography>
+        <Stack direction="row" justifyContent="space-evenly">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={handleNext}
+          >
+            Create
+          </Button>
+          <input
+            type="file"
+            accept=".doc,.docx,application/pdf"
+            style={{ display: 'none' }}
+            ref={inputRef}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<UploadFileIcon />}
+            onClick={handleClick}
+          >
+            Upload CV
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 };
 

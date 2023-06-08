@@ -1,36 +1,96 @@
+import { Dayjs } from 'dayjs';
+
 import { FC, useState } from 'react';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import {
+  Typography as BaseTypography,
   Button,
   Card,
   CardActions,
   CardContent,
   Grid,
-  Typography,
+  styled,
 } from '@mui/material';
 
+type PersonalInfoObj = {
+  firstName: string;
+  lastName: string;
+  birthDate: Dayjs;
+  gender: string;
+  emailAddress: string;
+  phoneNum: string;
+  address: string;
+  profileLinks: string;
+  personalLink: string;
+  personalPic: string;
+};
+type EducationInfoObj = {
+  degree: string;
+  institutionName: string;
+  major: string;
+  startDate: Dayjs;
+  endDate: Dayjs;
+  gpa: string;
+  country: string;
+};
+type WorkExperienceObj = {
+  jobTitle: string;
+  institutionName: string;
+  startDate: Dayjs;
+  endDate: Dayjs;
+  country: string;
+  jobDetails: string;
+  keyAchievements: string;
+};
+type SkillsObj = {
+  skills: string[];
+  title: string;
+};
+type PortfolioObj = {
+  projectTitle: string;
+  projectDescription: string;
+  startDate: Dayjs;
+  endDate: Dayjs;
+  projectLink: string;
+};
+type MotivationObj = {
+  motivationLetter: string;
+};
+type ReferencesObj = {
+  referenceName: string;
+  referenceRelation: string;
+  referenceCompany: string;
+  referencePhoneNum: string;
+  referenceEmail: string;
+};
 interface InnerObject {
   [key: string]: string;
 }
 
+type CVInfoObj = {
+  personalInfo: PersonalInfoObj;
+  educationInfo: EducationInfoObj[];
+  workInfo: WorkExperienceObj[];
+  skillsInfo: SkillsObj[];
+  portfolioInfo: PortfolioObj[];
+  motivationInfo: MotivationObj;
+  referencesInfo: ReferencesObj[];
+};
+
 interface ValuesObject {
   [key: string]: InnerObject;
-}
-interface CVValues {
-  [category: string]: {
-    [fieldName: string]: any;
-  }[];
 }
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   homeStep: () => void;
   prevStep: () => void;
-  values: ValuesObject;
+  values: CVInfoObj;
 }
+
 const Review: FC<Props> = ({
   nextPage,
   prevPage,
@@ -38,6 +98,9 @@ const Review: FC<Props> = ({
   prevStep,
   values,
 }) => {
+  const Typography = styled(BaseTypography)(() => ({
+    fontSize: '50%',
+  })) as typeof BaseTypography;
   const handleNext = (): void => {
     nextPage();
     homeStep();
@@ -58,194 +121,18 @@ const Review: FC<Props> = ({
       <Button type="button">Download .pdf file</Button>
     </a>;
   };
-  const personalData = values['Personal Info'];
-  const educationData = values.Education;
-  const workData = values['Work Experience'];
-  const skillsData = values.Skills;
-  const portfolioData = values.Portfolio;
-  const motivationData = values['Motivation Letter'];
-  const referencesData = values.References;
+  console.log(values);
+  // const personalData = values['Personal Info'];
+  // const educationData = values.Education;
+  // const workData = values['Work Experience'];
+  // const skillsData = values.Skills;
+  // const portfolioData = values.Portfolio;
+  // const motivationData = values['Motivation Letter'];
+  // const referencesData = values.References;
 
   return (
     <div>
       <h2>Review</h2>
-      <div>
-        {cards.map((card) => (
-          <Card
-            key={card.id}
-            sx={{
-              maxWidth: 900,
-              position: 'relative',
-              zIndex: 100,
-              overflow: 'visible',
-            }}
-            style={{
-              position: 'absolute',
-              height: 'auto',
-              top: '350px',
-              left: '650px',
-            }}
-          >
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Your Generated CV
-              </Typography>
-              <p>CV Goes Here</p>
-              <div>
-                {Object.entries(personalData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">Personal Data</Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}:{' '}
-                              {fieldName === 'Personal Picture' ? (
-                                <img src={value} alt="123" />
-                              ) : (
-                                value
-                              )}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(educationData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">
-                        Education {category + 1}
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(workData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">
-                        Work Experience {category + 1}
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(skillsData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">Skills</Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(portfolioData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">
-                        Portfolio - Proejcts {category + 1}
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(motivationData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">Motivation Letter</Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <div>
-                {Object.entries(referencesData).map(([category, fields]) => (
-                  <Card key={category}>
-                    <CardContent>
-                      <Typography variant="h5">
-                        References {category + 1}
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {Object.entries(fields).map(([fieldName, value]) => (
-                          <Grid item xs={12} sm={6} key={fieldName}>
-                            <Typography>
-                              {fieldName}: {value}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <CardActions>
-                {/* <a href="./yourfile.pdf" download>
-                  Download CV
-                </a> */}
-                <Button
-                  size="small"
-                  startIcon={<DownloadIcon />}
-                  onClick={handleDownload}
-                >
-                  Download CV
-                </Button>
-              </CardActions>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
       <Button
         style={{ position: 'absolute', top: '1555px', left: '550px' }}
         variant="contained"

@@ -93,10 +93,6 @@ const PlayerView: FC = () => {
     }));
   };
 
-  // const [cvValues, setCvValues] = useState({});
-  // const handleModify = (modifiedValues: any): void => {
-  //   setCvValues(modifiedValues);
-  // };
   return (
     <div
       style={{
@@ -187,7 +183,7 @@ const PlayerView: FC = () => {
             handleValues={handleModify}
           />
         )}
-        {activeStep === 9 && (
+        {/* {activeStep === 9 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}
@@ -195,7 +191,7 @@ const PlayerView: FC = () => {
             prevStep={prevStep}
             values={cvValues}
           />
-        )}
+        )} */}
       </FormLayout>
     </div>
   );
