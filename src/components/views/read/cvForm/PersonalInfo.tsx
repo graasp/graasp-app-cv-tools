@@ -152,176 +152,165 @@ const PersonalInfo: FC<Props> = ({
         {mapping.map((m) => (
           <>
             <p>{m.label}</p>
-            <TextField
-              label={m.label}
-              id={m.key}
-              value={
-                inputValues.find(
-                  (inputValue) => Object.keys(inputValue)[0] === m.key,
-                )?.[m.key] || ''
-              }
-              onChange={(e) => handleChange(m.key, e.target.value)}
-              required
-            />
+            {m.key !== 'birthDate' &&
+            m.key !== 'gender' &&
+            m.key !== 'emailAddress' &&
+            m.key !== 'phoneNumber' &&
+            m.key !== 'profileLinks' &&
+            m.key !== 'personalLinks' &&
+            m.key !== 'personalPicture' ? (
+              <TextField
+                label={m.label}
+                id={m.key}
+                value={
+                  inputValues.find(
+                    (inputValue) => Object.keys(inputValue)[0] === m.key,
+                  )?.[m.key] || ''
+                }
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                required
+              />
+            ) : (
+              <>
+                {m.key === 'birthDate' && (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Birth Date"
+                      value={birthDate}
+                      maxDate={dayjs()}
+                      onChange={(date) => {
+                        const formattedDate = date
+                          ? dayjs(date).format('YYYY-MM-DD')
+                          : '';
+                        setBirthDate(date);
+                        setInputValues((prevInputValues) => [
+                          ...prevInputValues.filter(
+                            (inputValue) =>
+                              Object.keys(inputValue)[0] !== 'birthDate',
+                          ),
+                          { birthDate: formattedDate },
+                        ]);
+                      }}
+                    />
+                  </LocalizationProvider>
+                )}
+                {m.key === 'gender' && (
+                  <TextField
+                    id="select-gender"
+                    select
+                    label="Gender"
+                    value={
+                      inputValues.find(
+                        (inputValue) => Object.keys(inputValue)[0] === 'gender',
+                      )?.gender || ''
+                    }
+                    onChange={(e) => handleChange('gender', e.target.value)}
+                    required
+                    helperText="Please select your gender"
+                    margin="normal"
+                  >
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="noIndicate">Do not Indicate</MenuItem>
+                  </TextField>
+                )}
+                {m.key === 'emailAddress' && (
+                  <TextField
+                    label="Email Address"
+                    type="email"
+                    value={
+                      inputValues.find(
+                        (inputValue) => Object.keys(inputValue)[0] === 'email',
+                      )?.email || ''
+                    }
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    required
+                  />
+                )}
+                {m.key === 'phoneNumber' && (
+                  <PhoneInput
+                    country="us"
+                    value={phoneNumber}
+                    onChange={(phone: string) => {
+                      setPhoneNumber(phone);
+                      setInputValues((prevInputValues) => [
+                        ...prevInputValues.filter(
+                          (inputValue) =>
+                            Object.keys(inputValue)[0] !== 'phoneNumber',
+                        ),
+                        { phoneNumber: phone },
+                      ]);
+                    }}
+                  />
+                )}
+                {m.key === 'profileLinks' && (
+                  <TextField
+                    type="url"
+                    label="LinkedIn Link"
+                    value={
+                      inputValues.find(
+                        (inputValue) =>
+                          Object.keys(inputValue)[0] === 'profileLinks',
+                      )?.profileLinks || ''
+                    }
+                    onChange={(e) =>
+                      handleChange('profileLinks', e.target.value)
+                    }
+                    required
+                  />
+                )}
+                {m.key === 'personalLinks' && (
+                  <TextField
+                    type="url"
+                    label="Personal Web Link"
+                    value={
+                      inputValues.find(
+                        (inputValue) =>
+                          Object.keys(inputValue)[0] === 'personalLink',
+                      )?.personalLink || ''
+                    }
+                    onChange={(e) =>
+                      handleChange('personalLink', e.target.value)
+                    }
+                    required
+                  />
+                )}
+                {m.key === 'personalPicture' && (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      ref={inputRef}
+                      onChange={handleFileChange}
+                    />
+                    {inputValues.find(
+                      (inputValue) => Object.keys(inputValue)[0] === 'preview',
+                    )?.preview && (
+                      <img
+                        src={
+                          inputValues.find(
+                            (inputValue) =>
+                              Object.keys(inputValue)[0] === 'preview',
+                          )?.preview
+                        }
+                        alt="Preview"
+                      />
+                    )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<UploadFileIcon />}
+                      onClick={handleClick}
+                    >
+                      Upload Image
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
           </>
         ))}
-        <p>First Name</p>
-        <TextField
-          label="First Name"
-          id="firstName"
-          value={
-            inputValues.find(
-              (inputValue) => Object.keys(inputValue)[0] === 'firstName',
-            )?.firstName || ''
-          }
-          onChange={(e) => handleChange('firstName', e.target.value)}
-          required
-        />
-        <p>Last Name</p>
-        <TextField
-          label="Last Name"
-          id="lastName"
-          value={
-            inputValues.find(
-              (inputValue) => Object.keys(inputValue)[0] === 'lastName',
-            )?.lastName || ''
-          }
-          onChange={(e) => handleChange('lastName', e.target.value)}
-          required
-        />
-        <p>Date of Birth</p>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Birth Date"
-            value={birthDate}
-            maxDate={dayjs()}
-            onChange={(date) => {
-              const formattedDate = date
-                ? dayjs(date).format('YYYY-MM-DD')
-                : '';
-              setBirthDate(date);
-              setInputValues((prevInputValues) => [
-                ...prevInputValues.filter(
-                  (inputValue) => Object.keys(inputValue)[0] !== 'birthDate',
-                ),
-                { birthDate: formattedDate },
-              ]);
-            }}
-          />
-        </LocalizationProvider>
-        <p>Gender</p>
-        <TextField
-          id="select-gender"
-          select
-          label="Gender"
-          value={
-            inputValues.find(
-              (inputValue) => Object.keys(inputValue)[0] === 'gender',
-            )?.gender || ''
-          }
-          onChange={(e) => handleChange('gender', e.target.value)}
-          required
-          helperText="Please select your gender"
-          margin="normal"
-        >
-          <MenuItem value="female">Female</MenuItem>
-          <MenuItem value="male">Male</MenuItem>
-          <MenuItem value="noIndicate">Do not Indicate</MenuItem>
-        </TextField>
-        <div>
-          <p>Email</p>
-          <TextField
-            label="Email Address"
-            type="email"
-            value={
-              inputValues.find(
-                (inputValue) => Object.keys(inputValue)[0] === 'email',
-              )?.email || ''
-            }
-            onChange={(e) => handleChange('email', e.target.value)}
-            required
-          />
-          <p>Phone Number</p>
-          <PhoneInput
-            country="us"
-            value={phoneNumber}
-            onChange={(phone: string) => {
-              setPhoneNumber(phone);
-              setInputValues((prevInputValues) => [
-                ...prevInputValues.filter(
-                  (inputValue) => Object.keys(inputValue)[0] !== 'phoneNumber',
-                ),
-                { phoneNumber: phone },
-              ]);
-            }}
-          />
-          <p>Address</p>
-          <TextField
-            label="Address"
-            value={
-              inputValues.find(
-                (inputValue) => Object.keys(inputValue)[0] === 'address',
-              )?.address || ''
-            }
-            onChange={(e) => handleChange('address', e.target.value)}
-            required
-          />
-          <p>LinkedIn - Github Link</p>
-          <TextField
-            type="url"
-            label="LinkedIn Link"
-            value={
-              inputValues.find(
-                (inputValue) => Object.keys(inputValue)[0] === 'profileLinks',
-              )?.profileLinks || ''
-            }
-            onChange={(e) => handleChange('profileLinks', e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <p>Own website</p>
-          <TextField
-            type="url"
-            label="Personal Web Link"
-            value={
-              inputValues.find(
-                (inputValue) => Object.keys(inputValue)[0] === 'personalLink',
-              )?.personalLink || ''
-            }
-            onChange={(e) => handleChange('personalLink', e.target.value)}
-            required
-          />
-          <p>Image</p>
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            ref={inputRef}
-            onChange={handleFileChange}
-          />
-
-          {inputValues.find(
-            (inputValue) => Object.keys(inputValue)[0] === 'preview',
-          )?.preview && (
-            <img
-              src={
-                inputValues.find(
-                  (inputValue) => Object.keys(inputValue)[0] === 'preview',
-                )?.preview
-              }
-              alt="Preview"
-            />
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<UploadFileIcon />}
-            onClick={handleClick}
-          >
-            Upload Image
-          </Button>
-        </div>
       </div>
       <Button
         variant="contained"
