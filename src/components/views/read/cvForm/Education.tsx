@@ -54,21 +54,17 @@ const Education: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [educationCards, setEducationCards] = useState<EducationInfoObj[]>(
-    cvValues.educationInfo.length > 0
-      ? cvValues.educationInfo
-      : [
-          {
-            degree: '',
-            institutionName: '',
-            major: '',
-            startDate: dayjs(),
-            endDate: dayjs(),
-            gpa: '',
-            country: '',
-          },
-        ],
-  );
+  const [educationCards, setEducationCards] = useState<EducationInfoObj[]>([
+    {
+      degree: '',
+      institutionName: '',
+      major: '',
+      startDate: dayjs(),
+      endDate: dayjs(),
+      gpa: '',
+      country: '',
+    },
+  ]);
   const [showFields, setShowFields] = useState<boolean[]>([false]);
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
@@ -94,7 +90,7 @@ const Education: FC<Props> = ({
     ]);
     setShowFields((prevShowFields) => [...prevShowFields, false]);
   };
-
+  const { educationInfo } = cvValues;
   const handleEdit = (index: number): void => {
     setShowFields((prevShowFields) => {
       const updatedShowFields = [...prevShowFields];
@@ -109,7 +105,18 @@ const Education: FC<Props> = ({
       updatedShowFields[index] = false;
       return updatedShowFields;
     });
-    // console.log(educationCards);
+    const updatedEducationInfo = [...educationInfo];
+    updatedEducationInfo[index] = {
+      ...updatedEducationInfo[index],
+      ...educationCards[index],
+    };
+
+    const newCvValues: CVInfoObj = {
+      ...cvValues,
+      educationInfo: updatedEducationInfo,
+    };
+
+    onCvValuesChange(newCvValues);
   };
 
   const handleRemove = (index: number): void => {
@@ -118,7 +125,6 @@ const Education: FC<Props> = ({
       prevShowFields.filter((_, i) => i !== index),
     );
   };
-
   const handleChange = (index: number, key: string, value: string): void => {
     setEducationCards((prevCards) => {
       const updatedCards = [...prevCards];
@@ -129,16 +135,8 @@ const Education: FC<Props> = ({
       return updatedCards;
     });
   };
-  const { educationInfo } = cvValues;
-  const handleNext = (): void => {
-    const newEducationInfo: EducationInfoObj[] = educationCards;
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      educationInfo: newEducationInfo,
-    };
 
-    onCvValuesChange(newCvValues);
-    console.log(cvValues);
+  const handleNext = (): void => {
     nextPage();
     nextStep();
   };
