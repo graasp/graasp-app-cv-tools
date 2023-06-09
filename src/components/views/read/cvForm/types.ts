@@ -1,4 +1,6 @@
-declare type PersonalInfoObj = {
+import { Dayjs } from 'dayjs';
+
+export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
   birthDate: Dayjs;
@@ -11,7 +13,7 @@ declare type PersonalInfoObj = {
   personalPic: string;
 };
 
-declare type EducationInfoObj = {
+export type EducationInfoObj = {
   degree: string;
   institutionName: string;
   major: string;
@@ -21,7 +23,7 @@ declare type EducationInfoObj = {
   country: string;
 };
 
-declare type WorkExperienceObj = {
+export type WorkExperienceObj = {
   jobTitle: string;
   institutionName: string;
   startDate: Dayjs;
@@ -31,12 +33,12 @@ declare type WorkExperienceObj = {
   keyAchievements: string;
 };
 
-declare type SkillsObj = {
+export type SkillsObj = {
   skills: string[];
   title: string;
 };
 
-declare type PortfolioObj = {
+export type PortfolioObj = {
   projectTitle: string;
   projectDescription: string;
   startDate: Dayjs;
@@ -44,11 +46,11 @@ declare type PortfolioObj = {
   projectLink: string;
 };
 
-declare type MotivationObj = {
+export type MotivationObj = {
   motivationLetter: string;
 };
 
-declare type ReferencesObj = {
+export type ReferencesObj = {
   referenceName: string;
   referenceRelation: string;
   referenceCompany: string;
@@ -56,7 +58,7 @@ declare type ReferencesObj = {
   referenceEmail: string;
 };
 
-declare type CVInfoObj = {
+export type CVInfoObj = {
   personalInfo: PersonalInfoObj;
   educationInfo: EducationInfoObj[];
   workInfo: WorkExperienceObj[];

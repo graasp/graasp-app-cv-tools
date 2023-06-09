@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { RecordOf } from 'immutable';
 
 import { FC, useContext, useState } from 'react';
@@ -24,6 +25,7 @@ import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
 import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
+import { CVInfoObj } from './cvForm/types';
 
 const SmallPre = styled('pre')(({ theme }) => ({
   fontSize: 12,
@@ -84,13 +86,41 @@ const PlayerView: FC = () => {
     'Template',
     'Review',
   ];
-  const [cvValues, setCvValues] = useState<Record<string, any>>({});
+  // const [cvValues, setCvValues] = useState<Record<string, any>>({});
 
-  const handleModify = (category: string, modifiedValues: any): void => {
-    setCvValues((prevValues) => ({
-      ...prevValues,
-      [category]: modifiedValues,
-    }));
+  // const handleModify = (category: string, modifiedValues: any): void => {
+  //   setCvValues((prevValues) => ({
+  //     ...prevValues,
+  //     [category]: modifiedValues,
+  //   }));
+  // };
+
+  const [cvValues, setCvValues] = useState<CVInfoObj>({
+    personalInfo: {
+      firstName: '',
+      lastName: '',
+      birthDate: dayjs(),
+      gender: '',
+      emailAddress: '',
+      phoneNum: '',
+      address: '',
+      profileLinks: '',
+      personalLink: '',
+      personalPic: '',
+      // ... other properties with initial values
+    },
+    educationInfo: [],
+    workInfo: [],
+    skillsInfo: [],
+    portfolioInfo: [],
+    motivationInfo: {
+      motivationLetter: '',
+    },
+    referencesInfo: [],
+  });
+
+  const handleCvValuesChange = (newCvValues: CVInfoObj): void => {
+    setCvValues(newCvValues);
   };
 
   return (
@@ -109,8 +139,8 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            values={cvValues}
-            handleValues={handleModify}
+            cvValues={cvValues}
+            onCvValuesChange={handleCvValuesChange}
           />
         )}
         {activeStep === 2 && (
@@ -119,11 +149,11 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            values={cvValues}
-            handleValues={handleModify}
+            cvValues={cvValues}
+            onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {activeStep === 3 && (
+        {/* {activeStep === 3 && (
           <WorkExperience
             nextPage={nextPage}
             prevPage={prevPage}
@@ -182,7 +212,7 @@ const PlayerView: FC = () => {
             values={cvValues}
             handleValues={handleModify}
           />
-        )}
+        )} */}
         {/* {activeStep === 9 && (
           <Review
             nextPage={nextPage}

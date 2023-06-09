@@ -1,4 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
+import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -18,105 +19,130 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-// Import the default theme styles
-interface InnerObject {
-  [key: string]: string;
-}
+import { CVInfoObj, EducationInfoObj } from './types';
 
-interface ValuesObject {
-  [key: string]: InnerObject;
-}
-interface HandleModifyFunction {
-  (category: string, modifiedValues: any): void;
-}
+// Import the default theme styles
+// interface InnerObject {
+//   [key: string]: string;
+// }
+
+// interface ValuesObject {
+//   [key: string]: InnerObject;
+// }
+// interface HandleModifyFunction {
+//   (category: string, modifiedValues: any): void;
+// }
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  values: ValuesObject;
-  handleValues: HandleModifyFunction;
+  // values: ValuesObject;
+  // handleValues: HandleModifyFunction;
+  cvValues: CVInfoObj;
+  onCvValuesChange: (newCvValues: CVInfoObj) => void;
 }
 const Education: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  values,
-  handleValues,
+  cvValues,
+  onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
-  const [cards, setCards] = useState([{ id: 1 }]);
+  const [educationCards, setEducationCards] = useState<EducationInfoObj[]>(
+    cvValues.educationInfo.length > 0
+      ? cvValues.educationInfo
+      : [
+          {
+            degree: '',
+            institutionName: '',
+            major: '',
+            startDate: dayjs(),
+            endDate: dayjs(),
+            gpa: '',
+            country: '',
+          },
+        ],
+  );
+  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const degrees = [
+    { value: 'bachelor', label: 'Bachelor' },
+    { value: 'master', label: 'Master' },
+    { value: 'phd', label: 'PhD' },
+  ];
+  const countriesArr = countries.map((country) => ({
+    value: country.alpha2,
+    label: country.country,
+  }));
   const handleAdd = (): void => {
-    const newCard = { id: cards.length + 1 };
-    setCards([...cards, newCard]);
+    setEducationCards((prevCards) => [
+      ...prevCards,
+      {
+        degree: '',
+        institutionName: '',
+        major: '',
+        startDate: dayjs(),
+        endDate: dayjs(),
+        gpa: '',
+        country: '',
+      },
+    ]);
+    setShowFields((prevShowFields) => [...prevShowFields, false]);
   };
-  const [showFields, setShowFields] = useState<boolean[]>([]);
-  const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const handleRemove = (cardId: number): void => {
-    if (cards.length === 1) {
-      return; // Do not allow removing the only card
-    }
 
-    const updatedCards = cards.filter((card) => card.id !== cardId);
-    setCards(updatedCards);
-  };
-  const handleEdit = (cardId: number): void => {
-    // Find the index of the card being edited
-    const cardIndex = cards.findIndex((card) => card.id === cardId);
-
-    // Update the active card index
-    setActiveCardIndex(cardIndex);
-    const updatedShowFields = [...showFields];
-
-    // Update the visibility for the selected card
-    updatedShowFields[cardIndex] = true;
-
-    // Update the state with the new visibility array
-    setShowFields(updatedShowFields);
-  };
-  const handleDone = (cardId: number): void => {
-    const updatedShowFields = [...showFields];
-    const cardIndex = cards.findIndex((card) => card.id === cardId);
-    updatedShowFields[cardIndex] = false; // Set the visibility for the selected card to false
-    setShowFields(updatedShowFields); // Update the state with the new visibility array
-  };
-  const [inputValues, setInputValues] = useState<
-    { cardId: number; values: { [key: string]: string } }[]
-  >([]);
-  const [inputValuesSecondary, setInputValuesSecondary] = useState<
-    { [key: string]: string }[]
-  >([]);
-  const handleChange = (cardId: number, field: string, value: string): void => {
-    setInputValues((prevInputValues) => {
-      const cardIndex = prevInputValues.findIndex(
-        (inputValue) => inputValue.cardId === cardId,
-      );
-
-      if (cardIndex === -1) {
-        // Card not found in the input values array, add a new entry
-        return [...prevInputValues, { cardId, values: { [field]: value } }];
-      }
-
-      // Card found in the input values array, update the existing entry
-      return prevInputValues.map((inputValue) => {
-        if (inputValue.cardId === cardId) {
-          return {
-            ...inputValue,
-            values: { ...inputValue.values, [field]: value },
-          };
-        }
-        console.log(inputValue);
-        return inputValue;
-      });
+  const handleEdit = (index: number): void => {
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = [...prevShowFields];
+      updatedShowFields[index] = true;
+      return updatedShowFields;
     });
   };
 
-  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
-  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs('2022-04-18'));
+  const handleDone = (index: number): void => {
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = [...prevShowFields];
+      updatedShowFields[index] = false;
+      return updatedShowFields;
+    });
+    // console.log(educationCards);
+  };
+
+  const handleRemove = (index: number): void => {
+    setEducationCards((prevCards) => prevCards.filter((_, i) => i !== index));
+    setShowFields((prevShowFields) =>
+      prevShowFields.filter((_, i) => i !== index),
+    );
+  };
+
+  const handleChange = (index: number, key: string, value: string): void => {
+    setEducationCards((prevCards) => {
+      const updatedCards = [...prevCards];
+      updatedCards[index] = {
+        ...updatedCards[index],
+        [key]: value,
+      };
+      return updatedCards;
+    });
+  };
+  const { educationInfo } = cvValues;
+  const handleNext = (): void => {
+    const newEducationInfo: EducationInfoObj[] = educationCards;
+    const newCvValues: CVInfoObj = {
+      ...cvValues,
+      educationInfo: newEducationInfo,
+    };
+
+    onCvValuesChange(newCvValues);
+    console.log(cvValues);
+    nextPage();
+    nextStep();
+  };
+
   const mapping = [
     { key: 'degree', label: 'Degree' },
     { key: 'institutionName', label: 'Institution Name' },
@@ -126,51 +152,12 @@ const Education: FC<Props> = ({
     { key: 'gpa', label: 'GPA' },
     { key: 'country', label: 'Country' },
   ];
-  const handleNext = (): void => {
-    const modifiedValues = cards.map((card) => {
-      const cardInputValues = inputValues.find(
-        (inputValue) => inputValue.cardId === card.id,
-      );
-
-      return {
-        Degree: cardInputValues?.values.degree || '',
-        'Institution Name': cardInputValues?.values.instName || '',
-        Major: cardInputValues?.values.major || '',
-        'Start Date': cardInputValues?.values.startDate || '',
-        'End Date': cardInputValues?.values.endDate || '',
-        GPA: cardInputValues?.values.gpa || '',
-        Country: cardInputValues?.values.country || '',
-      };
-    });
-
-    handleValues('Education', modifiedValues);
-    nextPage();
-    nextStep();
-  };
-  const handleChangeSecondary = (field: string, value: string): void => {
-    setInputValuesSecondary((prevInputValues) => {
-      const updatedInputValues = [...prevInputValues];
-      const fieldValue = { [field]: value };
-      const existingFieldIndex = updatedInputValues.findIndex(
-        (inputValue) => Object.keys(inputValue)[0] === field,
-      );
-      if (existingFieldIndex !== -1) {
-        // Field already exists, update its value
-        updatedInputValues[existingFieldIndex] = fieldValue;
-      } else {
-        // Field doesn't exist, add it to the input values
-        updatedInputValues.push(fieldValue);
-      }
-      console.log(updatedInputValues);
-      return updatedInputValues;
-    });
-  };
   return (
     <div>
       <h2>Education</h2>
       <div>
-        {cards.map((card, index) => (
-          <Card key={card.id}>
+        {educationCards.map((card, index) => (
+          <Card key={index}>
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 Education
@@ -181,146 +168,122 @@ const Education: FC<Props> = ({
               {showFields[index] && (
                 <>
                   {mapping.map((m) => (
-                    <>
+                    <div key={m.key}>
                       <p>{m.label}</p>
-                      {m.key !== 'degree' &&
-                      m.key !== 'startDate' &&
-                      m.key !== 'endDate' &&
-                      m.key !== 'country' ? (
+                      {m.key === 'degree' && (
                         <TextField
-                          label={m.label}
-                          id={m.key}
-                          value={
-                            inputValues.find(
-                              (inputValue) => inputValue.cardId === card.id,
-                            )?.values[m.key] || ''
-                          }
+                          id="select-degree"
+                          select
+                          label="Degree"
+                          value={card.degree}
                           onChange={(e) =>
-                            handleChange(card.id, m.key, e.target.value)
+                            handleChange(index, 'degree', e.target.value)
+                          }
+                          required
+                          helperText="Please select your degree"
+                          margin="normal"
+                        >
+                          {degrees.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      )}
+                      {m.key === 'institutionName' && (
+                        <TextField
+                          id={m.key}
+                          label={m.label}
+                          value={card.institutionName || ''}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              'institutionName',
+                              e.target.value,
+                            )
                           }
                           required
                         />
-                      ) : (
-                        <>
-                          {m.key === 'degree' && (
-                            <TextField
-                              id="select-degree"
-                              select
-                              label="Degree"
-                              value={
-                                inputValues.find(
-                                  (inputValue) => inputValue.cardId === card.id,
-                                )?.values.degree || ''
-                                // inputValuesSecondary.find(
-                                //   (inputValue) =>
-                                //     Object.keys(inputValue)[0] === 'degree',
-                                // )?.degree || ''
-                              }
-                              onChange={(e) =>
-                                handleChange(card.id, 'degree', e.target.value)
-                              }
-                              required
-                              helperText="Please select your degree"
-                              margin="normal"
-                            >
-                              <MenuItem value="bachelor">Bachelor</MenuItem>
-                              <MenuItem value="master">Master</MenuItem>
-                              <MenuItem value="phd">PhD</MenuItem>
-                            </TextField>
-                          )}
-                          {m.key === 'startDate' && (
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                label="From"
-                                value={
-                                  // startDate
-                                  inputValues.find(
-                                    (inputValue) =>
-                                      inputValue.cardId === card.id,
-                                  )?.values.startDate || startDate
-                                }
-                                maxDate={dayjs()}
-                                onChange={(date) => {
-                                  handleChange(
-                                    card.id,
-                                    'startDate',
-                                    date
-                                      ? dayjs(date).format('YYYY-MM-DD')
-                                      : dayjs(startDate).format('YYYY-MM-DD'),
-                                  );
-                                  setStartDate(dayjs(date));
-                                }}
-                              />
-                            </LocalizationProvider>
-                          )}
-                          {m.key === 'endDate' && (
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                label="Till"
-                                value={
-                                  // endDate
-                                  inputValues.find(
-                                    (inputValue) =>
-                                      inputValue.cardId === card.id,
-                                  )?.values.endDate || endDate
-                                }
-                                minDate={startDate}
-                                maxDate={dayjs()}
-                                onChange={(date) => {
-                                  handleChange(
-                                    card.id,
-                                    'endDate',
-                                    date
-                                      ? dayjs(date).format('YYYY-MM-DD')
-                                      : dayjs(endDate).format('YYYY-MM-DD'),
-                                  );
-                                  setEndDate(dayjs(date));
-                                }}
-                              />
-                            </LocalizationProvider>
-                          )}
-                          {m.key === 'country' && (
-                            <TextField
-                              id="select-country"
-                              select
-                              label="Country"
-                              value={
-                                inputValues.find(
-                                  (inputValue) => inputValue.cardId === card.id,
-                                )?.values.country || ''
-                                // inputValuesSecondary.find(
-                                //   (inputValue) =>
-                                //     Object.keys(inputValue)[0] === 'country',
-                                // )?.country || ''
-                              }
-                              onChange={(e) =>
-                                handleChange(card.id, 'country', e.target.value)
-                              }
-                              required
-                              helperText="Please select your country"
-                              margin="normal"
-                            >
-                              <MenuItem value="Switzerland">
-                                Switzerland
-                              </MenuItem>
-                              <MenuItem value="Europe">Europe</MenuItem>
-                              <MenuItem value="Asia">Asia</MenuItem>
-                              <MenuItem value="Africa">Africa</MenuItem>
-                              <MenuItem value="North America">
-                                North America
-                              </MenuItem>
-                              <MenuItem value="South America">
-                                South America
-                              </MenuItem>
-                              <MenuItem value="Other">Other</MenuItem>
-                            </TextField>
-                          )}
-                        </>
                       )}
-                    </>
+                      {m.key === 'major' && (
+                        <TextField
+                          id={m.key}
+                          label={m.label}
+                          value={card.major || ''}
+                          onChange={(e) =>
+                            handleChange(index, 'major', e.target.value)
+                          }
+                          required
+                        />
+                      )}
+                      {m.key === 'startDate' && (
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            label="From"
+                            value={card.startDate}
+                            maxDate={dayjs()}
+                            onChange={(date) =>
+                              handleChange(
+                                index,
+                                'startDate',
+                                date ? dayjs(date).format('YYYY-MM-DD') : '',
+                              )
+                            }
+                          />
+                        </LocalizationProvider>
+                      )}
+                      {m.key === 'endDate' && (
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            label="Till"
+                            value={card.endDate}
+                            minDate={card.startDate}
+                            maxDate={dayjs()}
+                            onChange={(date) =>
+                              handleChange(
+                                index,
+                                'endDate',
+                                date ? dayjs(date).format('YYYY-MM-DD') : '',
+                              )
+                            }
+                          />
+                        </LocalizationProvider>
+                      )}
+                      {m.key === 'gpa' && (
+                        <TextField
+                          id={m.key}
+                          label={m.label}
+                          value={card.gpa || ''}
+                          onChange={(e) =>
+                            handleChange(index, 'gpa', e.target.value)
+                          }
+                          required
+                        />
+                      )}
+                      {m.key === 'country' && (
+                        <TextField
+                          id="select-country"
+                          select
+                          label="Country"
+                          value={card.country}
+                          onChange={(e) =>
+                            handleChange(index, 'country', e.target.value)
+                          }
+                          required
+                          helperText="Please select your country"
+                          margin="normal"
+                        >
+                          {countriesArr.map((country) => (
+                            <MenuItem key={country.value} value={country.value}>
+                              {country.label}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      )}
+                    </div>
                   ))}
                 </>
-              )}{' '}
+              )}
               <CardActions>
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
@@ -329,7 +292,7 @@ const Education: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(card.id)}
+                    onClick={() => handleDone(index)}
                   >
                     Done
                   </Button>
@@ -337,16 +300,16 @@ const Education: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(card.id)}
+                    onClick={() => handleEdit(index)}
                   >
                     Edit
                   </Button>
                 )}
                 <Button
                   size="small"
-                  disabled={cards.length === 1}
+                  disabled={educationCards.length === 1}
                   startIcon={<DeleteIcon />}
-                  onClick={() => handleRemove(card.id)}
+                  onClick={() => handleRemove(index)}
                 >
                   Remove
                 </Button>

@@ -12,6 +12,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { CVInfoObj, PersonalInfoObj } from './types';
+
 interface InnerObject {
   [key: string]: string;
 }
@@ -28,8 +30,10 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  values: ValuesObject;
-  handleValues: HandleModifyFunction;
+  cvValues: CVInfoObj;
+  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  // values: ValuesObject;
+  // handleValues: HandleModifyFunction;
 }
 
 const PersonalInfo: FC<Props> = ({
@@ -37,111 +41,81 @@ const PersonalInfo: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  values,
-  handleValues,
+  cvValues,
+  onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
-  const [birthDate, setBirthDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const genders = [
+    { value: 'female', label: 'Female' },
+    { value: 'male', label: 'Male' },
+    { value: 'noIndicate', label: 'Do not Indicate' },
+  ];
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
-  const handleClick = (): void => {
-    // 👇️ open file input box on click of another element
-    inputRef.current?.click();
-  };
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }[]>(
-    [],
-  );
-  const handleChange = (field: string, value: string): void => {
-    setInputValues((prevInputValues) => {
-      const updatedInputValues = [...prevInputValues];
-      const fieldValue = { [field]: value };
-      const existingFieldIndex = updatedInputValues.findIndex(
-        (inputValue) => Object.keys(inputValue)[0] === field,
-      );
-      if (existingFieldIndex !== -1) {
-        // Field already exists, update its value
-        updatedInputValues[existingFieldIndex] = fieldValue;
-      } else {
-        // Field doesn't exist, add it to the input values
-        updatedInputValues.push(fieldValue);
-      }
-      console.log(updatedInputValues);
-      return updatedInputValues;
-    });
-  };
-  const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    const { files } = event.target;
-    if (files && files.length > 0) {
-      const selectedFile = files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        const filePreview = reader.result as string;
-        handleChange('preview', filePreview);
-      };
-      reader.readAsDataURL(selectedFile);
-    }
-  };
   const mapping = [
     { key: 'firstName', label: 'First Name' },
     { key: 'lastName', label: 'Last Name' },
     { key: 'birthDate', label: 'Birth Date' },
     { key: 'gender', label: 'Gender' },
     { key: 'emailAddress', label: 'Email Address' },
-    { key: 'phoneNumber', label: 'Phone Number' },
+    { key: 'phoneNum', label: 'Phone Number' },
     { key: 'address', label: 'Address' },
     { key: 'profileLinks', label: 'Profile Links' },
     { key: 'personalLinks', label: 'Personal Links' },
-    { key: 'personalPicture', label: 'Personal Picture' },
+    { key: 'personalPic', label: 'Personal Picture' },
   ];
-  const handleNext = (): void => {
-    const modifiedValues = {
-      'First Name':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'firstName',
-        )?.firstName || '',
-      'Last Name':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'lastName',
-        )?.lastName || '',
-      'Birth Date':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'birthDate',
-        )?.birthDate || '',
-      Gender:
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'gender',
-        )?.gender || '',
-      'Email Address':
-        inputValues.find((inputValue) => Object.keys(inputValue)[0] === 'email')
-          ?.email || '',
-      'Phone Number':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'phoneNumber',
-        )?.phoneNumber || '',
-      Address:
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'address',
-        )?.address || '',
-      'Profile Links':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'profileLinks',
-        )?.profileLinks || '',
-      'Personal Link':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'personalLink',
-        )?.personalLink || '',
-      'Personal Picture':
-        inputValues.find(
-          (inputValue) => Object.keys(inputValue)[0] === 'preview',
-        )?.preview || '',
+  const { personalInfo } = cvValues;
+  const [birthDate, setBirthDate] = useState<Dayjs | null>(
+    personalInfo.birthDate ?? null,
+  );
+  const handleChange = (field: keyof PersonalInfoObj, value: string): void => {
+    const newPersonalInfo: PersonalInfoObj = {
+      ...personalInfo,
+      [field]: value,
     };
 
-    handleValues('Personal Info', [modifiedValues]);
+    const newCvValues: CVInfoObj = {
+      ...cvValues,
+      personalInfo: newPersonalInfo,
+    };
+
+    onCvValuesChange(newCvValues);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const newPersonalInfo: PersonalInfoObj = {
+          ...personalInfo,
+          personalPic: reader.result as string,
+        };
+
+        const newCvValues: CVInfoObj = {
+          ...cvValues,
+          personalInfo: newPersonalInfo,
+        };
+
+        onCvValuesChange(newCvValues);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClick = (): void => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  const handleNext = (): void => {
+    console.log(cvValues);
     nextPage();
     nextStep();
   };
@@ -152,161 +126,112 @@ const PersonalInfo: FC<Props> = ({
         {mapping.map((m) => (
           <>
             <p>{m.label}</p>
-            {m.key !== 'birthDate' &&
-            m.key !== 'gender' &&
-            m.key !== 'emailAddress' &&
-            m.key !== 'phoneNumber' &&
-            m.key !== 'profileLinks' &&
-            m.key !== 'personalLinks' &&
-            m.key !== 'personalPicture' ? (
+            {m.key === 'firstName' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={
-                  inputValues.find(
-                    (inputValue) => Object.keys(inputValue)[0] === m.key,
-                  )?.[m.key] || ''
-                }
-                onChange={(e) => handleChange(m.key, e.target.value)}
+                value={personalInfo.firstName || ''}
+                onChange={(e) => handleChange('firstName', e.target.value)}
                 required
               />
-            ) : (
+            )}
+            {m.key === 'lastName' && (
+              <TextField
+                label={m.label}
+                id={m.key}
+                value={personalInfo.lastName || ''}
+                onChange={(e) => handleChange('lastName', e.target.value)}
+                required
+              />
+            )}
+            {m.key === 'birthDate' && (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Birth Date"
+                  value={birthDate}
+                  maxDate={dayjs()}
+                  onChange={(date) => {
+                    const formattedDate = date
+                      ? dayjs(date).format('YYYY-MM-DD')
+                      : '';
+                    setBirthDate(date || null);
+                    handleChange('birthDate', formattedDate);
+                  }}
+                />
+              </LocalizationProvider>
+            )}
+            {m.key === 'gender' && (
+              <TextField
+                id="select-gender"
+                select
+                label="Gender"
+                value={personalInfo.gender}
+                onChange={(e) => handleChange('gender', e.target.value)}
+                required
+                helperText="Please select your gender"
+                margin="normal"
+              >
+                {genders.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+            {m.key === 'emailAddress' && (
+              <TextField
+                label="Email Address"
+                type="email"
+                value={personalInfo.emailAddress}
+                onChange={(e) => handleChange('emailAddress', e.target.value)}
+                required
+              />
+            )}
+            {m.key === 'phoneNum' && (
+              <PhoneInput
+                country="us"
+                value={personalInfo.phoneNum}
+                onChange={(phone: string) => handleChange('phoneNum', phone)}
+              />
+            )}
+            {m.key === 'profileLinks' && (
+              <TextField
+                type="url"
+                label="LinkedIn Link"
+                value={personalInfo.profileLinks}
+                onChange={(e) => handleChange('profileLinks', e.target.value)}
+                required
+              />
+            )}
+            {m.key === 'personalLinks' && (
+              <TextField
+                type="url"
+                label="Personal Web Link"
+                value={personalInfo.personalLink}
+                onChange={(e) => handleChange('personalLink', e.target.value)}
+                required
+              />
+            )}
+            {m.key === 'personalPic' && (
               <>
-                {m.key === 'birthDate' && (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Birth Date"
-                      value={birthDate}
-                      maxDate={dayjs()}
-                      onChange={(date) => {
-                        const formattedDate = date
-                          ? dayjs(date).format('YYYY-MM-DD')
-                          : '';
-                        setBirthDate(date);
-                        setInputValues((prevInputValues) => [
-                          ...prevInputValues.filter(
-                            (inputValue) =>
-                              Object.keys(inputValue)[0] !== 'birthDate',
-                          ),
-                          { birthDate: formattedDate },
-                        ]);
-                      }}
-                    />
-                  </LocalizationProvider>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  ref={inputRef}
+                  onChange={handleFileChange}
+                />
+                {personalInfo.personalPic && (
+                  <img src={personalInfo.personalPic} alt="Preview" />
                 )}
-                {m.key === 'gender' && (
-                  <TextField
-                    id="select-gender"
-                    select
-                    label="Gender"
-                    value={
-                      inputValues.find(
-                        (inputValue) => Object.keys(inputValue)[0] === 'gender',
-                      )?.gender || ''
-                    }
-                    onChange={(e) => handleChange('gender', e.target.value)}
-                    required
-                    helperText="Please select your gender"
-                    margin="normal"
-                  >
-                    <MenuItem value="female">Female</MenuItem>
-                    <MenuItem value="male">Male</MenuItem>
-                    <MenuItem value="noIndicate">Do not Indicate</MenuItem>
-                  </TextField>
-                )}
-                {m.key === 'emailAddress' && (
-                  <TextField
-                    label="Email Address"
-                    type="email"
-                    value={
-                      inputValues.find(
-                        (inputValue) => Object.keys(inputValue)[0] === 'email',
-                      )?.email || ''
-                    }
-                    onChange={(e) => handleChange('email', e.target.value)}
-                    required
-                  />
-                )}
-                {m.key === 'phoneNumber' && (
-                  <PhoneInput
-                    country="us"
-                    value={phoneNumber}
-                    onChange={(phone: string) => {
-                      setPhoneNumber(phone);
-                      setInputValues((prevInputValues) => [
-                        ...prevInputValues.filter(
-                          (inputValue) =>
-                            Object.keys(inputValue)[0] !== 'phoneNumber',
-                        ),
-                        { phoneNumber: phone },
-                      ]);
-                    }}
-                  />
-                )}
-                {m.key === 'profileLinks' && (
-                  <TextField
-                    type="url"
-                    label="LinkedIn Link"
-                    value={
-                      inputValues.find(
-                        (inputValue) =>
-                          Object.keys(inputValue)[0] === 'profileLinks',
-                      )?.profileLinks || ''
-                    }
-                    onChange={(e) =>
-                      handleChange('profileLinks', e.target.value)
-                    }
-                    required
-                  />
-                )}
-                {m.key === 'personalLinks' && (
-                  <TextField
-                    type="url"
-                    label="Personal Web Link"
-                    value={
-                      inputValues.find(
-                        (inputValue) =>
-                          Object.keys(inputValue)[0] === 'personalLink',
-                      )?.personalLink || ''
-                    }
-                    onChange={(e) =>
-                      handleChange('personalLink', e.target.value)
-                    }
-                    required
-                  />
-                )}
-                {m.key === 'personalPicture' && (
-                  <>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      ref={inputRef}
-                      onChange={handleFileChange}
-                    />
-                    {inputValues.find(
-                      (inputValue) => Object.keys(inputValue)[0] === 'preview',
-                    )?.preview && (
-                      <img
-                        src={
-                          inputValues.find(
-                            (inputValue) =>
-                              Object.keys(inputValue)[0] === 'preview',
-                          )?.preview
-                        }
-                        alt="Preview"
-                      />
-                    )}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<UploadFileIcon />}
-                      onClick={handleClick}
-                    >
-                      Upload Image
-                    </Button>
-                  </>
-                )}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<UploadFileIcon />}
+                  onClick={handleClick}
+                >
+                  Upload Image
+                </Button>
               </>
             )}
           </>
