@@ -9,6 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -123,14 +124,13 @@ const Portfolio: FC<Props> = ({
     { key: 'projectLink', label: 'Project Link' },
   ];
   return (
-    <div>
-      <h2>Portfolio</h2>
-      <div>
+    <Box>
+      <Box>
         {portfolioCards.map((card, index) => (
           <Card key={index}>
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Portfolio
+              <Typography gutterBottom variant="h5">
+                Project
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Add A New Project To Your Portfolio
@@ -138,7 +138,7 @@ const Portfolio: FC<Props> = ({
               {showFields[index] && (
                 <>
                   {mapping.map((m) => (
-                    <div key={m.key}>
+                    <Box key={m.key}>
                       <Typography>{m.label}</Typography>
                       {m.key === 'projectTitle' && (
                         <TextField
@@ -210,7 +210,7 @@ const Portfolio: FC<Props> = ({
                           required
                         />
                       )}
-                    </div>
+                    </Box>
                   ))}
                 </>
               )}
@@ -247,7 +247,7 @@ const Portfolio: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -264,7 +264,7 @@ const Portfolio: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

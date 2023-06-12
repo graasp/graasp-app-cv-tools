@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Context, LocalContext } from '@graasp/apps-query-client';
 
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 
 import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
 import { hooks } from '../../../config/queryClient';
@@ -26,15 +26,6 @@ import Skills from './cvForm/Skills';
 import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
-
-const SmallPre = styled('pre')(({ theme }) => ({
-  fontSize: 12,
-  overflow: 'scroll',
-  border: '1px solid gray',
-  borderRadius: theme.spacing(1),
-  padding: theme.spacing(2),
-  margin: '0',
-}));
 
 const PlayerView: FC = () => {
   // use translations for the text
@@ -124,7 +115,7 @@ const PlayerView: FC = () => {
   };
 
   return (
-    <div
+    <Box
       style={{
         fontFamily: 'Roboto',
       }}
@@ -223,7 +214,7 @@ const PlayerView: FC = () => {
           />
         )} */}
       </FormLayout>
-    </div>
+    </Box>
   );
 };
 

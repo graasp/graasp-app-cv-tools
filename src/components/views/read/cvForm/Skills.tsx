@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -111,19 +112,19 @@ const Skills: FC<Props> = ({
     nextStep();
   };
   return (
-    <div>
-      <div>
+    <Box>
+      <Box>
         {skillCards.map((card, index) => (
           <Card key={card.title}>
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h5">
                 {card.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Add A Skill
               </Typography>
               {showFields[index] && (
-                <div className="skill">
+                <Box className="skill">
                   <ul>
                     {card.skills.map((skill, i) => (
                       <li key={i}>
@@ -146,7 +147,7 @@ const Skills: FC<Props> = ({
                       />
                     </li>
                   </ul>
-                </div>
+                </Box>
               )}
               <CardActions>
                 {showFields[index] ? (
@@ -170,7 +171,7 @@ const Skills: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -187,7 +188,7 @@ const Skills: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

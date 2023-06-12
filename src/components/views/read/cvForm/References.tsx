@@ -9,6 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -121,22 +122,21 @@ const References: FC<Props> = ({
     { key: 'referenceEmail', label: 'Reference Email' },
   ];
   return (
-    <div>
-      <h2>References</h2>
-      <div>
+    <Box>
+      <Box>
         {referencesCards.map((card, index) => (
           <Card key={index}>
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Education
+              <Typography gutterBottom variant="h5">
+                References
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Add A New Education
+                Add A New Reference
               </Typography>
               {showFields[index] && (
                 <>
                   {mapping.map((m) => (
-                    <div key={m.key}>
+                    <Box key={m.key}>
                       <Typography>{m.label}</Typography>
                       {m.key === 'referenceName' && (
                         <TextField
@@ -203,7 +203,7 @@ const References: FC<Props> = ({
                           required
                         />
                       )}
-                    </div>
+                    </Box>
                   ))}
                 </>
               )}
@@ -240,7 +240,7 @@ const References: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -257,7 +257,7 @@ const References: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -135,13 +136,12 @@ const WorkExperience: FC<Props> = ({
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
   return (
-    <div>
-      <h2>Work Experience</h2>
-      <div>
+    <Box>
+      <Box>
         {workCards.map((card, index) => (
           <Card key={index}>
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h5">
                 Work Experience
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -150,7 +150,7 @@ const WorkExperience: FC<Props> = ({
               {showFields[index] && (
                 <>
                   {mapping.map((m) => (
-                    <div key={m.key}>
+                    <Box key={m.key}>
                       <Typography>{m.label}</Typography>
                       {m.key === 'jobTitle' && (
                         <TextField
@@ -257,7 +257,7 @@ const WorkExperience: FC<Props> = ({
                           required
                         />
                       )}
-                    </div>
+                    </Box>
                   ))}
                 </>
               )}
@@ -294,7 +294,7 @@ const WorkExperience: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -311,7 +311,7 @@ const WorkExperience: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

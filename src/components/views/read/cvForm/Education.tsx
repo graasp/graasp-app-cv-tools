@@ -10,7 +10,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Button, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -138,12 +138,12 @@ const Education: FC<Props> = ({
     { key: 'country', label: 'Country' },
   ];
   return (
-    <div>
-      <div>
+    <Box>
+      <Box>
         {educationCards.map((card, index) => (
           <Card key={index}>
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h5">
                 Education
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -152,7 +152,7 @@ const Education: FC<Props> = ({
               {showFields[index] && (
                 <>
                   {mapping.map((m) => (
-                    <div key={m.key}>
+                    <Box key={m.key}>
                       <Typography>{m.label}</Typography>
                       {m.key === 'degree' && (
                         <TextField
@@ -264,7 +264,7 @@ const Education: FC<Props> = ({
                           ))}
                         </TextField>
                       )}
-                    </div>
+                    </Box>
                   ))}
                 </>
               )}
@@ -301,7 +301,7 @@ const Education: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -318,7 +318,7 @@ const Education: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

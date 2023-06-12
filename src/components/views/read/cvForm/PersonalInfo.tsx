@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/style.css';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Button, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -107,8 +107,8 @@ const PersonalInfo: FC<Props> = ({
   };
   // Flex-wrap: wrap;
   return (
-    <div>
-      <div>
+    <Box>
+      <Box>
         {mapping.map((m) => (
           <>
             <Typography>{m.label}</Typography>
@@ -222,7 +222,7 @@ const PersonalInfo: FC<Props> = ({
             )}
           </>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -239,7 +239,7 @@ const PersonalInfo: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 

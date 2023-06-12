@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Button, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 
 import { CVInfoObj, MotivationObj } from './types';
 
@@ -47,10 +47,10 @@ const MotivationLetter: FC<Props> = ({
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   return (
-    <div>
-      <div>
+    <Box>
+      <Box>
         {mapping.map((m) => (
-          <>
+          <Box key={m.key}>
             <Typography>{m.label}</Typography>
             {m.key === 'motivationLetter' && (
               <TextField
@@ -64,9 +64,9 @@ const MotivationLetter: FC<Props> = ({
                 required
               />
             )}
-          </>
+          </Box>
         ))}
-      </div>
+      </Box>
       <Button
         variant="contained"
         color="primary"
@@ -83,7 +83,7 @@ const MotivationLetter: FC<Props> = ({
       >
         Next
       </Button>
-    </div>
+    </Box>
   );
 };
 
