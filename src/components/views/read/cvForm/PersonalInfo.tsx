@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/style.css';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Button, MenuItem, TextField } from '@mui/material';
+import { Button, MenuItem, TextField, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -111,7 +111,7 @@ const PersonalInfo: FC<Props> = ({
       <div>
         {mapping.map((m) => (
           <>
-            <p>{m.label}</p>
+            <Typography>{m.label}</Typography>
             {m.key === 'firstName' && (
               <TextField
                 label={m.label}

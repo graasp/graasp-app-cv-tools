@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
 
 import { CVInfoObj, MotivationObj } from './types';
 
@@ -48,11 +48,10 @@ const MotivationLetter: FC<Props> = ({
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   return (
     <div>
-      <h2>Motivation</h2>
       <div>
         {mapping.map((m) => (
           <>
-            <p>{m.label}</p>
+            <Typography>{m.label}</Typography>
             {m.key === 'motivationLetter' && (
               <TextField
                 label={m.label}

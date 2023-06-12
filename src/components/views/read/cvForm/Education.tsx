@@ -139,7 +139,6 @@ const Education: FC<Props> = ({
   ];
   return (
     <div>
-      <h2>Education</h2>
       <div>
         {educationCards.map((card, index) => (
           <Card key={index}>
@@ -154,7 +153,7 @@ const Education: FC<Props> = ({
                 <>
                   {mapping.map((m) => (
                     <div key={m.key}>
-                      <p>{m.label}</p>
+                      <Typography>{m.label}</Typography>
                       {m.key === 'degree' && (
                         <TextField
                           id="select-degree"

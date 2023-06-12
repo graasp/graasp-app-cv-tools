@@ -137,7 +137,7 @@ const References: FC<Props> = ({
                 <>
                   {mapping.map((m) => (
                     <div key={m.key}>
-                      <p>{m.label}</p>
+                      <Typography>{m.label}</Typography>
                       {m.key === 'referenceName' && (
                         <TextField
                           id={m.key}

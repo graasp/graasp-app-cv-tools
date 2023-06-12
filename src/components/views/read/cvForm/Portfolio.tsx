@@ -139,7 +139,7 @@ const Portfolio: FC<Props> = ({
                 <>
                   {mapping.map((m) => (
                     <div key={m.key}>
-                      <p>{m.label}</p>
+                      <Typography>{m.label}</Typography>
                       {m.key === 'projectTitle' && (
                         <TextField
                           id={m.key}

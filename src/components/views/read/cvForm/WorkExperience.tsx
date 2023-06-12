@@ -151,7 +151,7 @@ const WorkExperience: FC<Props> = ({
                 <>
                   {mapping.map((m) => (
                     <div key={m.key}>
-                      <p>{m.label}</p>
+                      <Typography>{m.label}</Typography>
                       {m.key === 'jobTitle' && (
                         <TextField
                           id={m.key}
