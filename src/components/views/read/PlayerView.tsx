@@ -163,17 +163,17 @@ const PlayerView: FC = () => {
             onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {/* {activeStep === 4 && (
+        {activeStep === 4 && (
           <Skills
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            values={cvValues}
-            handleValues={handleModify}
+            cvValues={cvValues}
+            onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {activeStep === 5 && (
+        {/* {activeStep === 5 && (
           <Portfolio
             nextPage={nextPage}
             prevPage={prevPage}

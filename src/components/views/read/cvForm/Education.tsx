@@ -21,24 +21,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { CVInfoObj, EducationInfoObj } from './types';
 
-// Import the default theme styles
-// interface InnerObject {
-//   [key: string]: string;
-// }
-
-// interface ValuesObject {
-//   [key: string]: InnerObject;
-// }
-// interface HandleModifyFunction {
-//   (category: string, modifiedValues: any): void;
-// }
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  // values: ValuesObject;
-  // handleValues: HandleModifyFunction;
   cvValues: CVInfoObj;
   onCvValuesChange: (newCvValues: CVInfoObj) => void;
 }
