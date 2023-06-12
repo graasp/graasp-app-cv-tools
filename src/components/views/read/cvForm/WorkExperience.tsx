@@ -124,7 +124,6 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleNext = (): void => {
-    console.log(cvValues);
     nextPage();
     nextStep();
   };
