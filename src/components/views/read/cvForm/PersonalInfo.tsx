@@ -7,24 +7,13 @@ import 'react-phone-input-2/lib/style.css';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Button, MenuItem, Select, TextField } from '@mui/material';
+import { Button, MenuItem, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { CVInfoObj, PersonalInfoObj } from './types';
 
-interface InnerObject {
-  [key: string]: string;
-}
-
-interface ValuesObject {
-  [key: string]: InnerObject;
-}
-
-interface HandleModifyFunction {
-  (category: string, modifiedValues: any): void;
-}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
@@ -32,8 +21,6 @@ interface Props {
   prevStep: () => void;
   cvValues: CVInfoObj;
   onCvValuesChange: (newCvValues: CVInfoObj) => void;
-  // values: ValuesObject;
-  // handleValues: HandleModifyFunction;
 }
 
 const PersonalInfo: FC<Props> = ({
@@ -115,7 +102,6 @@ const PersonalInfo: FC<Props> = ({
   };
 
   const handleNext = (): void => {
-    console.log(cvValues);
     nextPage();
     nextStep();
   };

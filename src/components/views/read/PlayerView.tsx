@@ -183,17 +183,17 @@ const PlayerView: FC = () => {
             onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {/* {activeStep === 6 && (
+        {activeStep === 6 && (
           <MotivationLetter
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            values={cvValues}
-            handleValues={handleModify}
+            cvValues={cvValues}
+            onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {activeStep === 7 && (
+        {/* {activeStep === 7 && (
           <References
             nextPage={nextPage}
             prevPage={prevPage}

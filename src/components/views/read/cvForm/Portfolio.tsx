@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 import { FC, useState } from 'react';
 
@@ -112,7 +112,6 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleNext = (): void => {
-    console.log(cvValues);
     nextPage();
     nextStep();
   };

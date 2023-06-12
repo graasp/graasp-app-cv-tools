@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useState } from 'react';
@@ -14,9 +14,7 @@ import {
   Card,
   CardActions,
   CardContent,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';

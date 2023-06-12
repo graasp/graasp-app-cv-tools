@@ -1,124 +1,74 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
-import DoneIcon from '@mui/icons-material/Done';
-import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, TextField } from '@mui/material';
 
-interface InnerObject {
-  [key: string]: string;
-}
+import { CVInfoObj, MotivationObj } from './types';
 
-interface ValuesObject {
-  [key: string]: InnerObject;
-}
-interface HandleModifyFunction {
-  (category: string, modifiedValues: any): void;
-}
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  values: ValuesObject;
-  handleValues: HandleModifyFunction;
+  cvValues: CVInfoObj;
+  onCvValuesChange: (newCvValues: CVInfoObj) => void;
 }
 const MotivationLetter: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  values,
-  handleValues,
+  cvValues,
+  onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
-  const [showFields, setShowFields] = useState(false);
-  const [cards, setCards] = useState([{ id: 1 }]);
-  const handleEdit = (): void => {
-    setShowFields(true);
-  };
-  const handleDone = (): void => {
-    setShowFields(false);
-  };
-  const [motivation, setMotivation] = useState('');
-  const handleNext = (): void => {
-    const modifiedValues = {
-      Motivation: motivation,
+  const { motivationInfo } = cvValues;
+  const handleChange = (field: keyof MotivationObj, value: string): void => {
+    const newMotivationInfo: MotivationObj = {
+      ...motivationInfo,
+      [field]: value,
     };
-    handleValues('Motivation Letter', [modifiedValues]);
+
+    const newCvValues: CVInfoObj = {
+      ...cvValues,
+      motivationInfo: newMotivationInfo,
+    };
+
+    onCvValuesChange(newCvValues);
+  };
+
+  const handleNext = (): void => {
     nextPage();
     nextStep();
   };
+  const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   return (
     <div>
       <h2>Motivation</h2>
       <div>
-        {cards.map((card) => (
-          <Card
-            key={card.id}
-            sx={{
-              maxWidth: 900,
-              position: 'relative',
-              zIndex: 100,
-              height: '400px',
-              overflow: 'auto',
-            }}
-            style={{ position: 'absolute', top: '400px', left: '770px' }}
-          >
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Personal Motivation
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Add A New Mottivation
-              </Typography>
-              {showFields && (
-                <TextField
-                  label="Motivation Letter"
-                  value={motivation}
-                  onChange={(e) => {
-                    setMotivation(e.target.value);
-                  }}
-                  multiline
-                  required
-                />
-              )}
-              <CardActions>
-                {showFields ? (
-                  <Button
-                    size="small"
-                    startIcon={<DoneIcon />}
-                    onClick={handleDone}
-                  >
-                    Done
-                  </Button>
-                ) : (
-                  <Button
-                    size="small"
-                    startIcon={<EditIcon />}
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </Button>
-                )}
-              </CardActions>
-            </CardContent>
-          </Card>
+        {mapping.map((m) => (
+          <>
+            <p>{m.label}</p>
+            {m.key === 'motivationLetter' && (
+              <TextField
+                label={m.label}
+                id={m.key}
+                value={motivationInfo.motivationLetter || ''}
+                onChange={(e) =>
+                  handleChange('motivationLetter', e.target.value)
+                }
+                multiline
+                required
+              />
+            )}
+          </>
         ))}
       </div>
       <Button
-        style={{ position: 'absolute', top: '605px', left: '628px' }}
         variant="contained"
         color="primary"
         startIcon={<NavigateBeforeIcon />}
@@ -127,8 +77,6 @@ const MotivationLetter: FC<Props> = ({
         Back
       </Button>
       <Button
-        style={{ position: 'absolute', top: '599px', left: '1070px' }}
-        sx={{ width: 165 }}
         variant="contained"
         color="primary"
         startIcon={<NavigateNextIcon />}
