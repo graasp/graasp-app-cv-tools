@@ -43,6 +43,7 @@ const Education: FC<Props> = ({
   };
   const [educationCards, setEducationCards] = useState<EducationInfoObj[]>([
     {
+      id: 'card1',
       degree: '',
       institutionName: '',
       major: '',
@@ -52,7 +53,7 @@ const Education: FC<Props> = ({
       country: '',
     },
   ]);
-  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
@@ -63,9 +64,11 @@ const Education: FC<Props> = ({
     label: country.country,
   }));
   const handleAdd = (): void => {
+    const newCardId = `card${educationCards.length + 1}`;
     setEducationCards((prevCards) => [
       ...prevCards,
       {
+        id: newCardId,
         degree: '',
         institutionName: '',
         major: '',
@@ -75,24 +78,28 @@ const Education: FC<Props> = ({
         country: '',
       },
     ]);
-    setShowFields((prevShowFields) => [...prevShowFields, false]);
-  };
-  const { educationInfo } = cvValues;
-  const handleEdit = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = true;
-      return updatedShowFields;
-    });
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [newCardId]: false,
+    }));
   };
 
-  const handleDone = (index: number): void => {
+  const { educationInfo } = cvValues;
+  const handleEdit = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: true,
+    }));
+  };
+  const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = false;
+      const updatedShowFields = { ...prevShowFields };
+      updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
+
     const updatedEducationInfo = [...educationInfo];
+    const index = educationCards.findIndex((card) => card.id === cardId);
     updatedEducationInfo[index] = {
       ...updatedEducationInfo[index],
       ...educationCards[index],
@@ -106,14 +113,20 @@ const Education: FC<Props> = ({
     onCvValuesChange(newCvValues);
   };
 
-  const handleRemove = (index: number): void => {
-    setEducationCards((prevCards) => prevCards.filter((_, i) => i !== index));
-    setShowFields((prevShowFields) =>
-      prevShowFields.filter((_, i) => i !== index),
+  const handleRemove = (cardId: string): void => {
+    setEducationCards((prevCards) =>
+      prevCards.filter((card) => card.id !== cardId),
     );
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = { ...prevShowFields };
+      delete updatedShowFields[cardId];
+      return updatedShowFields;
+    });
   };
-  const handleChange = (index: number, key: string, value: string): void => {
+
+  const handleChange = (cardId: string, key: string, value: string): void => {
     setEducationCards((prevCards) => {
+      const index = educationCards.findIndex((card) => card.id === cardId);
       const updatedCards = [...prevCards];
       updatedCards[index] = {
         ...updatedCards[index],
@@ -140,8 +153,8 @@ const Education: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {educationCards.map((card, index) => (
-          <Card key={index}>
+        {educationCards.map((card) => (
+          <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
                 Education
@@ -149,7 +162,7 @@ const Education: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Education
               </Typography>
-              {showFields[index] && (
+              {showFields[card.id] && (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
@@ -161,7 +174,7 @@ const Education: FC<Props> = ({
                           label="Degree"
                           value={card.degree}
                           onChange={(e) =>
-                            handleChange(index, 'degree', e.target.value)
+                            handleChange(card.id, 'degree', e.target.value)
                           }
                           required
                           helperText="Please select your degree"
@@ -181,7 +194,7 @@ const Education: FC<Props> = ({
                           value={card.institutionName || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'institutionName',
                               e.target.value,
                             )
@@ -195,7 +208,7 @@ const Education: FC<Props> = ({
                           label={m.label}
                           value={card.major || ''}
                           onChange={(e) =>
-                            handleChange(index, 'major', e.target.value)
+                            handleChange(card.id, 'major', e.target.value)
                           }
                           required
                         />
@@ -208,7 +221,7 @@ const Education: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'startDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -225,7 +238,7 @@ const Education: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'endDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -239,7 +252,7 @@ const Education: FC<Props> = ({
                           label={m.label}
                           value={card.gpa || ''}
                           onChange={(e) =>
-                            handleChange(index, 'gpa', e.target.value)
+                            handleChange(card.id, 'gpa', e.target.value)
                           }
                           required
                         />
@@ -251,7 +264,7 @@ const Education: FC<Props> = ({
                           label="Country"
                           value={card.country}
                           onChange={(e) =>
-                            handleChange(index, 'country', e.target.value)
+                            handleChange(card.id, 'country', e.target.value)
                           }
                           required
                           helperText="Please select your country"
@@ -272,11 +285,11 @@ const Education: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                {showFields[index] ? (
+                {showFields[card.id] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(index)}
+                    onClick={() => handleDone(card.id)}
                   >
                     Done
                   </Button>
@@ -284,7 +297,7 @@ const Education: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(card.id)}
                   >
                     Edit
                   </Button>
@@ -293,7 +306,7 @@ const Education: FC<Props> = ({
                   size="small"
                   disabled={educationCards.length === 1}
                   startIcon={<DeleteIcon />}
-                  onClick={() => handleRemove(index)}
+                  onClick={() => handleRemove(card.id)}
                 >
                   Remove
                 </Button>

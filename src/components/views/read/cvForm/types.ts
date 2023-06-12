@@ -14,6 +14,7 @@ export type PersonalInfoObj = {
 };
 
 export type EducationInfoObj = {
+  id: string;
   degree: string;
   institutionName: string;
   major: string;
@@ -24,6 +25,7 @@ export type EducationInfoObj = {
 };
 
 export type WorkExperienceObj = {
+  id: string;
   jobTitle: string;
   institutionName: string;
   startDate: Dayjs;
@@ -39,6 +41,7 @@ export type SkillsObj = {
 };
 
 export type PortfolioObj = {
+  id: string;
   projectTitle: string;
   projectDescription: string;
   startDate: Dayjs;
@@ -51,6 +54,7 @@ export type MotivationObj = {
 };
 
 export type ReferencesObj = {
+  id: string;
   referenceName: string;
   referenceRelation: string;
   referenceCompany: string;

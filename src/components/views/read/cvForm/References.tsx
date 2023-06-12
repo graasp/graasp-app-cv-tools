@@ -42,6 +42,7 @@ const References: FC<Props> = ({
   };
   const [referencesCards, setReferencesCards] = useState<ReferencesObj[]>([
     {
+      id: 'card1',
       referenceName: '',
       referenceRelation: '',
       referenceCompany: '',
@@ -49,11 +50,13 @@ const References: FC<Props> = ({
       referenceEmail: '',
     },
   ]);
-  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const handleAdd = (): void => {
+    const newCardId = `card${referencesCards.length + 1}`;
     setReferencesCards((prevCards) => [
       ...prevCards,
       {
+        id: newCardId,
         referenceName: '',
         referenceRelation: '',
         referenceCompany: '',
@@ -61,24 +64,28 @@ const References: FC<Props> = ({
         referenceEmail: '',
       },
     ]);
-    setShowFields((prevShowFields) => [...prevShowFields, false]);
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [newCardId]: false,
+    }));
   };
   const { referencesInfo } = cvValues;
-  const handleEdit = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = true;
-      return updatedShowFields;
-    });
+  const handleEdit = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: true,
+    }));
   };
 
-  const handleDone = (index: number): void => {
+  const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = false;
+      const updatedShowFields = { ...prevShowFields };
+      updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
+
     const updatedReferecnesInfo = [...referencesInfo];
+    const index = referencesCards.findIndex((card) => card.id === cardId);
     updatedReferecnesInfo[index] = {
       ...updatedReferecnesInfo[index],
       ...referencesCards[index],
@@ -92,14 +99,20 @@ const References: FC<Props> = ({
     onCvValuesChange(newCvValues);
   };
 
-  const handleRemove = (index: number): void => {
-    setReferencesCards((prevCards) => prevCards.filter((_, i) => i !== index));
-    setShowFields((prevShowFields) =>
-      prevShowFields.filter((_, i) => i !== index),
+  const handleRemove = (cardId: string): void => {
+    setReferencesCards((prevCards) =>
+      prevCards.filter((card) => card.id !== cardId),
     );
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = { ...prevShowFields };
+      delete updatedShowFields[cardId];
+      return updatedShowFields;
+    });
   };
-  const handleChange = (index: number, key: string, value: string): void => {
+
+  const handleChange = (cardId: string, key: string, value: string): void => {
     setReferencesCards((prevCards) => {
+      const index = referencesCards.findIndex((card) => card.id === cardId);
       const updatedCards = [...prevCards];
       updatedCards[index] = {
         ...updatedCards[index],
@@ -124,8 +137,8 @@ const References: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {referencesCards.map((card, index) => (
-          <Card key={index}>
+        {referencesCards.map((card) => (
+          <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
                 References
@@ -133,7 +146,7 @@ const References: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Reference
               </Typography>
-              {showFields[index] && (
+              {showFields[card.id] && (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
@@ -144,7 +157,11 @@ const References: FC<Props> = ({
                           label={m.label}
                           value={card.referenceName || ''}
                           onChange={(e) =>
-                            handleChange(index, 'referenceName', e.target.value)
+                            handleChange(
+                              card.id,
+                              'referenceName',
+                              e.target.value,
+                            )
                           }
                           required
                         />
@@ -156,7 +173,7 @@ const References: FC<Props> = ({
                           value={card.referenceRelation || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'referenceRelation',
                               e.target.value,
                             )
@@ -171,7 +188,7 @@ const References: FC<Props> = ({
                           value={card.referenceCompany || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'referenceCompany',
                               e.target.value,
                             )
@@ -184,7 +201,7 @@ const References: FC<Props> = ({
                           country="us"
                           value={card.referencePhoneNum || ''}
                           onChange={(phone: string) =>
-                            handleChange(index, 'referencePhoneNum', phone)
+                            handleChange(card.id, 'referencePhoneNum', phone)
                           }
                         />
                       )}
@@ -195,7 +212,7 @@ const References: FC<Props> = ({
                           value={card.referenceEmail || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'referenceEmail',
                               e.target.value,
                             )
@@ -211,11 +228,11 @@ const References: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                {showFields[index] ? (
+                {showFields[card.id] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(index)}
+                    onClick={() => handleDone(card.id)}
                   >
                     Done
                   </Button>
@@ -223,7 +240,7 @@ const References: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(card.id)}
                   >
                     Edit
                   </Button>
@@ -232,7 +249,7 @@ const References: FC<Props> = ({
                   size="small"
                   disabled={referencesCards.length === 1}
                   startIcon={<DeleteIcon />}
-                  onClick={() => handleRemove(index)}
+                  onClick={() => handleRemove(card.id)}
                 >
                   Remove
                 </Button>

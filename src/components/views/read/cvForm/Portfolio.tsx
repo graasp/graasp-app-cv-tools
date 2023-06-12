@@ -45,6 +45,7 @@ const Portfolio: FC<Props> = ({
   };
   const [portfolioCards, setPortfolioCards] = useState<PortfolioObj[]>([
     {
+      id: 'card1',
       projectTitle: '',
       projectDescription: '',
       startDate: dayjs(),
@@ -52,11 +53,13 @@ const Portfolio: FC<Props> = ({
       projectLink: '',
     },
   ]);
-  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const handleAdd = (): void => {
+    const newCardId = `card${portfolioCards.length + 1}`;
     setPortfolioCards((prevCards) => [
       ...prevCards,
       {
+        id: newCardId,
         projectTitle: '',
         projectDescription: '',
         startDate: dayjs(),
@@ -64,24 +67,28 @@ const Portfolio: FC<Props> = ({
         projectLink: '',
       },
     ]);
-    setShowFields((prevShowFields) => [...prevShowFields, false]);
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [newCardId]: false,
+    }));
   };
   const { portfolioInfo } = cvValues;
-  const handleEdit = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = true;
-      return updatedShowFields;
-    });
+  const handleEdit = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: true,
+    }));
   };
 
-  const handleDone = (index: number): void => {
+  const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = false;
+      const updatedShowFields = { ...prevShowFields };
+      updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
+
     const updatedPortfoliokInfo = [...portfolioInfo];
+    const index = portfolioCards.findIndex((card) => card.id === cardId);
     updatedPortfoliokInfo[index] = {
       ...updatedPortfoliokInfo[index],
       ...portfolioCards[index],
@@ -95,14 +102,20 @@ const Portfolio: FC<Props> = ({
     onCvValuesChange(newCvValues);
   };
 
-  const handleRemove = (index: number): void => {
-    setPortfolioCards((prevCards) => prevCards.filter((_, i) => i !== index));
-    setShowFields((prevShowFields) =>
-      prevShowFields.filter((_, i) => i !== index),
+  const handleRemove = (cardId: string): void => {
+    setPortfolioCards((prevCards) =>
+      prevCards.filter((card) => card.id !== cardId),
     );
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = { ...prevShowFields };
+      delete updatedShowFields[cardId];
+      return updatedShowFields;
+    });
   };
-  const handleChange = (index: number, key: string, value: string): void => {
+
+  const handleChange = (cardId: string, key: string, value: string): void => {
     setPortfolioCards((prevCards) => {
+      const index = portfolioCards.findIndex((card) => card.id === cardId);
       const updatedCards = [...prevCards];
       updatedCards[index] = {
         ...updatedCards[index],
@@ -126,8 +139,8 @@ const Portfolio: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {portfolioCards.map((card, index) => (
-          <Card key={index}>
+        {portfolioCards.map((card) => (
+          <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
                 Project
@@ -135,7 +148,7 @@ const Portfolio: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Project To Your Portfolio
               </Typography>
-              {showFields[index] && (
+              {showFields[card.id] && (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
@@ -146,7 +159,11 @@ const Portfolio: FC<Props> = ({
                           label={m.label}
                           value={card.projectTitle || ''}
                           onChange={(e) =>
-                            handleChange(index, 'projectTitle', e.target.value)
+                            handleChange(
+                              card.id,
+                              'projectTitle',
+                              e.target.value,
+                            )
                           }
                           required
                         />
@@ -158,7 +175,7 @@ const Portfolio: FC<Props> = ({
                           value={card.projectDescription || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'projectDescription',
                               e.target.value,
                             )
@@ -174,7 +191,7 @@ const Portfolio: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'startDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -191,7 +208,7 @@ const Portfolio: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'endDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -205,7 +222,7 @@ const Portfolio: FC<Props> = ({
                           label={m.label}
                           value={card.projectLink || ''}
                           onChange={(e) =>
-                            handleChange(index, 'projectLink', e.target.value)
+                            handleChange(card.id, 'projectLink', e.target.value)
                           }
                           required
                         />
@@ -218,11 +235,11 @@ const Portfolio: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                {showFields[index] ? (
+                {showFields[card.id] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(index)}
+                    onClick={() => handleDone(card.id)}
                   >
                     Done
                   </Button>
@@ -230,7 +247,7 @@ const Portfolio: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(card.id)}
                   >
                     Edit
                   </Button>
@@ -239,7 +256,7 @@ const Portfolio: FC<Props> = ({
                   size="small"
                   disabled={portfolioCards.length === 1}
                   startIcon={<DeleteIcon />}
-                  onClick={() => handleRemove(index)}
+                  onClick={() => handleRemove(card.id)}
                 >
                   Remove
                 </Button>

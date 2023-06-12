@@ -47,6 +47,7 @@ const WorkExperience: FC<Props> = ({
   };
   const [workCards, setWorkCards] = useState<WorkExperienceObj[]>([
     {
+      id: 'card1',
       jobTitle: '',
       institutionName: '',
       startDate: dayjs(),
@@ -56,15 +57,17 @@ const WorkExperience: FC<Props> = ({
       keyAchievements: '',
     },
   ]);
-  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
     label: country.country,
   }));
   const handleAdd = (): void => {
+    const newCardId = `card${workCards.length + 1}`;
     setWorkCards((prevCards) => [
       ...prevCards,
       {
+        id: newCardId,
         jobTitle: '',
         institutionName: '',
         startDate: dayjs(),
@@ -74,24 +77,28 @@ const WorkExperience: FC<Props> = ({
         keyAchievements: '',
       },
     ]);
-    setShowFields((prevShowFields) => [...prevShowFields, false]);
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [newCardId]: false,
+    }));
   };
   const { workInfo } = cvValues;
-  const handleEdit = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = true;
-      return updatedShowFields;
-    });
+  const handleEdit = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: true,
+    }));
   };
 
-  const handleDone = (index: number): void => {
+  const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = false;
+      const updatedShowFields = { ...prevShowFields };
+      updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
+
     const updatedWorkInfo = [...workInfo];
+    const index = workCards.findIndex((card) => card.id === cardId);
     updatedWorkInfo[index] = {
       ...updatedWorkInfo[index],
       ...workCards[index],
@@ -105,14 +112,18 @@ const WorkExperience: FC<Props> = ({
     onCvValuesChange(newCvValues);
   };
 
-  const handleRemove = (index: number): void => {
-    setWorkCards((prevCards) => prevCards.filter((_, i) => i !== index));
-    setShowFields((prevShowFields) =>
-      prevShowFields.filter((_, i) => i !== index),
-    );
+  const handleRemove = (cardId: string): void => {
+    setWorkCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
+    setShowFields((prevShowFields) => {
+      const updatedShowFields = { ...prevShowFields };
+      delete updatedShowFields[cardId];
+      return updatedShowFields;
+    });
   };
-  const handleChange = (index: number, key: string, value: string): void => {
+
+  const handleChange = (cardId: string, key: string, value: string): void => {
     setWorkCards((prevCards) => {
+      const index = workCards.findIndex((card) => card.id === cardId);
       const updatedCards = [...prevCards];
       updatedCards[index] = {
         ...updatedCards[index],
@@ -138,8 +149,8 @@ const WorkExperience: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {workCards.map((card, index) => (
-          <Card key={index}>
+        {workCards.map((card) => (
+          <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
                 Work Experience
@@ -147,7 +158,7 @@ const WorkExperience: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Work Experience
               </Typography>
-              {showFields[index] && (
+              {showFields[card.id] && (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
@@ -158,7 +169,7 @@ const WorkExperience: FC<Props> = ({
                           label={m.label}
                           value={card.jobTitle || ''}
                           onChange={(e) =>
-                            handleChange(index, 'jobTitle', e.target.value)
+                            handleChange(card.id, 'jobTitle', e.target.value)
                           }
                           required
                         />
@@ -170,7 +181,7 @@ const WorkExperience: FC<Props> = ({
                           value={card.institutionName || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'institutionName',
                               e.target.value,
                             )
@@ -186,7 +197,7 @@ const WorkExperience: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'startDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -203,7 +214,7 @@ const WorkExperience: FC<Props> = ({
                             maxDate={dayjs()}
                             onChange={(date) =>
                               handleChange(
-                                index,
+                                card.id,
                                 'endDate',
                                 date ? dayjs(date).format('YYYY-MM-DD') : '',
                               )
@@ -218,7 +229,7 @@ const WorkExperience: FC<Props> = ({
                           label="Country"
                           value={card.country}
                           onChange={(e) =>
-                            handleChange(index, 'country', e.target.value)
+                            handleChange(card.id, 'country', e.target.value)
                           }
                           required
                           helperText="Please select your country"
@@ -237,7 +248,7 @@ const WorkExperience: FC<Props> = ({
                           label={m.label}
                           value={card.jobDetails || ''}
                           onChange={(e) =>
-                            handleChange(index, 'jobDetails', e.target.value)
+                            handleChange(card.id, 'jobDetails', e.target.value)
                           }
                           required
                         />
@@ -249,7 +260,7 @@ const WorkExperience: FC<Props> = ({
                           value={card.keyAchievements || ''}
                           onChange={(e) =>
                             handleChange(
-                              index,
+                              card.id,
                               'keyAchievements',
                               e.target.value,
                             )
@@ -265,11 +276,11 @@ const WorkExperience: FC<Props> = ({
                 <Button size="small" startIcon={<Add />} onClick={handleAdd}>
                   Add
                 </Button>
-                {showFields[index] ? (
+                {showFields[card.id] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(index)}
+                    onClick={() => handleDone(card.id)}
                   >
                     Done
                   </Button>
@@ -277,7 +288,7 @@ const WorkExperience: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(card.id)}
                   >
                     Edit
                   </Button>
@@ -286,7 +297,7 @@ const WorkExperience: FC<Props> = ({
                   size="small"
                   disabled={workCards.length === 1}
                   startIcon={<DeleteIcon />}
-                  onClick={() => handleRemove(index)}
+                  onClick={() => handleRemove(card.id)}
                 >
                   Remove
                 </Button>

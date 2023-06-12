@@ -37,59 +37,57 @@ const Skills: FC<Props> = ({
     prevStep();
   };
   const [skillCards, setSkillCards] = useState<SkillsObj[]>([
-    { title: 'Tech Skills', skills: ['React', 'Node.js'] },
-    { title: 'Lang Skills', skills: ['JavaScript', 'HTML', 'CSS'] },
-    { title: 'Other Skills', skills: ['Python', 'Django'] },
+    { title: 'Tech Skills', skills: [] },
+    { title: 'Lang Skills', skills: [] },
+    { title: 'Other Skills', skills: [] },
   ]);
-  const [showFields, setShowFields] = useState<boolean[]>([false]);
+  const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const { skillsInfo } = cvValues;
-  const handleEdit = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = true;
-      return updatedShowFields;
-    });
+  const handleEdit = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: true,
+    }));
   };
-  const handleDone = (index: number): void => {
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = [...prevShowFields];
-      updatedShowFields[index] = false;
-      return updatedShowFields;
-    });
-    const updatedSkillsInfo = [...skillsInfo];
-    updatedSkillsInfo[index] = {
-      ...updatedSkillsInfo[index],
-      ...skillCards[index],
-    };
+  const handleDone = (cardId: string): void => {
+    setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [cardId]: false,
+    }));
+
+    const index = skillCards.findIndex((card) => card.title === cardId);
+    const updatedSkillsInfo = skillsInfo.map((info, i) =>
+      i === index ? { ...info, ...skillCards[index] } : info,
+    );
 
     const newCvValues: CVInfoObj = {
       ...cvValues,
-      skillsInfo: updatedSkillsInfo,
+      skillsInfo: { ...updatedSkillsInfo, ...skillCards },
     };
 
     onCvValuesChange(newCvValues);
   };
-  const removeSkill = (index: number, skillIndex: number): void => {
+
+  const removeSkill = (cardId: string, skillIndex: number): void => {
     setSkillCards((prevCards) => {
       const updatedCards = [...prevCards];
+      const index = skillCards.findIndex((card) => card.title === cardId);
       updatedCards[index].skills.splice(skillIndex, 1);
       return updatedCards;
     });
   };
 
   const addSkill = (
-    cardIndex: number,
+    cardId: string,
     value: string,
     e: KeyboardEvent<HTMLInputElement>,
   ): void => {
+    const index = skillCards.findIndex((card) => card.title === cardId);
     if (e.key === ' ' && value.trim() !== '') {
       const updatedSkillCards = [...skillCards];
-      const updatedSkills = [
-        ...updatedSkillCards[cardIndex].skills,
-        value.trim(),
-      ];
-      updatedSkillCards[cardIndex] = {
-        ...updatedSkillCards[cardIndex],
+      const updatedSkills = [...updatedSkillCards[index].skills, value.trim()];
+      updatedSkillCards[index] = {
+        ...updatedSkillCards[index],
         skills: updatedSkills,
       };
       setSkillCards(updatedSkillCards);
@@ -97,10 +95,10 @@ const Skills: FC<Props> = ({
     } else if (e.key === 'Backspace' && value === '') {
       // Remove the last skill when backspace is pressed and input field is empty
       const updatedSkillCards = [...skillCards];
-      const updatedSkills = [...updatedSkillCards[cardIndex].skills];
+      const updatedSkills = [...updatedSkillCards[index].skills];
       updatedSkills.pop();
-      updatedSkillCards[cardIndex] = {
-        ...updatedSkillCards[cardIndex],
+      updatedSkillCards[index] = {
+        ...updatedSkillCards[index],
         skills: updatedSkills,
       };
       setSkillCards(updatedSkillCards);
@@ -114,7 +112,7 @@ const Skills: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {skillCards.map((card, index) => (
+        {skillCards.map((card) => (
           <Card key={card.title}>
             <CardContent>
               <Typography gutterBottom variant="h5">
@@ -123,7 +121,7 @@ const Skills: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A Skill
               </Typography>
-              {showFields[index] && (
+              {showFields[card.title] && (
                 <Box className="skill">
                   <ul>
                     {card.skills.map((skill, i) => (
@@ -131,7 +129,7 @@ const Skills: FC<Props> = ({
                         {skill}
                         <button
                           type="button"
-                          onClick={() => removeSkill(index, i)}
+                          onClick={() => removeSkill(card.title, i)}
                         >
                           +
                         </button>
@@ -140,7 +138,7 @@ const Skills: FC<Props> = ({
                     <li className="input-skill">
                       <input
                         onKeyDown={(e) =>
-                          addSkill(index, e.currentTarget.value, e)
+                          addSkill(card.title, e.currentTarget.value, e)
                         }
                         type="text"
                         size={2}
@@ -150,11 +148,11 @@ const Skills: FC<Props> = ({
                 </Box>
               )}
               <CardActions>
-                {showFields[index] ? (
+                {showFields[card.title] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(index)}
+                    onClick={() => handleDone(card.title)}
                   >
                     Done
                   </Button>
@@ -162,7 +160,7 @@ const Skills: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(card.title)}
                   >
                     Edit
                   </Button>
