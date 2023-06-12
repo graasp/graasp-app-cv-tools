@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useState } from 'react';
@@ -137,6 +137,7 @@ const Education: FC<Props> = ({
   };
 
   const handleNext = (): void => {
+    console.log(cvValues);
     nextPage();
     nextStep();
   };
