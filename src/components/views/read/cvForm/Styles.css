@@ -12,7 +12,7 @@
 .skill input:focus {
   outline: none;
 }
-ul {
+List {
   display: flex;
   flex-wrap: wrap;
   margin: 0;
@@ -20,7 +20,7 @@ ul {
   width: 100%;
   list-style: none;
 }
-ul li {
+List ListItem {
   align-items: center;
   background: #778ca3;
   border-radius: 2px;
@@ -29,7 +29,7 @@ ul li {
   margin: 5px;
   padding: 5px;
 }
-ul li button {
+List ListItem button {
   align-items: center;
   background: #333333;
   border: none;
@@ -44,22 +44,7 @@ ul li button {
   margin-left: 8px;
   transform: rotate(45deg);
 }
-ul .input-skill {
+List .input-skill {
   background: none;
   flex-grow: 1;
-}
-.card-item {
-  position: absolute;
-  top: 350px;
-}
-
-.card-1 {
-  left: 300px;
-}
-
-.card-2 {
-  left: 750px;
-}
-.card-3 {
-  left: 1300px;
 }

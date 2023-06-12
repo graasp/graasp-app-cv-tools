@@ -10,6 +10,8 @@ import {
   Card,
   CardActions,
   CardContent,
+  List,
+  ListItem,
   Typography,
 } from '@mui/material';
 
@@ -123,19 +125,16 @@ const Skills: FC<Props> = ({
               </Typography>
               {showFields[card.title] && (
                 <Box className="skill">
-                  <ul>
+                  <List>
                     {card.skills.map((skill, i) => (
-                      <li key={i}>
+                      <ListItem key={i}>
                         {skill}
-                        <button
-                          type="button"
-                          onClick={() => removeSkill(card.title, i)}
-                        >
+                        <Button onClick={() => removeSkill(card.title, i)}>
                           +
-                        </button>
-                      </li>
+                        </Button>
+                      </ListItem>
                     ))}
-                    <li className="input-skill">
+                    <ListItem className="input-skill">
                       <input
                         onKeyDown={(e) =>
                           addSkill(card.title, e.currentTarget.value, e)
@@ -143,8 +142,8 @@ const Skills: FC<Props> = ({
                         type="text"
                         size={2}
                       />
-                    </li>
-                  </ul>
+                    </ListItem>
+                  </List>
                 </Box>
               )}
               <CardActions>
