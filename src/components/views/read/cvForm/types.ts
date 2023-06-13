@@ -1,5 +1,3 @@
-import { Dayjs } from 'dayjs';
-
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;

@@ -55,7 +55,8 @@ const Portfolio: FC<Props> = ({
     },
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
-  const [isPresent, setIsPresent] = useState(false);
+  const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
+  // const [isPresent, setIsPresent] = useState(false);
   const handleAdd = (): void => {
     const newCardId = `card${portfolioCards.length + 1}`;
     setPortfolioCards((prevCards) => [
@@ -70,6 +71,10 @@ const Portfolio: FC<Props> = ({
       },
     ]);
     setShowFields((prevShowFields) => ({
+      ...prevShowFields,
+      [newCardId]: false,
+    }));
+    setIsPresent((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
     }));
@@ -207,7 +212,7 @@ const Portfolio: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={isPresent}
+                              disabled={isPresent[card.id]}
                               minDate={dayjs(card.startDate)}
                               value={
                                 card.endDate ? dayjs(card.endDate) : undefined
@@ -224,9 +229,13 @@ const Portfolio: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={isPresent}
-                            onChange={(e) => {
-                              setIsPresent(e.target.checked);
+                            checked={isPresent[card.id]}
+                            onChange={() => {
+                              setIsPresent((prevShowFields) => ({
+                                ...prevShowFields,
+                                [card.id]: true,
+                              }));
+                              // setIsPresent(e.target.checked);
                               handleChange(
                                 card.id,
                                 'endDate',
