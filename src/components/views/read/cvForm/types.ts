@@ -28,8 +28,8 @@ export type WorkExperienceObj = {
   id: string;
   jobTitle: string;
   institutionName: string;
-  startDate: Dayjs;
-  endDate: Dayjs;
+  startDate: string | undefined;
+  endDate: string | undefined;
   country: string;
   jobDetails: string;
   keyAchievements: string;
@@ -44,8 +44,8 @@ export type PortfolioObj = {
   id: string;
   projectTitle: string;
   projectDescription: string;
-  startDate: Dayjs;
-  endDate: Dayjs;
+  startDate: string | undefined;
+  endDate: string | undefined;
   projectLink: string;
 };
 

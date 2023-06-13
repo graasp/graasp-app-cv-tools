@@ -15,6 +15,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Checkbox,
   MenuItem,
   TextField,
   Typography,
@@ -50,14 +51,15 @@ const WorkExperience: FC<Props> = ({
       id: 'card1',
       jobTitle: '',
       institutionName: '',
-      startDate: dayjs(),
-      endDate: dayjs(),
+      startDate: undefined,
+      endDate: undefined,
       country: '',
       jobDetails: '',
       keyAchievements: '',
     },
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [isPresent, setIsPresent] = useState(false);
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
     label: country.country,
@@ -70,8 +72,8 @@ const WorkExperience: FC<Props> = ({
         id: newCardId,
         jobTitle: '',
         institutionName: '',
-        startDate: dayjs(),
-        endDate: dayjs(),
+        startDate: undefined,
+        endDate: undefined,
         country: '',
         jobDetails: '',
         keyAchievements: '',
@@ -193,34 +195,53 @@ const WorkExperience: FC<Props> = ({
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
                             label="From"
-                            value={card.startDate}
-                            maxDate={dayjs()}
-                            onChange={(date) =>
-                              handleChange(
-                                card.id,
-                                'startDate',
-                                date ? dayjs(date).format('YYYY-MM-DD') : '',
-                              )
+                            value={
+                              card.startDate ? dayjs(card.startDate) : undefined
                             }
+                            maxDate={dayjs()}
+                            onChange={(date) => {
+                              const formattedDate = date
+                                ? dayjs(date).format('YYYY-MM-DD')
+                                : '';
+                              handleChange(card.id, 'startDate', formattedDate);
+                            }}
                           />
                         </LocalizationProvider>
                       )}
                       {m.key === 'endDate' && (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="Till"
-                            value={card.endDate}
-                            minDate={card.startDate}
-                            maxDate={dayjs()}
-                            onChange={(date) =>
+                        <Box display="flex" alignItems="center">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="Till"
+                              disabled={isPresent}
+                              minDate={dayjs(card.startDate)}
+                              value={
+                                card.endDate ? dayjs(card.endDate) : undefined
+                              }
+                              maxDate={dayjs()}
+                              onChange={(date) => {
+                                handleChange(
+                                  card.id,
+                                  'endDate',
+                                  date ? dayjs(date).format('YYYY-MM-DD') : '',
+                                );
+                              }}
+                            />
+                          </LocalizationProvider>
+                          <Typography marginLeft={1}>Present</Typography>
+                          <Checkbox
+                            checked={isPresent}
+                            onChange={(e) => {
+                              setIsPresent(e.target.checked);
                               handleChange(
                                 card.id,
                                 'endDate',
-                                date ? dayjs(date).format('YYYY-MM-DD') : '',
-                              )
-                            }
+                                'OnGoing',
+                                // dayjs().format('YYYY-MM-DD'),
+                              );
+                            }}
                           />
-                        </LocalizationProvider>
+                        </Box>
                       )}
                       {m.key === 'country' && (
                         <TextField

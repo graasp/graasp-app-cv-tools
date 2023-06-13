@@ -83,10 +83,6 @@ const Education: FC<Props> = ({
       ...prevShowFields,
       [newCardId]: false,
     }));
-    // setIsPresent((prevPresent) => ({
-    //   ...prevPresent,
-    //   [newCardId]: false,
-    // }));
   };
 
   const { educationInfo } = cvValues;
@@ -102,37 +98,6 @@ const Education: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-    // if (isPresent) {
-    //   console.log('Nice');
-    //   // setEducationCards((prevCards) =>
-    //   //   prevCards.map((card) => {
-    //   //     if (card.id === cardId) {
-    //   //       return {
-    //   //         ...card,
-    //   //         endDate: dayjs().format('YYYY-MM-DD') || null,
-    //   //       } as EducationInfoObj;
-    //   //     }
-    //   //     return card;
-    //   //   }),
-    //   // );
-    //   // const updatedEducationCards = educationCards.map((card) => {
-    //   //   if (card.id === cardId) {
-    //   //     return { ...card, endDate: dayjs().format('YYYY-MM-DD') };
-    //   //   }
-    //   //   return card;
-    //   // });
-    //   // setEducationCards(updatedEducationCards);
-    // }
-    // console.log(educationCards);
-    // if (isPresent) {
-    //   educationCards.map((card) => {
-    //     if (card.id === cardId) {
-    //       return { ...card, endDate: dayjs() };
-    //     }
-    //     return card;
-    //   });
-    // }
-    // console.log(educationCards);
     const updatedEducationInfo = [...educationInfo];
     const index = educationCards.findIndex((card) => card.id === cardId);
     updatedEducationInfo[index] = {
