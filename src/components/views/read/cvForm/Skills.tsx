@@ -10,8 +10,8 @@ import {
   Card,
   CardActions,
   CardContent,
-  List,
-  ListItem,
+  Chip,
+  TextField,
   Typography,
 } from '@mui/material';
 
@@ -82,7 +82,7 @@ const Skills: FC<Props> = ({
   const addSkill = (
     cardId: string,
     value: string,
-    e: KeyboardEvent<HTMLInputElement>,
+    e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
     const index = skillCards.findIndex((card) => card.title === cardId);
     if (e.key === ' ' && value.trim() !== '') {
@@ -125,25 +125,20 @@ const Skills: FC<Props> = ({
               </Typography>
               {showFields[card.title] && (
                 <Box className="skill">
-                  <List>
-                    {card.skills.map((skill, i) => (
-                      <ListItem key={i}>
-                        {skill}
-                        <Button onClick={() => removeSkill(card.title, i)}>
-                          +
-                        </Button>
-                      </ListItem>
-                    ))}
-                    <ListItem className="input-skill">
-                      <input
-                        onKeyDown={(e) =>
-                          addSkill(card.title, e.currentTarget.value, e)
-                        }
-                        type="text"
-                        size={2}
-                      />
-                    </ListItem>
-                  </List>
+                  <TextField
+                    InputProps={{
+                      startAdornment: card.skills.map((skill, i) => (
+                        <Chip
+                          label={skill}
+                          key={i}
+                          onDelete={() => removeSkill(card.title, i)}
+                        />
+                      )),
+                      onKeyDown: (e) =>
+                        addSkill(card.title, e.currentTarget.value, e),
+                    }}
+                    size="small"
+                  />
                 </Box>
               )}
               <CardActions>

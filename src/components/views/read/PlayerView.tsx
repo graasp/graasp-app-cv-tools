@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { RecordOf } from 'immutable';
 
 import { FC, useContext, useState } from 'react';
@@ -6,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Context, LocalContext } from '@graasp/apps-query-client';
 
-import { Box, styled } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
 import { hooks } from '../../../config/queryClient';
@@ -90,7 +89,7 @@ const PlayerView: FC = () => {
     personalInfo: {
       firstName: '',
       lastName: '',
-      birthDate: dayjs(),
+      birthDate: undefined,
       gender: '',
       emailAddress: '',
       phoneNum: '',

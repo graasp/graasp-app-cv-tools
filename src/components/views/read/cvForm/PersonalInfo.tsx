@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 import { FC, RefObject, useRef, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
@@ -54,9 +54,7 @@ const PersonalInfo: FC<Props> = ({
     { key: 'personalPic', label: 'Personal Picture' },
   ];
   const { personalInfo } = cvValues;
-  const [birthDate, setBirthDate] = useState<Dayjs | null>(
-    personalInfo.birthDate ?? null,
-  );
+  const [birthDate, setBirthDate] = useState<string | undefined>();
   const handleChange = (field: keyof PersonalInfoObj, value: string): void => {
     const newPersonalInfo: PersonalInfoObj = {
       ...personalInfo,
@@ -134,13 +132,13 @@ const PersonalInfo: FC<Props> = ({
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Birth Date"
-                  value={birthDate}
+                  value={birthDate ? dayjs(birthDate) : undefined}
                   maxDate={dayjs()}
                   onChange={(date) => {
                     const formattedDate = date
                       ? dayjs(date).format('YYYY-MM-DD')
                       : '';
-                    setBirthDate(date || null);
+                    setBirthDate(formattedDate || undefined);
                     handleChange('birthDate', formattedDate);
                   }}
                 />

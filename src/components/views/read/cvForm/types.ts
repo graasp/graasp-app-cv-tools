@@ -3,7 +3,7 @@ import { Dayjs } from 'dayjs';
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
-  birthDate: Dayjs;
+  birthDate: string | undefined;
   gender: string;
   emailAddress: string;
   phoneNum: string;
@@ -18,8 +18,8 @@ export type EducationInfoObj = {
   degree: string;
   institutionName: string;
   major: string;
-  startDate: Dayjs;
-  endDate: Dayjs;
+  startDate: string | undefined;
+  endDate: string | undefined;
   gpa: string;
   country: string;
 };

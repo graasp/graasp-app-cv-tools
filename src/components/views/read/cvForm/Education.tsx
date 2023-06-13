@@ -10,7 +10,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, TextField, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -47,13 +47,14 @@ const Education: FC<Props> = ({
       degree: '',
       institutionName: '',
       major: '',
-      startDate: dayjs(),
-      endDate: dayjs(),
+      startDate: undefined,
+      endDate: undefined,
       gpa: '',
       country: '',
     },
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [isPresent, setIsPresent] = useState(false);
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
@@ -72,8 +73,8 @@ const Education: FC<Props> = ({
         degree: '',
         institutionName: '',
         major: '',
-        startDate: dayjs(),
-        endDate: dayjs(),
+        startDate: undefined,
+        endDate: undefined,
         gpa: '',
         country: '',
       },
@@ -82,6 +83,10 @@ const Education: FC<Props> = ({
       ...prevShowFields,
       [newCardId]: false,
     }));
+    // setIsPresent((prevPresent) => ({
+    //   ...prevPresent,
+    //   [newCardId]: false,
+    // }));
   };
 
   const { educationInfo } = cvValues;
@@ -97,7 +102,37 @@ const Education: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
+    // if (isPresent) {
+    //   console.log('Nice');
+    //   // setEducationCards((prevCards) =>
+    //   //   prevCards.map((card) => {
+    //   //     if (card.id === cardId) {
+    //   //       return {
+    //   //         ...card,
+    //   //         endDate: dayjs().format('YYYY-MM-DD') || null,
+    //   //       } as EducationInfoObj;
+    //   //     }
+    //   //     return card;
+    //   //   }),
+    //   // );
+    //   // const updatedEducationCards = educationCards.map((card) => {
+    //   //   if (card.id === cardId) {
+    //   //     return { ...card, endDate: dayjs().format('YYYY-MM-DD') };
+    //   //   }
+    //   //   return card;
+    //   // });
+    //   // setEducationCards(updatedEducationCards);
+    // }
+    // console.log(educationCards);
+    // if (isPresent) {
+    //   educationCards.map((card) => {
+    //     if (card.id === cardId) {
+    //       return { ...card, endDate: dayjs() };
+    //     }
+    //     return card;
+    //   });
+    // }
+    // console.log(educationCards);
     const updatedEducationInfo = [...educationInfo];
     const index = educationCards.findIndex((card) => card.id === cardId);
     updatedEducationInfo[index] = {
@@ -217,34 +252,53 @@ const Education: FC<Props> = ({
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
                             label="From"
-                            value={card.startDate}
-                            maxDate={dayjs()}
-                            onChange={(date) =>
-                              handleChange(
-                                card.id,
-                                'startDate',
-                                date ? dayjs(date).format('YYYY-MM-DD') : '',
-                              )
+                            value={
+                              card.startDate ? dayjs(card.startDate) : undefined
                             }
+                            maxDate={dayjs()}
+                            onChange={(date) => {
+                              const formattedDate = date
+                                ? dayjs(date).format('YYYY-MM-DD')
+                                : '';
+                              handleChange(card.id, 'startDate', formattedDate);
+                            }}
                           />
                         </LocalizationProvider>
                       )}
                       {m.key === 'endDate' && (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="Till"
-                            value={card.endDate}
-                            minDate={card.startDate}
-                            maxDate={dayjs()}
-                            onChange={(date) =>
+                        <Box display="flex" alignItems="center">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="Till"
+                              disabled={isPresent}
+                              minDate={dayjs(card.startDate)}
+                              value={
+                                card.endDate ? dayjs(card.endDate) : undefined
+                              }
+                              maxDate={dayjs()}
+                              onChange={(date) => {
+                                handleChange(
+                                  card.id,
+                                  'endDate',
+                                  date ? dayjs(date).format('YYYY-MM-DD') : '',
+                                );
+                              }}
+                            />
+                          </LocalizationProvider>
+                          <Typography marginLeft={1}>Present</Typography>
+                          <Checkbox
+                            checked={isPresent}
+                            onChange={(e) => {
+                              setIsPresent(e.target.checked);
                               handleChange(
                                 card.id,
                                 'endDate',
-                                date ? dayjs(date).format('YYYY-MM-DD') : '',
-                              )
-                            }
+                                'OnGoing',
+                                // dayjs().format('YYYY-MM-DD'),
+                              );
+                            }}
                           />
-                        </LocalizationProvider>
+                        </Box>
                       )}
                       {m.key === 'gpa' && (
                         <TextField
