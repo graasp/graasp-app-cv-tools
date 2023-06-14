@@ -105,12 +105,7 @@ const PlayerView: FC = () => {
   };
 
   return (
-    <Box
-      style={{
-        fontFamily: 'Roboto',
-      }}
-      data-cy={PLAYER_VIEW_CY}
-    >
+    <Box data-cy={PLAYER_VIEW_CY}>
       <FormLayout activeStep={activeStep} steps={steps} page={page}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && <Home nextPage={nextPage} nextStep={nextStep} />}
