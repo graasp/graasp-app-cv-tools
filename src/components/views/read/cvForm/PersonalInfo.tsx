@@ -102,6 +102,7 @@ const PersonalInfo: FC<Props> = ({
   const handleNext = (): void => {
     nextPage();
     nextStep();
+    console.log(cvValues);
   };
   // Flex-wrap: wrap;
   return (

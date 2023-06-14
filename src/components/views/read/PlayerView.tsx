@@ -76,14 +76,6 @@ const PlayerView: FC = () => {
     'Template',
     'Review',
   ];
-  // const [cvValues, setCvValues] = useState<Record<string, any>>({});
-
-  // const handleModify = (category: string, modifiedValues: any): void => {
-  //   setCvValues((prevValues) => ({
-  //     ...prevValues,
-  //     [category]: modifiedValues,
-  //   }));
-  // };
 
   const [cvValues, setCvValues] = useState<CVInfoObj>({
     personalInfo: {
@@ -97,7 +89,6 @@ const PlayerView: FC = () => {
       profileLinks: '',
       personalLink: '',
       personalPic: '',
-      // ... other properties with initial values
     },
     educationInfo: [],
     workInfo: [],
@@ -203,7 +194,7 @@ const PlayerView: FC = () => {
             handleValues={handleModify}
           />
         )} */}
-        {/* {activeStep === 9 && (
+        {/* {activeStep === 8 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}

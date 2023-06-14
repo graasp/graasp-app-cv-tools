@@ -15,7 +15,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import './Styles.css';
 import { CVInfoObj, SkillsObj } from './types';
 
 interface Props {

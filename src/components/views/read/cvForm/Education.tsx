@@ -55,7 +55,6 @@ const Education: FC<Props> = ({
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
-  // const [isPresent, setIsPresent] = useState(false);
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
