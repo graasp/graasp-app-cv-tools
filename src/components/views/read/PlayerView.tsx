@@ -20,9 +20,7 @@ import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
 import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
-import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
-import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
@@ -106,7 +104,7 @@ const PlayerView: FC = () => {
 
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
-      <FormLayout activeStep={activeStep} steps={steps} page={page}>
+      <FormLayout activeStep={activeStep} steps={steps}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && <Home nextPage={nextPage} nextStep={nextStep} />}
         {activeStep === 1 && (
