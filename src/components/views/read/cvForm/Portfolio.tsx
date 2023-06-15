@@ -29,15 +29,18 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  portfolioData: PortfolioObj[];
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 const Portfolio: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  portfolioData,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -56,7 +59,6 @@ const Portfolio: FC<Props> = ({
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
-  // const [isPresent, setIsPresent] = useState(false);
   const handleAdd = (): void => {
     const newCardId = `card${portfolioCards.length + 1}`;
     setPortfolioCards((prevCards) => [
@@ -79,7 +81,6 @@ const Portfolio: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { portfolioInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -94,19 +95,13 @@ const Portfolio: FC<Props> = ({
       return updatedShowFields;
     });
 
-    const updatedPortfoliokInfo = [...portfolioInfo];
+    const updatedPortfoliokInfo: PortfolioObj[] = [...portfolioData];
     const index = portfolioCards.findIndex((card) => card.id === cardId);
     updatedPortfoliokInfo[index] = {
       ...updatedPortfoliokInfo[index],
       ...portfolioCards[index],
     };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      portfolioInfo: updatedPortfoliokInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('portfolioInfo', updatedPortfoliokInfo);
   };
 
   const handleRemove = (cardId: string): void => {

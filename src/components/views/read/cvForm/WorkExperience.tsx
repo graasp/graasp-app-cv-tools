@@ -63,7 +63,6 @@ const WorkExperience: FC<Props> = ({
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
-  // const [isPresent, setIsPresent] = useState(false);
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
     label: country.country,
