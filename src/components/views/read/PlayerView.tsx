@@ -97,9 +97,17 @@ const PlayerView: FC = () => {
     },
     referencesInfo: [],
   });
-
-  const handleCvValuesChange = (newCvValues: CVInfoObj): void => {
-    setCvValues(newCvValues);
+  const handleCvValuesChange = (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ): void => {
+    setCvValues((prevCvValues) => ({
+      ...prevCvValues,
+      [subkey]: {
+        ...prevCvValues[subkey],
+        ...newSubkeyValues,
+      },
+    }));
   };
 
   return (
@@ -113,11 +121,11 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
+            personalInfo={cvValues.personalInfo}
             onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {activeStep === 2 && (
+        {/* {activeStep === 2 && (
           <Education
             nextPage={nextPage}
             prevPage={prevPage}
@@ -176,7 +184,7 @@ const PlayerView: FC = () => {
             cvValues={cvValues}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
+        )} */}
         {/* {activeStep === 8 && (
           <Template
             nextPage={nextPage}

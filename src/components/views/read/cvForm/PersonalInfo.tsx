@@ -19,8 +19,11 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  personalInfo: PersonalInfoObj;
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 
 const PersonalInfo: FC<Props> = ({
@@ -28,7 +31,7 @@ const PersonalInfo: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  personalInfo,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -53,7 +56,6 @@ const PersonalInfo: FC<Props> = ({
     { key: 'personalLinks', label: 'Personal Links' },
     { key: 'personalPic', label: 'Personal Picture' },
   ];
-  const { personalInfo } = cvValues;
   const [birthDate, setBirthDate] = useState<string | undefined>();
   const handleChange = (field: keyof PersonalInfoObj, value: string): void => {
     const newPersonalInfo: PersonalInfoObj = {
@@ -61,14 +63,8 @@ const PersonalInfo: FC<Props> = ({
       [field]: value,
     };
 
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      personalInfo: newPersonalInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('personalInfo', newPersonalInfo);
   };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
 
@@ -81,12 +77,7 @@ const PersonalInfo: FC<Props> = ({
           personalPic: reader.result as string,
         };
 
-        const newCvValues: CVInfoObj = {
-          ...cvValues,
-          personalInfo: newPersonalInfo,
-        };
-
-        onCvValuesChange(newCvValues);
+        onCvValuesChange('personalInfo', newPersonalInfo);
       };
 
       reader.readAsDataURL(file);
@@ -102,7 +93,6 @@ const PersonalInfo: FC<Props> = ({
   const handleNext = (): void => {
     nextPage();
     nextStep();
-    console.log(cvValues);
   };
   // Flex-wrap: wrap;
   return (
