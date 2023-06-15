@@ -26,7 +26,11 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  referencesData: ReferencesObj[];
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 const References: FC<Props> = ({
   nextPage,
@@ -34,6 +38,7 @@ const References: FC<Props> = ({
   nextStep,
   prevStep,
   cvValues,
+  referencesData,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -69,7 +74,6 @@ const References: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { referencesInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -84,19 +88,13 @@ const References: FC<Props> = ({
       return updatedShowFields;
     });
 
-    const updatedReferecnesInfo = [...referencesInfo];
+    const updatedReferecnesInfo: ReferencesObj[] = [...referencesData];
     const index = referencesCards.findIndex((card) => card.id === cardId);
     updatedReferecnesInfo[index] = {
       ...updatedReferecnesInfo[index],
       ...referencesCards[index],
     };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      referencesInfo: updatedReferecnesInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('referencesInfo', updatedReferecnesInfo);
   };
 
   const handleRemove = (cardId: string): void => {
