@@ -25,8 +25,13 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
+  educationData: EducationInfoObj[];
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
   cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  // onCvValuesChange: (newCvValues: CVInfoObj) => void;
 }
 const Education: FC<Props> = ({
   nextPage,
@@ -34,6 +39,7 @@ const Education: FC<Props> = ({
   nextStep,
   prevStep,
   cvValues,
+  educationData,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -88,32 +94,64 @@ const Education: FC<Props> = ({
     }));
   };
 
-  const { educationInfo } = cvValues;
+  // const { educationInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [cardId]: true,
     }));
   };
+  // const handleDone = (cardId: string): void => {
+  //   setShowFields((prevShowFields) => {
+  //     const updatedShowFields = { ...prevShowFields };
+  //     updatedShowFields[cardId] = false;
+  //     return updatedShowFields;
+  //   });
+  //   const updatedEducationInfo = [...educationInfo];
+  //   const index = educationCards.findIndex((card) => card.id === cardId);
+  //   updatedEducationInfo[index] = {
+  //     ...updatedEducationInfo[index],
+  //     ...educationCards[index],
+  //   };
+
+  //   const newCvValues: CVInfoObj = {
+  //     ...cvValues,
+  //     educationInfo: updatedEducationInfo,
+  //   };
+
+  //   onCvValuesChange(newCvValues);
+  // };
   const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-    const updatedEducationInfo = [...educationInfo];
+    // const updatedEducationInfo: EducationInfoObj[] = educationInfo.map(
+    //   (card) => ({ ...card }),
+    // );
+    // const index = educationCards.findIndex((card) => card.id === cardId);
+    // updatedEducationInfo[index] = {
+    //   ...updatedEducationInfo[index],
+    //   ...educationCards[index],
+    // };
+
+    const updatedEducationInfo: EducationInfoObj[] = [...educationData];
     const index = educationCards.findIndex((card) => card.id === cardId);
     updatedEducationInfo[index] = {
       ...updatedEducationInfo[index],
       ...educationCards[index],
     };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      educationInfo: updatedEducationInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    // const updatedEducationInfo: EducationInfoObj[] = educationCards.map(
+    //   (card) => {
+    //     if (card.id === cardId) {
+    //       return { ...card };
+    //     }
+    //     return card;
+    //   },
+    // );
+    console.log(updatedEducationInfo);
+    onCvValuesChange('educationInfo', updatedEducationInfo);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -140,6 +178,7 @@ const Education: FC<Props> = ({
   };
 
   const handleNext = (): void => {
+    console.log(cvValues);
     nextPage();
     nextStep();
   };

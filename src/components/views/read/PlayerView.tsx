@@ -22,7 +22,7 @@ import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
 import Skills from './cvForm/Skills';
 import WorkExperience from './cvForm/WorkExperience';
-import { CVInfoObj } from './cvForm/types';
+import { CVInfoObj, EducationInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
   // use translations for the text
@@ -97,17 +97,32 @@ const PlayerView: FC = () => {
     },
     referencesInfo: [],
   });
+  const directAssignSubkeys = [
+    'educationInfo',
+    'workInfo',
+    'skillsInfo',
+    'portfolioInfo',
+    'referencesInfo',
+  ];
+
   const handleCvValuesChange = (
     subkey: string,
     newSubkeyValues: Partial<CVInfoObj>,
   ): void => {
-    setCvValues((prevCvValues) => ({
-      ...prevCvValues,
-      [subkey]: {
-        ...prevCvValues[subkey],
-        ...newSubkeyValues,
-      },
-    }));
+    if (directAssignSubkeys.includes(subkey)) {
+      setCvValues((prevCvValues) => ({
+        ...prevCvValues,
+        [subkey]: newSubkeyValues,
+      }));
+    } else {
+      setCvValues((prevCvValues) => ({
+        ...prevCvValues,
+        [subkey]: {
+          ...prevCvValues[subkey],
+          ...newSubkeyValues,
+        },
+      }));
+    }
   };
 
   return (
@@ -125,17 +140,18 @@ const PlayerView: FC = () => {
             onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {/* {activeStep === 2 && (
+        {activeStep === 2 && (
           <Education
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
             cvValues={cvValues}
+            educationData={cvValues.educationInfo}
             onCvValuesChange={handleCvValuesChange}
           />
         )}
-        {activeStep === 3 && (
+        {/* {activeStep === 3 && (
           <WorkExperience
             nextPage={nextPage}
             prevPage={prevPage}
