@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';

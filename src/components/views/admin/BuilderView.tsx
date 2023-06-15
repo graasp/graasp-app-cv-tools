@@ -8,12 +8,16 @@ interface ListItemProps {
   cv: string;
 }
 const ListItem = ({ cv }: ListItemProps): JSX.Element => {
+  // todo: implement the logic
   const handleDownload = (): void => {
     const x = 'Downloaded';
+    // eslint-disable-next-line no-console
     console.log(x);
   };
+  // todo: implement the logic
   const handleView = (): void => {
     const x = 'Viewed';
+    // eslint-disable-next-line no-console
     console.log(x);
   };
   const [rating, setRating] = useState<number | null>(2);
