@@ -57,14 +57,19 @@ const Skills: FC<Props> = ({
       ...prevShowFields,
       [cardId]: false,
     }));
-
     const updatedSkillsInfo: SkillsObj[] = [...skillsData];
     const index = skillCards.findIndex((card) => card.title === cardId);
     updatedSkillsInfo[index] = {
       ...updatedSkillsInfo[index],
       ...skillCards[index],
     };
-    onCvValuesChange('skillsInfo', updatedSkillsInfo);
+    const updatedSkills = skillCards.map((card) => {
+      if (card.title !== cardId) {
+        return card;
+      }
+      return updatedSkillsInfo[index];
+    });
+    onCvValuesChange('skillsInfo', updatedSkills);
   };
 
   const removeSkill = (cardId: string, skillIndex: number): void => {
