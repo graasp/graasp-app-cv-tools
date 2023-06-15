@@ -31,15 +31,18 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  workData: WorkExperienceObj[];
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 const WorkExperience: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  workData,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -89,7 +92,6 @@ const WorkExperience: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { workInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -104,19 +106,13 @@ const WorkExperience: FC<Props> = ({
       return updatedShowFields;
     });
 
-    const updatedWorkInfo = [...workInfo];
+    const updatedWorkInfo: WorkExperienceObj[] = [...workData];
     const index = workCards.findIndex((card) => card.id === cardId);
     updatedWorkInfo[index] = {
       ...updatedWorkInfo[index],
       ...workCards[index],
     };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      workInfo: updatedWorkInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('workInfo', updatedWorkInfo);
   };
 
   const handleRemove = (cardId: string): void => {
