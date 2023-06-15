@@ -146,7 +146,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
             educationData={cvValues.educationInfo}
             onCvValuesChange={handleCvValuesChange}
           />
