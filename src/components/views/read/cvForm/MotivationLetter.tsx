@@ -11,34 +11,31 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  motivationInfo: MotivationObj;
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 const MotivationLetter: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  motivationInfo,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
-  const { motivationInfo } = cvValues;
   const handleChange = (field: keyof MotivationObj, value: string): void => {
     const newMotivationInfo: MotivationObj = {
       ...motivationInfo,
       [field]: value,
     };
 
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      motivationInfo: newMotivationInfo,
-    };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('motivationInfo', newMotivationInfo);
   };
 
   const handleNext = (): void => {
