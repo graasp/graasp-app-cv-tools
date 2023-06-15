@@ -1,4 +1,4 @@
-import React, { FC, KeyboardEvent, useState } from 'react';
+import { FC, KeyboardEvent, useState } from 'react';
 
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,15 +22,18 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  skillsData: SkillsObj[];
+  onCvValuesChange: (
+    subkey: string,
+    newSubkeyValues: Partial<CVInfoObj>,
+  ) => void;
 }
 const Skills: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  skillsData,
   onCvValuesChange,
 }) => {
   const handlePrev = (): void => {
@@ -43,7 +46,6 @@ const Skills: FC<Props> = ({
     { title: 'Other Skills', skills: [] },
   ]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
-  const { skillsInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -56,17 +58,13 @@ const Skills: FC<Props> = ({
       [cardId]: false,
     }));
 
+    const updatedSkillsInfo: SkillsObj[] = [...skillsData];
     const index = skillCards.findIndex((card) => card.title === cardId);
-    const updatedSkillsInfo = skillsInfo.map((info, i) =>
-      i === index ? { ...info, ...skillCards[index] } : info,
-    );
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      skillsInfo: { ...updatedSkillsInfo, ...skillCards },
+    updatedSkillsInfo[index] = {
+      ...updatedSkillsInfo[index],
+      ...skillCards[index],
     };
-
-    onCvValuesChange(newCvValues);
+    onCvValuesChange('skillsInfo', updatedSkillsInfo);
   };
 
   const removeSkill = (cardId: string, skillIndex: number): void => {
