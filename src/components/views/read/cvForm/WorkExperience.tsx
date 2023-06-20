@@ -111,7 +111,7 @@ const WorkExperience: FC<Props> = ({
       ...updatedWorkInfo[index],
       ...workCards[index],
     };
-    onCvValuesChange('workInfo', updatedWorkInfo);
+    // onCvValuesChange('workInfo', updatedWorkInfo);
   };
 
   const handleRemove = (cardId: string): void => {

@@ -35,7 +35,7 @@ const MotivationLetter: FC<Props> = ({
       [field]: value,
     };
 
-    onCvValuesChange('motivationInfo', newMotivationInfo);
+    // onCvValuesChange('motivationInfo', newMotivationInfo);
   };
 
   const handleNext = (): void => {

@@ -101,7 +101,7 @@ const Portfolio: FC<Props> = ({
       ...updatedPortfoliokInfo[index],
       ...portfolioCards[index],
     };
-    onCvValuesChange('portfolioInfo', updatedPortfoliokInfo);
+    // onCvValuesChange('portfolioInfo', updatedPortfoliokInfo);
   };
 
   const handleRemove = (cardId: string): void => {

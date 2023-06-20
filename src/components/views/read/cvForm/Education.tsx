@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,7 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { CVInfoObj, EducationInfoObj } from './types';
+import { EducationInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -26,10 +26,7 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   educationData: EducationInfoObj[];
-  onCvValuesChange: (
-    subkey: string,
-    newSubkeyValues: Partial<CVInfoObj>,
-  ) => void;
+  onCvValuesChange: (data: EducationInfoObj[]) => void;
 }
 const Education: FC<Props> = ({
   nextPage,
@@ -43,18 +40,11 @@ const Education: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [educationCards, setEducationCards] = useState<EducationInfoObj[]>([
-    {
-      id: 'card1',
-      degree: '',
-      institutionName: '',
-      major: '',
-      startDate: undefined,
-      endDate: undefined,
-      gpa: '',
-      country: '',
-    },
-  ]);
+  const [educationCards, setEducationCards] = useState(educationData);
+
+  useEffect(() => {
+    setEducationCards(educationData);
+  }, [educationData]);
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
   const degrees = [
@@ -71,7 +61,7 @@ const Education: FC<Props> = ({
     setEducationCards((prevCards) => [
       ...prevCards,
       {
-        id: newCardId,
+        id: `card${prevCards.length + 1}`,
         degree: '',
         institutionName: '',
         major: '',
@@ -102,14 +92,6 @@ const Education: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
-    const updatedEducationInfo: EducationInfoObj[] = [...educationData];
-    const index = educationCards.findIndex((card) => card.id === cardId);
-    updatedEducationInfo[index] = {
-      ...updatedEducationInfo[index],
-      ...educationCards[index],
-    };
-    onCvValuesChange('educationInfo', updatedEducationInfo);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -125,17 +107,15 @@ const Education: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setEducationCards((prevCards) => {
-      const index = educationCards.findIndex((card) => card.id === cardId);
-      const updatedCards = [...prevCards];
-      updatedCards[index] = {
-        ...updatedCards[index],
-        [key]: value,
-      };
+      const updatedCards = prevCards.map((card) =>
+        card.id === cardId ? { ...card, [key]: value } : card,
+      );
       return updatedCards;
     });
   };
 
   const handleNext = (): void => {
+    onCvValuesChange(educationCards);
     nextPage();
     nextStep();
   };
@@ -304,9 +284,6 @@ const Education: FC<Props> = ({
                 </>
               )}
               <CardActions>
-                <Button size="small" startIcon={<Add />} onClick={handleAdd}>
-                  Add
-                </Button>
                 {showFields[card.id] ? (
                   <Button
                     size="small"
@@ -336,6 +313,11 @@ const Education: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
+      </Box>
+      <Box>
+        <Button size="small" startIcon={<Add />} onClick={handleAdd}>
+          Add
+        </Button>
       </Box>
       <Button
         variant="contained"

@@ -69,7 +69,7 @@ const Skills: FC<Props> = ({
       }
       return updatedSkillsInfo[index];
     });
-    onCvValuesChange('skillsInfo', updatedSkills);
+    // onCvValuesChange('skillsInfo', updatedSkills);
   };
 
   const removeSkill = (cardId: string, skillIndex: number): void => {

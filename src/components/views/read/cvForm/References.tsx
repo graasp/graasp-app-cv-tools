@@ -94,7 +94,7 @@ const References: FC<Props> = ({
       ...updatedReferecnesInfo[index],
       ...referencesCards[index],
     };
-    onCvValuesChange('referencesInfo', updatedReferecnesInfo);
+    // onCvValuesChange('referencesInfo', updatedReferecnesInfo);
   };
 
   const handleRemove = (cardId: string): void => {

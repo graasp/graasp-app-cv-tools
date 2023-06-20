@@ -13,6 +13,7 @@ import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import { useAppDataContext } from '../../context/AppDataContext';
 import { useAppSettingContext } from '../../context/AppSettingContext';
 import { useMembersContext } from '../../context/MembersContext';
+import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
 import PersonalInfo from './cvForm/PersonalInfo';
@@ -119,22 +120,25 @@ const PlayerView: FC = () => {
             }
           />
         )}
-        {/* {activeStep === 2 && (
+        {activeStep === 2 && (
           <Education
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
             educationData={cvValues.educationInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('educationInfo', data)
+            }
           />
-        )} */}
+        )}
         {/* {activeStep === 3 && (
           <WorkExperience
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            cvValues{cvValues}
             workData={cvValues.workInfo}
             onCvValuesChange={handleCvValuesChange}
           />
