@@ -45,23 +45,27 @@ const Education: FC<Props> = ({
   useEffect(() => {
     setEducationCards(educationData);
   }, [educationData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
+
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
     { value: 'phd', label: 'PhD' },
   ];
+
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
     label: country.country,
   }));
+
   const handleAdd = (): void => {
     const newCardId = `card${educationCards.length + 1}`;
     setEducationCards((prevCards) => [
       ...prevCards,
       {
-        id: `card${prevCards.length + 1}`,
+        id: newCardId,
         degree: '',
         institutionName: '',
         major: '',
@@ -80,12 +84,14 @@ const Education: FC<Props> = ({
       [newCardId]: false,
     }));
   };
+
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [cardId]: true,
     }));
   };
+
   const handleDone = (cardId: string): void => {
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
