@@ -20,7 +20,9 @@ import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
 import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
+import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
+import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj, EducationInfoObj } from './cvForm/types';
 
@@ -96,6 +98,7 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
+    templateInfo: { title: '' },
   });
   const directAssignSubkeys = [
     'educationInfo',
@@ -105,24 +108,14 @@ const PlayerView: FC = () => {
     'referencesInfo',
   ];
 
-  const handleCvValuesChange = (
-    subkey: string,
-    newSubkeyValues: Partial<CVInfoObj>,
+  const handleCvValuesChange = <K extends keyof CVInfoObj>(
+    subkey: K,
+    newSubkeyValues: CVInfoObj[K],
   ): void => {
-    if (directAssignSubkeys.includes(subkey)) {
-      setCvValues((prevCvValues) => ({
-        ...prevCvValues,
-        [subkey]: newSubkeyValues,
-      }));
-    } else {
-      setCvValues((prevCvValues) => ({
-        ...prevCvValues,
-        [subkey]: {
-          ...prevCvValues[subkey],
-          ...newSubkeyValues,
-        },
-      }));
-    }
+    setCvValues((prevCvValues) => ({
+      ...prevCvValues,
+      [subkey]: newSubkeyValues,
+    }));
   };
 
   return (
@@ -137,10 +130,12 @@ const PlayerView: FC = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             personalInfo={cvValues.personalInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('personalInfo', data)
+            }
           />
         )}
-        {activeStep === 2 && (
+        {/* {activeStep === 2 && (
           <Education
             nextPage={nextPage}
             prevPage={prevPage}
@@ -149,8 +144,8 @@ const PlayerView: FC = () => {
             educationData={cvValues.educationInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
-        {activeStep === 3 && (
+        )} */}
+        {/* {activeStep === 3 && (
           <WorkExperience
             nextPage={nextPage}
             prevPage={prevPage}
@@ -159,8 +154,8 @@ const PlayerView: FC = () => {
             workData={cvValues.workInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
-        {activeStep === 4 && (
+        )} */}
+        {/* {activeStep === 4 && (
           <Skills
             nextPage={nextPage}
             prevPage={prevPage}
@@ -169,8 +164,8 @@ const PlayerView: FC = () => {
             skillsData={cvValues.skillsInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
-        {activeStep === 5 && (
+        )} */}
+        {/* {activeStep === 5 && (
           <Portfolio
             nextPage={nextPage}
             prevPage={prevPage}
@@ -179,8 +174,8 @@ const PlayerView: FC = () => {
             portfolioData={cvValues.portfolioInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
-        {activeStep === 6 && (
+        )} */}
+        {/* {activeStep === 6 && (
           <MotivationLetter
             nextPage={nextPage}
             prevPage={prevPage}
@@ -189,8 +184,8 @@ const PlayerView: FC = () => {
             motivationInfo={cvValues.motivationInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
-        {activeStep === 7 && (
+        )} */}
+        {/* {activeStep === 7 && (
           <References
             nextPage={nextPage}
             prevPage={prevPage}
@@ -200,24 +195,24 @@ const PlayerView: FC = () => {
             referencesData={cvValues.referencesInfo}
             onCvValuesChange={handleCvValuesChange}
           />
-        )}
+        )} */}
         {/* {activeStep === 8 && (
           <Template
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            values={cvValues}
-            handleValues={handleModify}
+            templateData={cvValues.templateInfo}
+            onCvValuesChange={handleCvValuesChange}
           />
         )} */}
-        {/* {activeStep === 8 && (
+        {/* {activeStep === 9 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}
             homeStep={homeStep}
             prevStep={prevStep}
-            values={cvValues}
+            cvValues={cvValues}
           />
         )} */}
       </FormLayout>
