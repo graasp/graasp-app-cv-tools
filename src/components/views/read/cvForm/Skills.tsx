@@ -1,4 +1,4 @@
-import { FC, KeyboardEvent, useState } from 'react';
+import { FC, KeyboardEvent, useEffect, useState } from 'react';
 
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { CVInfoObj, SkillsObj } from './types';
+import { SkillsObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -23,10 +23,7 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   skillsData: SkillsObj[];
-  onCvValuesChange: (
-    subkey: string,
-    newSubkeyValues: Partial<CVInfoObj>,
-  ) => void;
+  onCvValuesChange: (data: SkillsObj[]) => void;
 }
 const Skills: FC<Props> = ({
   nextPage,
@@ -40,12 +37,14 @@ const Skills: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  const [skillCards, setSkillCards] = useState<SkillsObj[]>([
-    { title: 'Tech Skills', skills: [] },
-    { title: 'Lang Skills', skills: [] },
-    { title: 'Other Skills', skills: [] },
-  ]);
+  const [skillCards, setSkillCards] = useState(skillsData);
+
+  useEffect(() => {
+    setSkillCards(skillsData);
+  }, [skillsData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -57,19 +56,6 @@ const Skills: FC<Props> = ({
       ...prevShowFields,
       [cardId]: false,
     }));
-    const updatedSkillsInfo: SkillsObj[] = [...skillsData];
-    const index = skillCards.findIndex((card) => card.title === cardId);
-    updatedSkillsInfo[index] = {
-      ...updatedSkillsInfo[index],
-      ...skillCards[index],
-    };
-    const updatedSkills = skillCards.map((card) => {
-      if (card.title !== cardId) {
-        return card;
-      }
-      return updatedSkillsInfo[index];
-    });
-    // onCvValuesChange('skillsInfo', updatedSkills);
   };
 
   const removeSkill = (cardId: string, skillIndex: number): void => {
@@ -110,6 +96,7 @@ const Skills: FC<Props> = ({
   };
 
   const handleNext = (): void => {
+    onCvValuesChange(skillCards);
     nextPage();
     nextStep();
   };

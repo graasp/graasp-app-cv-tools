@@ -17,6 +17,8 @@ import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
 import PersonalInfo from './cvForm/PersonalInfo';
+import Portfolio from './cvForm/Portfolio';
+import Skills from './cvForm/Skills';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
@@ -86,7 +88,11 @@ const PlayerView: FC = () => {
     },
     educationInfo: [],
     workInfo: [],
-    skillsInfo: [],
+    skillsInfo: [
+      { title: 'Tech Skills', skills: [] },
+      { title: 'Lang Skills', skills: [] },
+      { title: 'Other Skills', skills: [] },
+    ],
     portfolioInfo: [],
     motivationInfo: {
       motivationLetter: '',
@@ -143,26 +149,31 @@ const PlayerView: FC = () => {
             onCvValuesChange={(data) => handleCvValuesChange('workInfo', data)}
           />
         )}
-        {/* {activeStep === 4 && (
+        {activeStep === 4 && (
           <Skills
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
             skillsData={cvValues.skillsInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('skillsInfo', data)
+            }
           />
-        )} */}
-        {/* {activeStep === 5 && (
+        )}
+        {activeStep === 5 && (
           <Portfolio
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            cvValues={cvValues}
             portfolioData={cvValues.portfolioInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('portfolioInfo', data)
+            }
           />
-        )} */}
+        )}
         {/* {activeStep === 6 && (
           <MotivationLetter
             nextPage={nextPage}

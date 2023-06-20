@@ -282,9 +282,6 @@ const WorkExperience: FC<Props> = ({
                 </>
               )}
               <CardActions>
-                <Button size="small" startIcon={<Add />} onClick={handleAdd}>
-                  Add
-                </Button>
                 {showFields[card.id] ? (
                   <Button
                     size="small"

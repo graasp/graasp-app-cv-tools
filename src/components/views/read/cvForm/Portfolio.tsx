@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,35 +30,28 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   portfolioData: PortfolioObj[];
-  onCvValuesChange: (
-    subkey: string,
-    newSubkeyValues: Partial<CVInfoObj>,
-  ) => void;
+  cvValues: CVInfoObj;
+  onCvValuesChange: (data: PortfolioObj[]) => void;
 }
 const Portfolio: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
+  cvValues,
   portfolioData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
-  const [portfolioCards, setPortfolioCards] = useState<PortfolioObj[]>([
-    {
-      id: 'card1',
-      projectTitle: '',
-      projectDescription: '',
-      startDate: undefined,
-      endDate: undefined,
-      projectLink: '',
-    },
-  ]);
+  console.log(cvValues);
+  const [portfolioCards, setPortfolioCards] = useState(portfolioData);
+
+  useEffect(() => {
+    setPortfolioCards(portfolioData);
+  }, [portfolioData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
+
   const handleAdd = (): void => {
     const newCardId = `card${portfolioCards.length + 1}`;
     setPortfolioCards((prevCards) => [
@@ -94,14 +87,6 @@ const Portfolio: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
-    const updatedPortfoliokInfo: PortfolioObj[] = [...portfolioData];
-    const index = portfolioCards.findIndex((card) => card.id === cardId);
-    updatedPortfoliokInfo[index] = {
-      ...updatedPortfoliokInfo[index],
-      ...portfolioCards[index],
-    };
-    // onCvValuesChange('portfolioInfo', updatedPortfoliokInfo);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -117,17 +102,19 @@ const Portfolio: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setPortfolioCards((prevCards) => {
-      const index = portfolioCards.findIndex((card) => card.id === cardId);
-      const updatedCards = [...prevCards];
-      updatedCards[index] = {
-        ...updatedCards[index],
-        [key]: value,
-      };
+      const updatedCards = prevCards.map((card) =>
+        card.id === cardId ? { ...card, [key]: value } : card,
+      );
       return updatedCards;
     });
   };
 
+  const handlePrev = (): void => {
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
+    onCvValuesChange(portfolioCards);
     nextPage();
     nextStep();
   };
