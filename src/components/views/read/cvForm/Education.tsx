@@ -36,10 +36,6 @@ const Education: FC<Props> = ({
   educationData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
   const [educationCards, setEducationCards] = useState(educationData);
 
   useEffect(() => {
@@ -119,7 +115,10 @@ const Education: FC<Props> = ({
       return updatedCards;
     });
   };
-
+  const handlePrev = (): void => {
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
     onCvValuesChange(educationCards);
     nextPage();

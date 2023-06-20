@@ -17,6 +17,7 @@ import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
 import PersonalInfo from './cvForm/PersonalInfo';
+import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
@@ -132,17 +133,16 @@ const PlayerView: FC = () => {
             }
           />
         )}
-        {/* {activeStep === 3 && (
+        {activeStep === 3 && (
           <WorkExperience
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues{cvValues}
             workData={cvValues.workInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) => handleCvValuesChange('workInfo', data)}
           />
-        )} */}
+        )}
         {/* {activeStep === 4 && (
           <Skills
             nextPage={nextPage}
