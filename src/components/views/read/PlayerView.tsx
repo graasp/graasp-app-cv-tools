@@ -13,18 +13,10 @@ import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import { useAppDataContext } from '../../context/AppDataContext';
 import { useAppSettingContext } from '../../context/AppSettingContext';
 import { useMembersContext } from '../../context/MembersContext';
-import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
-import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
-import Portfolio from './cvForm/Portfolio';
-import References from './cvForm/References';
-import Review from './cvForm/Review';
-import Skills from './cvForm/Skills';
-import Template from './cvForm/Template';
-import WorkExperience from './cvForm/WorkExperience';
-import { CVInfoObj, EducationInfoObj } from './cvForm/types';
+import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
   // use translations for the text
@@ -98,15 +90,7 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
-    templateInfo: { title: '' },
   });
-  const directAssignSubkeys = [
-    'educationInfo',
-    'workInfo',
-    'skillsInfo',
-    'portfolioInfo',
-    'referencesInfo',
-  ];
 
   const handleCvValuesChange = <K extends keyof CVInfoObj>(
     subkey: K,

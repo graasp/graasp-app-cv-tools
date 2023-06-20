@@ -68,5 +68,4 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
-  [key: string]: any; // To access any object within this object.
 };
