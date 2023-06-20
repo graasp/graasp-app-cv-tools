@@ -1,10 +1,10 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
-import { CVInfoObj, MotivationObj } from './types';
+import { MotivationObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -12,10 +12,7 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   motivationInfo: MotivationObj;
-  onCvValuesChange: (
-    subkey: string,
-    newSubkeyValues: Partial<CVInfoObj>,
-  ) => void;
+  onCvValuesChange: (data: MotivationObj) => void;
 }
 const MotivationLetter: FC<Props> = ({
   nextPage,
@@ -25,20 +22,19 @@ const MotivationLetter: FC<Props> = ({
   motivationInfo,
   onCvValuesChange,
 }) => {
+  const [motivationInfoState, setMotivationInfoState] =
+    useState(motivationInfo);
+
+  useEffect(() => {
+    setMotivationInfoState(motivationInfo);
+  }, [motivationInfo]);
+
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
-  const handleChange = (field: keyof MotivationObj, value: string): void => {
-    const newMotivationInfo: MotivationObj = {
-      ...motivationInfo,
-      [field]: value,
-    };
-
-    // onCvValuesChange('motivationInfo', newMotivationInfo);
-  };
-
   const handleNext = (): void => {
+    onCvValuesChange(motivationInfoState);
     nextPage();
     nextStep();
   };
@@ -53,9 +49,12 @@ const MotivationLetter: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={motivationInfo.motivationLetter || ''}
+                value={motivationInfoState.motivationLetter || ''}
                 onChange={(e) =>
-                  handleChange('motivationLetter', e.target.value)
+                  setMotivationInfoState((prev) => ({
+                    ...prev,
+                    motivationLetter: e.target.value,
+                  }))
                 }
                 multiline
                 required

@@ -22,7 +22,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { CVInfoObj, PortfolioObj } from './types';
+import { PortfolioObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -30,7 +30,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   portfolioData: PortfolioObj[];
-  cvValues: CVInfoObj;
   onCvValuesChange: (data: PortfolioObj[]) => void;
 }
 const Portfolio: FC<Props> = ({
@@ -38,11 +37,9 @@ const Portfolio: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
   portfolioData,
   onCvValuesChange,
 }) => {
-  console.log(cvValues);
   const [portfolioCards, setPortfolioCards] = useState(portfolioData);
 
   useEffect(() => {
@@ -276,6 +273,11 @@ const Portfolio: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
+      </Box>
+      <Box>
+        <Button size="small" startIcon={<Add />} onClick={handleAdd}>
+          Add
+        </Button>
       </Box>
       <Button
         variant="contained"

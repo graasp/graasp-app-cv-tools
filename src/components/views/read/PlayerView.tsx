@@ -16,8 +16,10 @@ import { useMembersContext } from '../../context/MembersContext';
 import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
+import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
 import Portfolio from './cvForm/Portfolio';
+import References from './cvForm/References';
 import Skills from './cvForm/Skills';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
@@ -167,24 +169,25 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
             portfolioData={cvValues.portfolioInfo}
             onCvValuesChange={(data) =>
               handleCvValuesChange('portfolioInfo', data)
             }
           />
         )}
-        {/* {activeStep === 6 && (
+        {activeStep === 6 && (
           <MotivationLetter
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
             motivationInfo={cvValues.motivationInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('motivationInfo', data)
+            }
           />
-        )} */}
-        {/* {activeStep === 7 && (
+        )}
+        {activeStep === 7 && (
           <References
             nextPage={nextPage}
             prevPage={prevPage}
@@ -192,9 +195,11 @@ const PlayerView: FC = () => {
             prevStep={prevStep}
             cvValues={cvValues}
             referencesData={cvValues.referencesInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('referencesInfo', data)
+            }
           />
-        )} */}
+        )}
         {/* {activeStep === 8 && (
           <Template
             nextPage={nextPage}
