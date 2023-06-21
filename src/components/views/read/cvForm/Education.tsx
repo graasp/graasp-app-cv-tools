@@ -18,7 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { EducationInfoObj } from './types';
+import { CVInfoObj, EducationInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -26,6 +26,8 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   educationData: EducationInfoObj[];
+  cvValues: CVInfoObj;
+  onPrevCvSection: (dataObj: CVInfoObj) => void;
   onCvValuesChange: (data: EducationInfoObj[]) => void;
 }
 const Education: FC<Props> = ({
@@ -33,6 +35,8 @@ const Education: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
+  cvValues,
+  onPrevCvSection,
   educationData,
   onCvValuesChange,
 }) => {
@@ -116,6 +120,7 @@ const Education: FC<Props> = ({
     });
   };
   const handlePrev = (): void => {
+    onPrevCvSection(cvValues);
     prevPage();
     prevStep();
   };
