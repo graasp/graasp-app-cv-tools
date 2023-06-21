@@ -115,6 +115,7 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
+    onCvValuesChange(workCards);
     prevPage();
     prevStep();
   };

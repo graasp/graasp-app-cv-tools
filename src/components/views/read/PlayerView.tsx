@@ -112,10 +112,6 @@ const PlayerView: FC = () => {
     }));
   };
 
-  const handleBackCvSections = (dataObj: CVInfoObj): void => {
-    setCvValues(dataObj);
-  };
-
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
       <FormLayout activeStep={activeStep} steps={steps}>
@@ -139,8 +135,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
-            onPrevCvSection={handleBackCvSections}
             educationData={cvValues.educationInfo}
             onCvValuesChange={(data) =>
               handleCvValuesChange('educationInfo', data)

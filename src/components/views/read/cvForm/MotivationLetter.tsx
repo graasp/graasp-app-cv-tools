@@ -30,6 +30,7 @@ const MotivationLetter: FC<Props> = ({
   }, [motivationInfo]);
 
   const handlePrev = (): void => {
+    onCvValuesChange(motivationInfoState);
     prevPage();
     prevStep();
   };

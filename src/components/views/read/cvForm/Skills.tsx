@@ -33,10 +33,6 @@ const Skills: FC<Props> = ({
   skillsData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
   const [skillCards, setSkillCards] = useState(skillsData);
 
   useEffect(() => {
@@ -95,6 +91,11 @@ const Skills: FC<Props> = ({
     }
   };
 
+  const handlePrev = (): void => {
+    onCvValuesChange(skillCards);
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
     onCvValuesChange(skillCards);
     nextPage();

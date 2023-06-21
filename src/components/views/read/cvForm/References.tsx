@@ -101,6 +101,7 @@ const References: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
+    onCvValuesChange(referencesCards);
     prevPage();
     prevStep();
   };
