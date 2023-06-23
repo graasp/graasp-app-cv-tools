@@ -177,16 +177,17 @@ const FirstTemplate: FC<Props> = ({
             >
               {item.startDate} - {item.endDate}
             </Text>
-            {/* <Text style={{ fontSize: '11px' }}>Degree: {item.degree}</Text> */}
             {Object.entries(item)
               .filter(
                 ([key]) =>
-                  key !== 'id' &&
-                  key !== 'major' &&
-                  key !== 'institutionName' &&
-                  key !== 'startDate' &&
-                  key !== 'endDate',
-              ) // Exclude the key "id"
+                  ![
+                    'id',
+                    'major',
+                    'institutionName',
+                    'startDate',
+                    'endDate',
+                  ].includes(key),
+              )
               .map(([key, value]) => (
                 <View key={key}>
                   <Text style={{ fontSize: '11px' }}>
