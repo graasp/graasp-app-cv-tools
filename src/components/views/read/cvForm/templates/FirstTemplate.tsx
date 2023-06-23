@@ -11,6 +11,7 @@ import {
   SkillsObj,
   WorkExperienceObj,
 } from '../types';
+import Divider from './Divider';
 
 interface Props {
   personalData: PersonalInfoObj;
@@ -158,15 +159,7 @@ const FirstTemplate: FC<Props> = ({
         }}
       >
         <Text>Education</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         {educationData.map((item, index) => (
           <View key={index} style={{ marginBottom: 10 }}>
             <Text style={{ fontSize: '13px' }}>
@@ -198,15 +191,7 @@ const FirstTemplate: FC<Props> = ({
           </View>
         ))}
         <Text>Employment History</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         {workData.map((item, index) => (
           <View key={index} style={{ marginBottom: 10 }}>
             {Object.entries(item)
@@ -221,15 +206,7 @@ const FirstTemplate: FC<Props> = ({
           </View>
         ))}
         <Text>Skills</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         {skillsData.map(
           (item, index) =>
             item.skills.length > 0 && (
@@ -247,15 +224,7 @@ const FirstTemplate: FC<Props> = ({
         )}
 
         <Text>Portfolio & Projects</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         {portfolioData.map((item, index) => (
           <View key={index} style={{ marginBottom: 10 }}>
             {Object.entries(item)
@@ -270,26 +239,10 @@ const FirstTemplate: FC<Props> = ({
           </View>
         ))}
         <Text>Self-Motivation</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         <Text>{motivationData.motivationLetter}</Text>
         <Text>References</Text>
-        <View
-          style={{
-            height: '1px',
-            marginTop: '13px',
-            marginBottom: '12px',
-            width: '100%',
-            backgroundColor: '#084c41',
-          }}
-        />
+        <Divider />
         {referencesData.map((item, index) => (
           <View key={index} style={{ marginBottom: 10 }}>
             {Object.entries(item)
