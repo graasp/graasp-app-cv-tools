@@ -18,14 +18,13 @@ import {
   Typography,
 } from '@mui/material';
 
-import { CVInfoObj, ReferencesObj } from './types';
+import { ReferencesObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
   referencesData: ReferencesObj[];
   onCvValuesChange: (data: ReferencesObj[]) => void;
 }
@@ -34,7 +33,6 @@ const References: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
   referencesData,
   onCvValuesChange,
 }) => {
@@ -106,7 +104,6 @@ const References: FC<Props> = ({
     prevStep();
   };
   const handleNext = (): void => {
-    console.log(cvValues);
     onCvValuesChange(referencesCards);
     nextPage();
     nextStep();

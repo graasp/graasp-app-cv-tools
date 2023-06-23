@@ -193,7 +193,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
             referencesData={cvValues.referencesInfo}
             onCvValuesChange={(data) =>
               handleCvValuesChange('referencesInfo', data)
