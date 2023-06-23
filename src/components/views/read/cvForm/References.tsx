@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
@@ -18,39 +18,32 @@ import {
   Typography,
 } from '@mui/material';
 
-import { CVInfoObj, ReferencesObj } from './types';
+import { ReferencesObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  referencesData: ReferencesObj[];
+  onCvValuesChange: (data: ReferencesObj[]) => void;
 }
 const References: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  referencesData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
-  const [referencesCards, setReferencesCards] = useState<ReferencesObj[]>([
-    {
-      id: 'card1',
-      referenceName: '',
-      referenceRelation: '',
-      referenceCompany: '',
-      referencePhoneNum: '',
-      referenceEmail: '',
-    },
-  ]);
+  const [referencesCards, setReferencesCards] = useState(referencesData);
+
+  useEffect(() => {
+    setReferencesCards(referencesData);
+  }, [referencesData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+
   const handleAdd = (): void => {
     const newCardId = `card${referencesCards.length + 1}`;
     setReferencesCards((prevCards) => [
@@ -69,7 +62,7 @@ const References: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { referencesInfo } = cvValues;
+
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -83,20 +76,6 @@ const References: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
-    const updatedReferecnesInfo = [...referencesInfo];
-    const index = referencesCards.findIndex((card) => card.id === cardId);
-    updatedReferecnesInfo[index] = {
-      ...updatedReferecnesInfo[index],
-      ...referencesCards[index],
-    };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      referencesInfo: updatedReferecnesInfo,
-    };
-
-    onCvValuesChange(newCvValues);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -112,21 +91,24 @@ const References: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setReferencesCards((prevCards) => {
-      const index = referencesCards.findIndex((card) => card.id === cardId);
-      const updatedCards = [...prevCards];
-      updatedCards[index] = {
-        ...updatedCards[index],
-        [key]: value,
-      };
+      const updatedCards = prevCards.map((card) =>
+        card.id === cardId ? { ...card, [key]: value } : card,
+      );
       return updatedCards;
     });
   };
 
+  const handlePrev = (): void => {
+    onCvValuesChange(referencesCards);
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
-    console.log(cvValues);
+    onCvValuesChange(referencesCards);
     nextPage();
     nextStep();
   };
+
   const mapping = [
     { key: 'referenceName', label: 'Reference Name' },
     { key: 'referenceRelation', label: 'Reference Relation' },
@@ -225,9 +207,6 @@ const References: FC<Props> = ({
                 </>
               )}
               <CardActions>
-                <Button size="small" startIcon={<Add />} onClick={handleAdd}>
-                  Add
-                </Button>
                 {showFields[card.id] ? (
                   <Button
                     size="small"
@@ -257,6 +236,11 @@ const References: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
+      </Box>
+      <Box>
+        <Button size="small" startIcon={<Add />} onClick={handleAdd}>
+          Add
+        </Button>
       </Box>
       <Button
         variant="contained"

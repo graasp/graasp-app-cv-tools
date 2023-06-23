@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,41 +22,33 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { CVInfoObj, PortfolioObj } from './types';
+import { PortfolioObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  portfolioData: PortfolioObj[];
+  onCvValuesChange: (data: PortfolioObj[]) => void;
 }
 const Portfolio: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  portfolioData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
-  const [portfolioCards, setPortfolioCards] = useState<PortfolioObj[]>([
-    {
-      id: 'card1',
-      projectTitle: '',
-      projectDescription: '',
-      startDate: undefined,
-      endDate: undefined,
-      projectLink: '',
-    },
-  ]);
+  const [portfolioCards, setPortfolioCards] = useState(portfolioData);
+
+  useEffect(() => {
+    setPortfolioCards(portfolioData);
+  }, [portfolioData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
-  // const [isPresent, setIsPresent] = useState(false);
+
   const handleAdd = (): void => {
     const newCardId = `card${portfolioCards.length + 1}`;
     setPortfolioCards((prevCards) => [
@@ -79,7 +71,6 @@ const Portfolio: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { portfolioInfo } = cvValues;
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -93,20 +84,6 @@ const Portfolio: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
-    const updatedPortfoliokInfo = [...portfolioInfo];
-    const index = portfolioCards.findIndex((card) => card.id === cardId);
-    updatedPortfoliokInfo[index] = {
-      ...updatedPortfoliokInfo[index],
-      ...portfolioCards[index],
-    };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      portfolioInfo: updatedPortfoliokInfo,
-    };
-
-    onCvValuesChange(newCvValues);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -122,17 +99,20 @@ const Portfolio: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setPortfolioCards((prevCards) => {
-      const index = portfolioCards.findIndex((card) => card.id === cardId);
-      const updatedCards = [...prevCards];
-      updatedCards[index] = {
-        ...updatedCards[index],
-        [key]: value,
-      };
+      const updatedCards = prevCards.map((card) =>
+        card.id === cardId ? { ...card, [key]: value } : card,
+      );
       return updatedCards;
     });
   };
 
+  const handlePrev = (): void => {
+    onCvValuesChange(portfolioCards);
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
+    onCvValuesChange(portfolioCards);
     nextPage();
     nextStep();
   };
@@ -262,9 +242,6 @@ const Portfolio: FC<Props> = ({
                 </>
               )}
               <CardActions>
-                <Button size="small" startIcon={<Add />} onClick={handleAdd}>
-                  Add
-                </Button>
                 {showFields[card.id] ? (
                   <Button
                     size="small"
@@ -294,6 +271,11 @@ const Portfolio: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
+      </Box>
+      <Box>
+        <Button size="small" startIcon={<Add />} onClick={handleAdd}>
+          Add
+        </Button>
       </Box>
       <Button
         variant="contained"

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { FC, RefObject, useRef, useState } from 'react';
+import { FC, RefObject, useEffect, useRef, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
@@ -12,15 +12,15 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { CVInfoObj, PersonalInfoObj } from './types';
+import { PersonalInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  personalInfo: PersonalInfoObj;
+  onCvValuesChange: (data: PersonalInfoObj) => void;
 }
 
 const PersonalInfo: FC<Props> = ({
@@ -28,9 +28,12 @@ const PersonalInfo: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  personalInfo,
   onCvValuesChange,
 }) => {
+  // Below is an example of translating the comps.
+  // const { t } = useTranslation();
+  // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
   const handlePrev = (): void => {
     prevPage();
     prevStep();
@@ -53,22 +56,12 @@ const PersonalInfo: FC<Props> = ({
     { key: 'personalLinks', label: 'Personal Links' },
     { key: 'personalPic', label: 'Personal Picture' },
   ];
-  const { personalInfo } = cvValues;
   const [birthDate, setBirthDate] = useState<string | undefined>();
-  const handleChange = (field: keyof PersonalInfoObj, value: string): void => {
-    const newPersonalInfo: PersonalInfoObj = {
-      ...personalInfo,
-      [field]: value,
-    };
+  const [personalInfoState, setPersonalInfoState] = useState(personalInfo);
 
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      personalInfo: newPersonalInfo,
-    };
-
-    onCvValuesChange(newCvValues);
-  };
-
+  useEffect(() => {
+    setPersonalInfoState(personalInfo);
+  }, [personalInfo]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
 
@@ -76,17 +69,10 @@ const PersonalInfo: FC<Props> = ({
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        const newPersonalInfo: PersonalInfoObj = {
-          ...personalInfo,
+        setPersonalInfoState((prev) => ({
+          ...prev,
           personalPic: reader.result as string,
-        };
-
-        const newCvValues: CVInfoObj = {
-          ...cvValues,
-          personalInfo: newPersonalInfo,
-        };
-
-        onCvValuesChange(newCvValues);
+        }));
       };
 
       reader.readAsDataURL(file);
@@ -100,9 +86,9 @@ const PersonalInfo: FC<Props> = ({
   };
 
   const handleNext = (): void => {
+    onCvValuesChange(personalInfoState);
     nextPage();
     nextStep();
-    console.log(cvValues);
   };
   // Flex-wrap: wrap;
   return (
@@ -115,8 +101,13 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfo.firstName || ''}
-                onChange={(e) => handleChange('firstName', e.target.value)}
+                value={personalInfoState.firstName || ''}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    firstName: e.target.value,
+                  }))
+                }
                 required
               />
             )}
@@ -124,15 +115,20 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfo.lastName || ''}
-                onChange={(e) => handleChange('lastName', e.target.value)}
+                value={personalInfoState.lastName || ''}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    lastName: e.target.value,
+                  }))
+                }
                 required
               />
             )}
             {m.key === 'birthDate' && (
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  label="Birth Date"
+                  label={m.label}
                   value={birthDate ? dayjs(birthDate) : undefined}
                   maxDate={dayjs()}
                   onChange={(date) => {
@@ -140,7 +136,10 @@ const PersonalInfo: FC<Props> = ({
                       ? dayjs(date).format('YYYY-MM-DD')
                       : '';
                     setBirthDate(formattedDate || undefined);
-                    handleChange('birthDate', formattedDate);
+                    setPersonalInfoState((prev) => ({
+                      ...prev,
+                      birthDate: formattedDate,
+                    }));
                   }}
                 />
               </LocalizationProvider>
@@ -150,8 +149,13 @@ const PersonalInfo: FC<Props> = ({
                 id="select-gender"
                 select
                 label="Gender"
-                value={personalInfo.gender}
-                onChange={(e) => handleChange('gender', e.target.value)}
+                value={personalInfoState.gender}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    gender: e.target.value,
+                  }))
+                }
                 required
                 helperText="Please select your gender"
                 margin="normal"
@@ -167,24 +171,53 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label="Email Address"
                 type="email"
-                value={personalInfo.emailAddress}
-                onChange={(e) => handleChange('emailAddress', e.target.value)}
+                value={personalInfoState.emailAddress}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    emailAddress: e.target.value,
+                  }))
+                }
                 required
               />
             )}
             {m.key === 'phoneNum' && (
               <PhoneInput
                 country="us"
-                value={personalInfo.phoneNum}
-                onChange={(phone: string) => handleChange('phoneNum', phone)}
+                value={personalInfoState.phoneNum}
+                onChange={(phone: string) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    phoneNum: phone,
+                  }))
+                }
+              />
+            )}
+            {m.key === 'address' && (
+              <TextField
+                label={m.label}
+                id={m.key}
+                value={personalInfoState.address || ''}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
+                required
               />
             )}
             {m.key === 'profileLinks' && (
               <TextField
                 type="url"
                 label="LinkedIn Link"
-                value={personalInfo.profileLinks}
-                onChange={(e) => handleChange('profileLinks', e.target.value)}
+                value={personalInfoState.profileLinks}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    profileLinks: e.target.value,
+                  }))
+                }
                 required
               />
             )}
@@ -192,8 +225,13 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 type="url"
                 label="Personal Web Link"
-                value={personalInfo.personalLink}
-                onChange={(e) => handleChange('personalLink', e.target.value)}
+                value={personalInfoState.personalLink}
+                onChange={(e) =>
+                  setPersonalInfoState((prev) => ({
+                    ...prev,
+                    personalLink: e.target.value,
+                  }))
+                }
                 required
               />
             )}
@@ -206,8 +244,8 @@ const PersonalInfo: FC<Props> = ({
                   ref={inputRef}
                   onChange={handleFileChange}
                 />
-                {personalInfo.personalPic && (
-                  <img src={personalInfo.personalPic} alt="Preview" />
+                {personalInfoState.personalPic && (
+                  <img src={personalInfoState.personalPic} alt="Preview" />
                 )}
                 <Button
                   variant="contained"

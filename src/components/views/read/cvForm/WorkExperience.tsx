@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,47 +24,38 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { CVInfoObj, WorkExperienceObj } from './types';
+import { WorkExperienceObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
-  onCvValuesChange: (newCvValues: CVInfoObj) => void;
+  workData: WorkExperienceObj[];
+  onCvValuesChange: (data: WorkExperienceObj[]) => void;
 }
 const WorkExperience: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  cvValues,
+  workData,
   onCvValuesChange,
 }) => {
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
-  const [workCards, setWorkCards] = useState<WorkExperienceObj[]>([
-    {
-      id: 'card1',
-      jobTitle: '',
-      institutionName: '',
-      startDate: undefined,
-      endDate: undefined,
-      country: '',
-      jobDetails: '',
-      keyAchievements: '',
-    },
-  ]);
+  const [workCards, setWorkCards] = useState(workData);
+
+  useEffect(() => {
+    setWorkCards(workData);
+  }, [workData]);
+
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
-  // const [isPresent, setIsPresent] = useState(false);
+
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
     label: country.country,
   }));
+
   const handleAdd = (): void => {
     const newCardId = `card${workCards.length + 1}`;
     setWorkCards((prevCards) => [
@@ -89,7 +80,7 @@ const WorkExperience: FC<Props> = ({
       [newCardId]: false,
     }));
   };
-  const { workInfo } = cvValues;
+
   const handleEdit = (cardId: string): void => {
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -103,20 +94,6 @@ const WorkExperience: FC<Props> = ({
       updatedShowFields[cardId] = false;
       return updatedShowFields;
     });
-
-    const updatedWorkInfo = [...workInfo];
-    const index = workCards.findIndex((card) => card.id === cardId);
-    updatedWorkInfo[index] = {
-      ...updatedWorkInfo[index],
-      ...workCards[index],
-    };
-
-    const newCvValues: CVInfoObj = {
-      ...cvValues,
-      workInfo: updatedWorkInfo,
-    };
-
-    onCvValuesChange(newCvValues);
   };
 
   const handleRemove = (cardId: string): void => {
@@ -130,17 +107,20 @@ const WorkExperience: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setWorkCards((prevCards) => {
-      const index = workCards.findIndex((card) => card.id === cardId);
-      const updatedCards = [...prevCards];
-      updatedCards[index] = {
-        ...updatedCards[index],
-        [key]: value,
-      };
+      const updatedCards = prevCards.map((card) =>
+        card.id === cardId ? { ...card, [key]: value } : card,
+      );
       return updatedCards;
     });
   };
 
+  const handlePrev = (): void => {
+    onCvValuesChange(workCards);
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
+    onCvValuesChange(workCards);
     nextPage();
     nextStep();
   };
@@ -303,9 +283,6 @@ const WorkExperience: FC<Props> = ({
                 </>
               )}
               <CardActions>
-                <Button size="small" startIcon={<Add />} onClick={handleAdd}>
-                  Add
-                </Button>
                 {showFields[card.id] ? (
                   <Button
                     size="small"
@@ -335,6 +312,11 @@ const WorkExperience: FC<Props> = ({
             </CardContent>
           </Card>
         ))}
+      </Box>
+      <Box>
+        <Button size="small" startIcon={<Add />} onClick={handleAdd}>
+          Add
+        </Button>
       </Box>
       <Button
         variant="contained"
