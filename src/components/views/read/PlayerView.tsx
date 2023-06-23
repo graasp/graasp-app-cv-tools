@@ -20,7 +20,9 @@ import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
 import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
+import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
+import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
@@ -100,6 +102,7 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
+    templateInfo: [{ id: 1, title: 'professional template', selected: false }],
   });
 
   const handleCvValuesChange = <K extends keyof CVInfoObj>(
@@ -199,17 +202,20 @@ const PlayerView: FC = () => {
             }
           />
         )}
-        {/* {activeStep === 8 && (
+        {activeStep === 8 && (
           <Template
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            cvValues={cvValues}
             templateData={cvValues.templateInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('templateInfo', data)
+            }
           />
-        )} */}
-        {/* {activeStep === 9 && (
+        )}
+        {activeStep === 9 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}
@@ -217,7 +223,7 @@ const PlayerView: FC = () => {
             prevStep={prevStep}
             cvValues={cvValues}
           />
-        )} */}
+        )}
       </FormLayout>
     </Box>
   );

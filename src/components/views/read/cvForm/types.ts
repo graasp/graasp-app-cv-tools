@@ -60,6 +60,12 @@ export type ReferencesObj = {
   referenceEmail: string;
 };
 
+export type TemplateObj = {
+  id: number;
+  title: string;
+  selected: boolean;
+};
+
 export type CVInfoObj = {
   personalInfo: PersonalInfoObj;
   educationInfo: EducationInfoObj[];
@@ -68,4 +74,5 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
+  templateInfo: TemplateObj[];
 };
