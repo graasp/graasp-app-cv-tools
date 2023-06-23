@@ -34,17 +34,7 @@ const Review: FC<Props> = ({
   const motivationData = cvValues.motivationInfo;
   const referencesData = cvValues.referencesInfo;
   const templateData = cvValues.templateInfo;
-  const professionalTemplate = (
-    <FirstTemplate
-      personalData={personalData}
-      educationData={educationData}
-      workData={workData}
-      skillsData={skillsData}
-      portfolioData={portfolioData}
-      motivationData={motivationData}
-      referencesData={referencesData}
-    />
-  );
+  const professionalTemplate = <FirstTemplate cvValues={cvValues} />;
   const handleDownload = async (): Promise<void> => {
     const blob = await pdf(professionalTemplate).toBlob();
 

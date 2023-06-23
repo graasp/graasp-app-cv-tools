@@ -123,15 +123,7 @@ const Template: FC<Props> = ({
             </Typography>
             {template.title === 'professional template' && (
               <PDFViewer showToolbar={false}>
-                <FirstTemplate
-                  personalData={personalData}
-                  educationData={educationData}
-                  workData={workData}
-                  skillsData={skillsData}
-                  portfolioData={portfolioData}
-                  motivationData={motivationData}
-                  referencesData={referencesData}
-                />
+                <FirstTemplate cvValues={cvValues} />
               </PDFViewer>
             )}
           </CardContent>
