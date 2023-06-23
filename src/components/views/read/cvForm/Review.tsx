@@ -34,19 +34,19 @@ const Review: FC<Props> = ({
   const motivationData = cvValues.motivationInfo;
   const referencesData = cvValues.referencesInfo;
   const templateData = cvValues.templateInfo;
-
+  const professionalTemplate = (
+    <FirstTemplate
+      personalData={personalData}
+      educationData={educationData}
+      workData={workData}
+      skillsData={skillsData}
+      portfolioData={portfolioData}
+      motivationData={motivationData}
+      referencesData={referencesData}
+    />
+  );
   const handleDownload = async (): Promise<void> => {
-    const blob = await pdf(
-      <FirstTemplate
-        personalData={personalData}
-        educationData={educationData}
-        workData={workData}
-        skillsData={skillsData}
-        portfolioData={portfolioData}
-        motivationData={motivationData}
-        referencesData={referencesData}
-      />,
-    ).toBlob();
+    const blob = await pdf(professionalTemplate).toBlob();
 
     saveAs(blob, 'generated-cv.pdf');
   };
@@ -59,7 +59,6 @@ const Review: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  console.log(cvValues);
   return (
     <Box>
       <Typography>Generated CV</Typography>
@@ -73,15 +72,7 @@ const Review: FC<Props> = ({
               }}
               showToolbar={false}
             >
-              <FirstTemplate
-                personalData={personalData}
-                educationData={educationData}
-                workData={workData}
-                skillsData={skillsData}
-                portfolioData={portfolioData}
-                motivationData={motivationData}
-                referencesData={referencesData}
-              />
+              {professionalTemplate}
             </PDFViewer>
           )}
       </Box>
