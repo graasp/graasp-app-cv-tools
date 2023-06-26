@@ -116,11 +116,6 @@ const Template: FC<Props> = ({
                 <template.component cvValues={cvValues} />
               </PDFViewer>
             )}
-            {/* {template.title === 'professional template' && (
-              <PDFViewer showToolbar={false}>
-                <FirstTemplate cvValues={cvValues} />
-              </PDFViewer>
-            )} */}
           </CardContent>
           <CardActions>
             <Button

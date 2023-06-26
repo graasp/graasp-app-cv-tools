@@ -1,18 +1,8 @@
-import { RecordOf } from 'immutable';
-
-import { FC, useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { Context, LocalContext } from '@graasp/apps-query-client';
+import { FC, useState } from 'react';
 
 import { Box } from '@mui/material';
 
-import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
-import { hooks } from '../../../config/queryClient';
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
-import { useAppDataContext } from '../../context/AppDataContext';
-import { useAppSettingContext } from '../../context/AppSettingContext';
-import { useMembersContext } from '../../context/MembersContext';
 import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
@@ -24,40 +14,9 @@ import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
 import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
-import FirstTemplate from './cvForm/templates/FirstTemplate';
-import { CVInfoObj, TemplateObj } from './cvForm/types';
+import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
-  // use translations for the text
-  const { t } = useTranslation();
-
-  // context describes the item context, i.e. has the item id, current member id (memberId),
-  // the language and current view (builder, player, ...), the current permission (admin, write, read)
-  const context: RecordOf<LocalContext> = useContext(Context);
-  const { data: appContext } = hooks.useAppContext();
-
-  // get the members having access to the space
-  const members = useMembersContext();
-
-  // get the appData array and a callback to post new appData
-  const { postAppData, appDataArray } = useAppDataContext();
-
-  // get the appData array and a callback to post new appSetting
-  const { patchAppSetting, postAppSetting, appSettingArray } =
-    useAppSettingContext();
-
-  const [settingValue, setSettingValue] = useState('');
-  const [settingName, setSettingName] = useState(MOCK_SETTING_KEY);
-
-  const handleAppSetting = (name: string, value: string): void => {
-    const mockSetting = appSettingArray.find((s) => s.name === name);
-
-    if (mockSetting) {
-      patchAppSetting({ data: { content: value }, id: mockSetting.id });
-    } else {
-      postAppSetting({ data: { content: value }, name });
-    }
-  };
   const [page, setPage] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
   const nextPage = (): void => setPage(page + 1);
