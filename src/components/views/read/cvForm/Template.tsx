@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, RefObject, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, RefObject, useRef, useState } from 'react';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
@@ -17,38 +17,38 @@ import {
 
 import { PDFViewer } from '@react-pdf/renderer';
 
-import { TemplateObj } from './types';
+import { TEMPLATES } from './Constants';
+import { CVInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  templateData: TemplateObj[];
-  onTemplateValuesChange: (data: TemplateObj[]) => void;
+  cvValues: CVInfoObj;
+  templateData: { [key: string]: string };
+  onCvValuesChange: (data: { [key: string]: string }) => void;
 }
 const Template: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
+  cvValues,
   templateData,
-  onTemplateValuesChange,
+  onCvValuesChange,
 }) => {
-  const [templates, setTemplates] = useState(templateData);
-  useEffect(() => {
-    setTemplates(templateData);
-  }, [templateData]);
-
-  const handleSelect = (templateId: number): void => {
-    const updatedTemplates = templates.map((template) =>
-      template.id === templateId
-        ? { ...template, selected: true }
-        : { ...template, selected: false },
-    );
-
-    setTemplates(updatedTemplates);
-    onTemplateValuesChange(updatedTemplates);
+  const handleSelect = (templateId: string): void => {
+    // const updatedTemplates = TEMPLATES.map((template) =>
+    //   template.id === templateId
+    //     ? { selectedTemplateId: templateId }
+    //     : { selectedTemplateId: '' },
+    // );
+    const selectedTemplate = {
+      ...templateData,
+      selectedTemplateId: templateId,
+    };
+    onCvValuesChange(selectedTemplate);
     nextPage();
     nextStep();
   };
@@ -102,17 +102,19 @@ const Template: FC<Props> = ({
 
   return (
     <Box>
-      {templates.map((template) => (
+      {TEMPLATES.map((template) => (
         <Card key={template.id}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
-              {template.title} - {template.id}
+              {template.name} - {template.id}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Select A Template
             </Typography>
             {template.component && (
-              <PDFViewer showToolbar={false}>{template.component}</PDFViewer>
+              <PDFViewer showToolbar={false}>
+                <template.component cvValues={cvValues} />
+              </PDFViewer>
             )}
             {/* {template.title === 'professional template' && (
               <PDFViewer showToolbar={false}>

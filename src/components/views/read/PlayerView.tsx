@@ -103,15 +103,8 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
+    templateInfo: { selectedTemplateId: '' },
   });
-  const [templateInfo, setTemplateInfo] = useState<TemplateObj[]>([
-    {
-      id: 1,
-      title: 'professional template',
-      component: <FirstTemplate cvValues={cvValues} />,
-      selected: false,
-    },
-  ]);
   const handleCvValuesChange = <K extends keyof CVInfoObj>(
     subkey: K,
     newSubkeyValues: CVInfoObj[K],
@@ -215,8 +208,11 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            templateData={templateInfo}
-            onTemplateValuesChange={(data) => setTemplateInfo(data)}
+            cvValues={cvValues}
+            templateData={cvValues.templateInfo}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('templateInfo', data)
+            }
           />
         )}
         {activeStep === 9 && (
@@ -226,7 +222,6 @@ const PlayerView: FC = () => {
             homeStep={homeStep}
             prevStep={prevStep}
             cvValues={cvValues}
-            templateInfo={templateInfo}
           />
         )}
       </FormLayout>

@@ -9,8 +9,9 @@ import { Box, Button, Typography } from '@mui/material';
 
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 
+import { TEMPLATES } from './Constants';
 import FirstTemplate from './templates/FirstTemplate';
-import { CVInfoObj, TemplateObj } from './types';
+import { CVInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -18,7 +19,6 @@ interface Props {
   homeStep: () => void;
   prevStep: () => void;
   cvValues: CVInfoObj;
-  templateInfo: TemplateObj[];
 }
 const Review: FC<Props> = ({
   nextPage,
@@ -26,9 +26,7 @@ const Review: FC<Props> = ({
   homeStep,
   prevStep,
   cvValues,
-  templateInfo,
 }) => {
-  const templateData = templateInfo;
   const professionalTemplate = <FirstTemplate cvValues={cvValues} />;
   const handleDownload = async (): Promise<void> => {
     const blob = await pdf(professionalTemplate).toBlob();
@@ -48,24 +46,18 @@ const Review: FC<Props> = ({
     <Box>
       <Typography>Generated CV</Typography>
       <Box justifyContent="center" display="flex">
-        {templateData.map(
-          (template) =>
-            template.selected === true && (
-              <React.Fragment key={template.id}>
-                {template.component && (
-                  <PDFViewer
-                    showToolbar={false}
-                    style={{
-                      minHeight: '75vh',
-                      minWidth: '50%',
-                    }}
-                  >
-                    {template.component}
-                  </PDFViewer>
-                )}
-              </React.Fragment>
-            ),
-        )}
+        {TEMPLATES.map((template) => (
+          <React.Fragment key={template.id}>
+            {template.component && (
+              <PDFViewer
+                showToolbar={false}
+                style={{ minHeight: '75vh', minWidth: '50%' }}
+              >
+                <template.component cvValues={cvValues} />
+              </PDFViewer>
+            )}
+          </React.Fragment>
+        ))}
       </Box>
       <Button
         variant="contained"

@@ -12,7 +12,7 @@ import {
 } from '../types';
 import Divider from './Divider';
 
-interface Props {
+export interface Props {
   cvValues: CVInfoObj;
 }
 

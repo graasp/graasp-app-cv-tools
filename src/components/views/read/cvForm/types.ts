@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
@@ -59,14 +61,14 @@ export type ReferencesObj = {
   referencePhoneNum: string;
   referenceEmail: string;
 };
-
-export type TemplateObj = {
-  id: number;
-  title: string;
-  component: React.ReactElement;
-  selected: boolean;
+export type ConstTemplateObj = {
+  id: string;
+  name: string;
+  component: React.FC<any>;
 };
-
+export type TemplateObj = {
+  [key: string]: string;
+};
 export type CVInfoObj = {
   personalInfo: PersonalInfoObj;
   educationInfo: EducationInfoObj[];
@@ -75,4 +77,5 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
+  templateInfo: TemplateObj;
 };
