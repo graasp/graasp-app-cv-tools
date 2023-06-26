@@ -27,7 +27,7 @@ interface Props {
   prevStep: () => void;
   templateData: TemplateObj[];
   cvValues: CVInfoObj;
-  onCvValuesChange: (data: TemplateObj[]) => void;
+  onTemplateValuesChange: (data: TemplateObj[]) => void;
 }
 const Template: FC<Props> = ({
   nextPage,
@@ -36,7 +36,7 @@ const Template: FC<Props> = ({
   prevStep,
   templateData,
   cvValues,
-  onCvValuesChange,
+  onTemplateValuesChange,
 }) => {
   const [templates, setTemplates] = useState(templateData);
   useEffect(() => {
@@ -51,7 +51,7 @@ const Template: FC<Props> = ({
     );
 
     setTemplates(updatedTemplates);
-    onCvValuesChange(updatedTemplates);
+    onTemplateValuesChange(updatedTemplates);
     nextPage();
     nextStep();
   };
@@ -103,13 +103,6 @@ const Template: FC<Props> = ({
     prevStep();
   };
 
-  const personalData = cvValues.personalInfo;
-  const educationData = cvValues.educationInfo;
-  const workData = cvValues.workInfo;
-  const skillsData = cvValues.skillsInfo;
-  const portfolioData = cvValues.portfolioInfo;
-  const motivationData = cvValues.motivationInfo;
-  const referencesData = cvValues.referencesInfo;
   return (
     <Box>
       {templates.map((template) => (
@@ -121,11 +114,14 @@ const Template: FC<Props> = ({
             <Typography variant="body2" color="text.secondary">
               Select A Template
             </Typography>
-            {template.title === 'professional template' && (
+            {template.component && (
+              <PDFViewer showToolbar={false}>{template.component}</PDFViewer>
+            )}
+            {/* {template.title === 'professional template' && (
               <PDFViewer showToolbar={false}>
                 <FirstTemplate cvValues={cvValues} />
               </PDFViewer>
-            )}
+            )} */}
           </CardContent>
           <CardActions>
             <Button

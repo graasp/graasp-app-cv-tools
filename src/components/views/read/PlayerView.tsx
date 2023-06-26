@@ -24,7 +24,8 @@ import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
 import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
-import { CVInfoObj } from './cvForm/types';
+import FirstTemplate from './cvForm/templates/FirstTemplate';
+import { CVInfoObj, TemplateObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
   // use translations for the text
@@ -102,9 +103,15 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
-    templateInfo: [{ id: 1, title: 'professional template', selected: false }],
   });
-
+  const [templateInfo, setTemplateInfo] = useState<TemplateObj[]>([
+    {
+      id: 1,
+      title: 'professional template',
+      component: <FirstTemplate cvValues={cvValues} />,
+      selected: false,
+    },
+  ]);
   const handleCvValuesChange = <K extends keyof CVInfoObj>(
     subkey: K,
     newSubkeyValues: CVInfoObj[K],
@@ -209,10 +216,8 @@ const PlayerView: FC = () => {
             nextStep={nextStep}
             prevStep={prevStep}
             cvValues={cvValues}
-            templateData={cvValues.templateInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('templateInfo', data)
-            }
+            templateData={templateInfo}
+            onTemplateValuesChange={(data) => setTemplateInfo(data)}
           />
         )}
         {activeStep === 9 && (
@@ -222,6 +227,7 @@ const PlayerView: FC = () => {
             homeStep={homeStep}
             prevStep={prevStep}
             cvValues={cvValues}
+            templateInfo={templateInfo}
           />
         )}
       </FormLayout>

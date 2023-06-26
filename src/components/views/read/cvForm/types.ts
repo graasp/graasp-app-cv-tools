@@ -63,6 +63,7 @@ export type ReferencesObj = {
 export type TemplateObj = {
   id: number;
   title: string;
+  component: React.ReactElement;
   selected: boolean;
 };
 
@@ -74,5 +75,4 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
-  templateInfo: TemplateObj[];
 };

@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -10,7 +10,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 
 import FirstTemplate from './templates/FirstTemplate';
-import { CVInfoObj } from './types';
+import { CVInfoObj, TemplateObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -18,6 +18,7 @@ interface Props {
   homeStep: () => void;
   prevStep: () => void;
   cvValues: CVInfoObj;
+  templateInfo: TemplateObj[];
 }
 const Review: FC<Props> = ({
   nextPage,
@@ -25,15 +26,9 @@ const Review: FC<Props> = ({
   homeStep,
   prevStep,
   cvValues,
+  templateInfo,
 }) => {
-  const personalData = cvValues.personalInfo;
-  const educationData = cvValues.educationInfo;
-  const workData = cvValues.workInfo;
-  const skillsData = cvValues.skillsInfo;
-  const portfolioData = cvValues.portfolioInfo;
-  const motivationData = cvValues.motivationInfo;
-  const referencesData = cvValues.referencesInfo;
-  const templateData = cvValues.templateInfo;
+  const templateData = templateInfo;
   const professionalTemplate = <FirstTemplate cvValues={cvValues} />;
   const handleDownload = async (): Promise<void> => {
     const blob = await pdf(professionalTemplate).toBlob();
@@ -53,18 +48,24 @@ const Review: FC<Props> = ({
     <Box>
       <Typography>Generated CV</Typography>
       <Box justifyContent="center" display="flex">
-        {templateData[0].selected === true &&
-          templateData[0].title === 'professional template' && (
-            <PDFViewer
-              style={{
-                minHeight: '75vh',
-                minWidth: '50%',
-              }}
-              showToolbar={false}
-            >
-              {professionalTemplate}
-            </PDFViewer>
-          )}
+        {templateData.map(
+          (template) =>
+            template.selected === true && (
+              <React.Fragment key={template.id}>
+                {template.component && (
+                  <PDFViewer
+                    showToolbar={false}
+                    style={{
+                      minHeight: '75vh',
+                      minWidth: '50%',
+                    }}
+                  >
+                    {template.component}
+                  </PDFViewer>
+                )}
+              </React.Fragment>
+            ),
+        )}
       </Box>
       <Button
         variant="contained"
