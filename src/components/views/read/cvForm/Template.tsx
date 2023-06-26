@@ -17,8 +17,7 @@ import {
 
 import { PDFViewer } from '@react-pdf/renderer';
 
-import FirstTemplate from './templates/FirstTemplate';
-import { CVInfoObj, TemplateObj } from './types';
+import { TemplateObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -26,7 +25,6 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   templateData: TemplateObj[];
-  cvValues: CVInfoObj;
   onTemplateValuesChange: (data: TemplateObj[]) => void;
 }
 const Template: FC<Props> = ({
@@ -35,7 +33,6 @@ const Template: FC<Props> = ({
   nextStep,
   prevStep,
   templateData,
-  cvValues,
   onTemplateValuesChange,
 }) => {
   const [templates, setTemplates] = useState(templateData);

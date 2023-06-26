@@ -215,7 +215,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
             templateData={templateInfo}
             onTemplateValuesChange={(data) => setTemplateInfo(data)}
           />
