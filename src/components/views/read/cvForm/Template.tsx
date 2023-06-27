@@ -18,6 +18,7 @@ import {
 
 import { PDFViewer } from '@react-pdf/renderer';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { TEMPLATES } from './constants';
 import { CVInfoObj, TemplateObj } from './types';
 
@@ -41,11 +42,27 @@ const Template: FC<Props> = ({
   templateData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const templateInfoObject = appDataArray.find(
+    (obj) => obj.type === 'templateInfo',
+  );
+  const handlePost = (newdata: TemplateObj): void => {
+    postAppData({ data: newdata, type: 'templateInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: TemplateObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
   const handleSelect = (templateId: string): void => {
     const selectedTemplate = {
       ...templateData,
       selectedTemplateId: templateId,
     };
+    // search in appdata so if we find the object of the same type 'templateInfo' patch its data by its id, otherwise just post the object
+    if (templateInfoObject) {
+      handlePatch(templateInfoObject, selectedTemplate);
+    } else {
+      handlePost(selectedTemplate);
+    }
     onCvValuesChange(selectedTemplate);
     nextPage();
     nextStep();

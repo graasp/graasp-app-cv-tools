@@ -34,8 +34,7 @@ const Skills: FC<Props> = ({
   skillsData,
   onCvValuesChange,
 }) => {
-  const { postAppData, patchAppData, deleteAppData, appDataArray } =
-    useAppDataContext();
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const skillsInfoObject = appDataArray.find(
     (obj) => obj.type === 'skillsInfo',
   );
@@ -180,7 +179,6 @@ const Skills: FC<Props> = ({
           </Card>
         ))}
       </Box>
-      <Typography>{JSON.stringify(appDataArray, null, 2)}</Typography>
       <Button
         variant="contained"
         color="primary"
