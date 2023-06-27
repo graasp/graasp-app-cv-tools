@@ -24,6 +24,7 @@ const PlayerView: FC = () => {
   const nextStep = (): void => setActiveStep(activeStep + 1);
   const prevStep = (): void => setActiveStep(activeStep - 1);
   const homeStep = (): void => setActiveStep(0);
+  const templateStep = (): void => setActiveStep(8);
   const steps = [
     'Home',
     'Personal Info',
@@ -73,12 +74,21 @@ const PlayerView: FC = () => {
       [subkey]: newSubkeyValues,
     }));
   };
-
+  const handleUploadCvValues = (data: CVInfoObj): void => {
+    setCvValues(data);
+  };
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
       <FormLayout activeStep={activeStep} steps={steps}>
         {/* We can also instead use Switch-Cases for the rendering process */}
-        {activeStep === 0 && <Home nextPage={nextPage} nextStep={nextStep} />}
+        {activeStep === 0 && (
+          <Home
+            nextPage={nextPage}
+            nextStep={nextStep}
+            templateStep={templateStep}
+            onCvValuesUpload={(cvData) => handleUploadCvValues(cvData)}
+          />
+        )}
         {activeStep === 1 && (
           <PersonalInfo
             nextPage={nextPage}
@@ -166,6 +176,7 @@ const PlayerView: FC = () => {
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
+            homeStep={homeStep}
             prevStep={prevStep}
             cvValues={cvValues}
             templateData={cvValues.templateInfo}

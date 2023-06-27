@@ -1,13 +1,30 @@
 import dayjs from 'dayjs';
 
-import { FC, Fragment, RefObject, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FC,
+  Fragment,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
+import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import {
+  Box,
+  Button,
+  IconButton,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -43,7 +60,6 @@ const PersonalInfo: FC<Props> = ({
     { value: 'male', label: 'Male' },
     { value: 'noIndicate', label: 'Do not Indicate' },
   ];
-  const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const mapping = [
     { key: 'firstName', label: 'First Name' },
     { key: 'lastName', label: 'Last Name' },
@@ -62,27 +78,57 @@ const PersonalInfo: FC<Props> = ({
   useEffect(() => {
     setPersonalInfoState(personalInfo);
   }, [personalInfo]);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files?.[0];
 
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setPersonalInfoState((prev) => ({
-          ...prev,
-          personalPic: reader.result as string,
-        }));
-      };
-
-      reader.readAsDataURL(file);
-    }
-  };
+  const inputRef: RefObject<HTMLInputElement> = useRef(null);
+  const [url, setUrl] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [visibility, setVisibility] = useState(false);
 
   const handleClick = (): void => {
     if (inputRef.current) {
+      inputRef.current.value = '';
       inputRef.current.click();
     }
+  };
+  const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { files } = e.target;
+    const file = files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        setUrl(dataUrl as string);
+        setUploadedFile(file);
+        setPersonalInfoState((prev) => ({
+          ...prev,
+          personalPic: dataUrl as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setUrl('');
+      setUploadedFile(null);
+      setPersonalInfoState((prev) => ({
+        ...prev,
+        personalPic: '',
+      }));
+    }
+  };
+
+  const handleFileRemove = (): void => {
+    setUrl('');
+    setUploadedFile(null);
+    setPersonalInfoState((prev) => ({
+      ...prev,
+      personalPic: '',
+    }));
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
+  const handleVisibility = (): void => {
+    setVisibility(!visibility);
   };
 
   const handleNext = (): void => {
@@ -237,16 +283,6 @@ const PersonalInfo: FC<Props> = ({
             )}
             {m.key === 'personalPic' && (
               <>
-                <input
-                  type="file"
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  ref={inputRef}
-                  onChange={handleFileChange}
-                />
-                {personalInfoState.personalPic && (
-                  <img src={personalInfoState.personalPic} alt="Preview" />
-                )}
                 <Button
                   variant="contained"
                   color="primary"
@@ -255,6 +291,25 @@ const PersonalInfo: FC<Props> = ({
                 >
                   Upload Image
                 </Button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  ref={inputRef}
+                  onChange={onChange}
+                />
+                {uploadedFile && (
+                  <Box display="flex" alignItems="center">
+                    <Typography>{uploadedFile.name}</Typography>
+                    <IconButton onClick={handleFileRemove} color="primary">
+                      <ClearIcon />
+                    </IconButton>
+                    <IconButton onClick={handleVisibility} color="primary">
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Box>
+                )}
+                {visibility && url && <img src={url} alt="Preview" />}
               </>
             )}
           </Fragment>
