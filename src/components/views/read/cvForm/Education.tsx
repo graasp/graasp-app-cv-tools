@@ -132,6 +132,7 @@ const Education: FC<Props> = ({
     );
     const educationToDelete = objToDelete.find((obj) => obj.data.id === cardId);
     handleDelete(educationToDelete);
+
     setEducationCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
     );

@@ -24,6 +24,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { WorkExperienceObj } from './types';
 
 interface Props {
@@ -42,6 +43,19 @@ const WorkExperience: FC<Props> = ({
   workData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const workInfoObject = appDataArray.find((obj) => obj.type === 'workInfo');
+  const handlePost = (newdata: WorkExperienceObj): void => {
+    postAppData({ data: newdata, type: 'workInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: WorkExperienceObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+  const handleDelete = (dataObj: any): void => {
+    deleteAppData({ id: dataObj.id });
+  };
+
   const [workCards, setWorkCards] = useState(workData);
 
   useEffect(() => {
@@ -89,6 +103,20 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    const workInfoCard = workCards.find((card) => card.id === cardId);
+    if (
+      workInfoObject &&
+      workInfoObject?.data.id === workInfoCard?.id &&
+      workInfoCard
+    ) {
+      handlePatch(workInfoObject, workInfoCard);
+    } else if (
+      (!workInfoObject && workInfoCard) ||
+      (workInfoObject?.data.id !== workInfoCard?.id && workInfoCard)
+    ) {
+      handlePost(workInfoCard);
+    }
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
@@ -97,6 +125,10 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
+    const objToDelete = appDataArray.filter((obj) => obj.type === 'workInfo');
+    const workToDelete = objToDelete.find((obj) => obj.data.id === cardId);
+    handleDelete(workToDelete);
+
     setWorkCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
