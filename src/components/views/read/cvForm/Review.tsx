@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -9,7 +9,7 @@ import { Box, Button, Typography } from '@mui/material';
 
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 
-import { TEMPLATES } from './Constants';
+import { TEMPLATES } from './constants';
 import FirstTemplate from './templates/FirstTemplate';
 import { CVInfoObj } from './types';
 
@@ -27,10 +27,13 @@ const Review: FC<Props> = ({
   prevStep,
   cvValues,
 }) => {
-  const professionalTemplate = <FirstTemplate cvValues={cvValues} />;
-  const handleDownload = async (): Promise<void> => {
-    const blob = await pdf(professionalTemplate).toBlob();
+  const { component: CvTemplate } = TEMPLATES.find(
+    (t) => t.id === cvValues.templateInfo.selectedTemplateId,
+  ) || { component: FirstTemplate };
+  const renderedTemplate = <CvTemplate cvValues={cvValues} />;
 
+  const handleDownload = async (): Promise<void> => {
+    const blob = await pdf(renderedTemplate).toBlob();
     saveAs(blob, 'generated-cv.pdf');
   };
 
@@ -46,18 +49,12 @@ const Review: FC<Props> = ({
     <Box>
       <Typography>Generated CV</Typography>
       <Box justifyContent="center" display="flex">
-        {TEMPLATES.map((template) => (
-          <React.Fragment key={template.id}>
-            {template.component && (
-              <PDFViewer
-                showToolbar={false}
-                style={{ minHeight: '75vh', minWidth: '50%' }}
-              >
-                <template.component cvValues={cvValues} />
-              </PDFViewer>
-            )}
-          </React.Fragment>
-        ))}
+        <PDFViewer
+          showToolbar={false}
+          style={{ minHeight: '75vh', minWidth: '50%' }}
+        >
+          {renderedTemplate}
+        </PDFViewer>
       </Box>
       <Button
         variant="contained"

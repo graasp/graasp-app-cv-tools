@@ -17,8 +17,8 @@ import {
 
 import { PDFViewer } from '@react-pdf/renderer';
 
-import { TEMPLATES } from './Constants';
-import { CVInfoObj } from './types';
+import { TEMPLATES } from './constants';
+import { CVInfoObj, TemplateObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -26,8 +26,8 @@ interface Props {
   nextStep: () => void;
   prevStep: () => void;
   cvValues: CVInfoObj;
-  templateData: { [key: string]: string };
-  onCvValuesChange: (data: { [key: string]: string }) => void;
+  templateData: TemplateObj;
+  onCvValuesChange: (data: TemplateObj) => void;
 }
 const Template: FC<Props> = ({
   nextPage,
@@ -39,11 +39,6 @@ const Template: FC<Props> = ({
   onCvValuesChange,
 }) => {
   const handleSelect = (templateId: string): void => {
-    // const updatedTemplates = TEMPLATES.map((template) =>
-    //   template.id === templateId
-    //     ? { selectedTemplateId: templateId }
-    //     : { selectedTemplateId: '' },
-    // );
     const selectedTemplate = {
       ...templateData,
       selectedTemplateId: templateId,
@@ -111,11 +106,9 @@ const Template: FC<Props> = ({
             <Typography variant="body2" color="text.secondary">
               Select A Template
             </Typography>
-            {template.component && (
-              <PDFViewer showToolbar={false}>
-                <template.component cvValues={cvValues} />
-              </PDFViewer>
-            )}
+            <PDFViewer showToolbar={false} style={{ width: '100%' }}>
+              <template.component cvValues={cvValues} />
+            </PDFViewer>
           </CardContent>
           <CardActions>
             <Button

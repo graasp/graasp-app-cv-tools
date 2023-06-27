@@ -1,22 +1,18 @@
-import { FC } from 'react';
-
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer';
 
 import {
-  CVInfoObj,
   EducationInfoObj,
   PortfolioObj,
   ReferencesObj,
   SkillsObj,
   WorkExperienceObj,
 } from '../types';
-import Divider from './Divider';
+import Divider from './layout/Divider';
+import { TemplateComponent, TemplateComponentProps } from './types';
 
-export interface Props {
-  cvValues: CVInfoObj;
-}
-
-const FirstTemplate: FC<Props> = ({ cvValues }) => {
+const FirstTemplate: TemplateComponent = ({
+  cvValues,
+}: TemplateComponentProps) => {
   const {
     personalInfo,
     educationInfo,

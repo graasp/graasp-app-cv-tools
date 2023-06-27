@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
@@ -61,15 +59,11 @@ export type ReferencesObj = {
   referencePhoneNum: string;
   referenceEmail: string;
 };
-export type ConstTemplateObj = {
-  id: string;
-  name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: React.FC<any>;
-};
+
 export type TemplateObj = {
-  [key: string]: string;
+  selectedTemplateId: string;
 };
+
 export type CVInfoObj = {
   personalInfo: PersonalInfoObj;
   educationInfo: EducationInfoObj[];
