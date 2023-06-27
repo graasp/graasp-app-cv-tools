@@ -8,7 +8,7 @@ const Divider: FC = () => (
       marginTop: '10px',
       width: '50%',
       height: '1px',
-      backgroundColor: '#FFF',
+      backgroundColor: '#000',
       textAlign: 'center',
     }}
   />

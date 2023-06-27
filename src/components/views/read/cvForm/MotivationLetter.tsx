@@ -4,6 +4,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj } from './types';
 
 interface Props {
@@ -22,6 +23,16 @@ const MotivationLetter: FC<Props> = ({
   motivationInfo,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const motivationObject = appDataArray.find(
+    (obj) => obj.type === 'motivationInfo',
+  );
+  const handlePost = (newdata: MotivationObj): void => {
+    postAppData({ data: newdata, type: 'motivationInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: MotivationObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
   const [motivationInfoState, setMotivationInfoState] =
     useState(motivationInfo);
 
@@ -35,6 +46,12 @@ const MotivationLetter: FC<Props> = ({
     prevStep();
   };
   const handleNext = (): void => {
+    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
+    if (motivationObject) {
+      handlePatch(motivationObject, motivationInfoState);
+    } else {
+      handlePost(motivationInfoState);
+    }
     onCvValuesChange(motivationInfoState);
     nextPage();
     nextStep();

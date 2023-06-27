@@ -29,6 +29,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { PersonalInfoObj } from './types';
 
 interface Props {
@@ -51,9 +52,15 @@ const PersonalInfo: FC<Props> = ({
   // Below is an example of translating the comps.
   // const { t } = useTranslation();
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const personalInfoObject = appDataArray.find(
+    (obj) => obj.type === 'personalInfo',
+  );
+  const handlePost = (newdata: PersonalInfoObj): void => {
+    postAppData({ data: newdata, type: 'personalInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: PersonalInfoObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
   };
   const genders = [
     { value: 'female', label: 'Female' },
@@ -131,7 +138,17 @@ const PersonalInfo: FC<Props> = ({
     setVisibility(!visibility);
   };
 
+  const handlePrev = (): void => {
+    prevPage();
+    prevStep();
+  };
   const handleNext = (): void => {
+    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
+    if (personalInfoObject) {
+      handlePatch(personalInfoObject, personalInfoState);
+    } else {
+      handlePost(personalInfoState);
+    }
     onCvValuesChange(personalInfoState);
     nextPage();
     nextStep();
