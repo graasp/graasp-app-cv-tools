@@ -1,18 +1,8 @@
-import { RecordOf } from 'immutable';
-
-import { FC, useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { Context, LocalContext } from '@graasp/apps-query-client';
+import { FC, useState } from 'react';
 
 import { Box } from '@mui/material';
 
-import { MOCK_SETTING_KEY } from '../../../config/appSettingTypes';
-import { hooks } from '../../../config/queryClient';
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
-import { useAppDataContext } from '../../context/AppDataContext';
-import { useAppSettingContext } from '../../context/AppSettingContext';
-import { useMembersContext } from '../../context/MembersContext';
 import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
@@ -20,41 +10,13 @@ import MotivationLetter from './cvForm/MotivationLetter';
 import PersonalInfo from './cvForm/PersonalInfo';
 import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
+import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
+import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
-  // use translations for the text
-  const { t } = useTranslation();
-
-  // context describes the item context, i.e. has the item id, current member id (memberId),
-  // the language and current view (builder, player, ...), the current permission (admin, write, read)
-  const context: RecordOf<LocalContext> = useContext(Context);
-  const { data: appContext } = hooks.useAppContext();
-
-  // get the members having access to the space
-  const members = useMembersContext();
-
-  // get the appData array and a callback to post new appData
-  const { postAppData, appDataArray } = useAppDataContext();
-
-  // get the appData array and a callback to post new appSetting
-  const { patchAppSetting, postAppSetting, appSettingArray } =
-    useAppSettingContext();
-
-  const [settingValue, setSettingValue] = useState('');
-  const [settingName, setSettingName] = useState(MOCK_SETTING_KEY);
-
-  const handleAppSetting = (name: string, value: string): void => {
-    const mockSetting = appSettingArray.find((s) => s.name === name);
-
-    if (mockSetting) {
-      patchAppSetting({ data: { content: value }, id: mockSetting.id });
-    } else {
-      postAppSetting({ data: { content: value }, name });
-    }
-  };
   const [page, setPage] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
   const nextPage = (): void => setPage(page + 1);
@@ -100,8 +62,8 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
+    templateInfo: { selectedTemplateId: '' },
   });
-
   const handleCvValuesChange = <K extends keyof CVInfoObj>(
     subkey: K,
     newSubkeyValues: CVInfoObj[K],
@@ -199,17 +161,20 @@ const PlayerView: FC = () => {
             }
           />
         )}
-        {/* {activeStep === 8 && (
+        {activeStep === 8 && (
           <Template
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
+            cvValues={cvValues}
             templateData={cvValues.templateInfo}
-            onCvValuesChange={handleCvValuesChange}
+            onCvValuesChange={(data) =>
+              handleCvValuesChange('templateInfo', data)
+            }
           />
-        )} */}
-        {/* {activeStep === 9 && (
+        )}
+        {activeStep === 9 && (
           <Review
             nextPage={nextPage}
             prevPage={prevPage}
@@ -217,7 +182,7 @@ const PlayerView: FC = () => {
             prevStep={prevStep}
             cvValues={cvValues}
           />
-        )} */}
+        )}
       </FormLayout>
     </Box>
   );

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { FC, RefObject, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, RefObject, useEffect, useRef, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
@@ -95,7 +95,7 @@ const PersonalInfo: FC<Props> = ({
     <Box>
       <Box>
         {mapping.map((m) => (
-          <>
+          <Fragment key={m.key}>
             <Typography>{m.label}</Typography>
             {m.key === 'firstName' && (
               <TextField
@@ -257,7 +257,7 @@ const PersonalInfo: FC<Props> = ({
                 </Button>
               </>
             )}
-          </>
+          </Fragment>
         ))}
       </Box>
       <Button
