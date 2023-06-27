@@ -226,7 +226,6 @@ const References: FC<Props> = ({
                 )}
                 <Button
                   size="small"
-                  disabled={referencesCards.length === 1}
                   startIcon={<DeleteIcon />}
                   onClick={() => handleRemove(card.id)}
                 >
