@@ -309,7 +309,6 @@ const Education: FC<Props> = ({
                 )}
                 <Button
                   size="small"
-                  disabled={educationCards.length === 1}
                   startIcon={<DeleteIcon />}
                   onClick={() => handleRemove(card.id)}
                 >
