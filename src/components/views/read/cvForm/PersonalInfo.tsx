@@ -131,29 +131,6 @@ const PersonalInfo: FC<Props> = ({
     setVisibility(!visibility);
   };
 
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-  //   const file = e.target.files?.[0];
-
-  //   if (file) {
-  //     const reader = new FileReader();
-
-  //     reader.onloadend = () => {
-  //       setPersonalInfoState((prev) => ({
-  //         ...prev,
-  //         personalPic: reader.result as string,
-  //       }));
-  //     };
-
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-
-  // const handleClick = (): void => {
-  //   if (inputRef.current) {
-  //     inputRef.current.click();
-  //   }
-  // };
-
   const handleNext = (): void => {
     onCvValuesChange(personalInfoState);
     nextPage();
