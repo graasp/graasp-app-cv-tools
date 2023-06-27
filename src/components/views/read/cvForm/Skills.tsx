@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { SkillsObj } from './types';
 
 interface Props {
@@ -33,6 +34,17 @@ const Skills: FC<Props> = ({
   skillsData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const skillsInfoObject = appDataArray.find(
+    (obj) => obj.type === 'skillsInfo',
+  );
+  const handlePost = (newdata: SkillsObj): void => {
+    postAppData({ data: newdata, type: 'skillsInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: SkillsObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
   const [skillCards, setSkillCards] = useState(skillsData);
 
   useEffect(() => {
@@ -48,6 +60,20 @@ const Skills: FC<Props> = ({
     }));
   };
   const handleDone = (cardId: string): void => {
+    const skillsInfoCard = skillCards.find((card) => card.title === cardId);
+    if (
+      skillsInfoObject &&
+      skillsInfoObject?.data.title === skillsInfoCard?.title &&
+      skillsInfoCard
+    ) {
+      handlePatch(skillsInfoObject, skillsInfoCard);
+    } else if (
+      (!skillsInfoObject && skillsInfoCard) ||
+      (skillsInfoObject?.data.title !== skillsInfoCard?.title && skillsInfoCard)
+    ) {
+      handlePost(skillsInfoCard);
+    }
+
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [cardId]: false,
@@ -154,6 +180,7 @@ const Skills: FC<Props> = ({
           </Card>
         ))}
       </Box>
+      <Typography>{JSON.stringify(appDataArray, null, 2)}</Typography>
       <Button
         variant="contained"
         color="primary"
