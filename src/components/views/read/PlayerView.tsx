@@ -176,6 +176,7 @@ const PlayerView: FC = () => {
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
+            homeStep={homeStep}
             prevStep={prevStep}
             cvValues={cvValues}
             templateData={cvValues.templateInfo}

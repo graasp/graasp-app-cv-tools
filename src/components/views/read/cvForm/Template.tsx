@@ -2,6 +2,7 @@ import { ChangeEvent, FC, RefObject, useRef, useState } from 'react';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
+import HomeIcon from '@mui/icons-material/Home';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -25,6 +26,7 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
+  homeStep: () => void;
   cvValues: CVInfoObj;
   templateData: TemplateObj;
   onCvValuesChange: (data: TemplateObj) => void;
@@ -34,6 +36,7 @@ const Template: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
+  homeStep,
   cvValues,
   templateData,
   onCvValuesChange,
@@ -136,6 +139,14 @@ const Template: FC<Props> = ({
         ref={inputRef}
         onChange={onChange}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<HomeIcon />}
+        onClick={() => homeStep()}
+      >
+        Main
+      </Button>
       <Button
         variant="contained"
         color="primary"
