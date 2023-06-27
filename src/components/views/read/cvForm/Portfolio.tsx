@@ -22,6 +22,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { PortfolioObj } from './types';
 
 interface Props {
@@ -40,6 +41,21 @@ const Portfolio: FC<Props> = ({
   portfolioData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const portoflioInfoObject = appDataArray.find(
+    (obj) => obj.type === 'portfolioInfo',
+  );
+  const handlePost = (newdata: PortfolioObj): void => {
+    postAppData({ data: newdata, type: 'portfolioInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: PortfolioObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+  const handleDelete = (dataObj: any): void => {
+    deleteAppData({ id: dataObj.id });
+  };
+
   const [portfolioCards, setPortfolioCards] = useState(portfolioData);
 
   useEffect(() => {
@@ -79,6 +95,21 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    const portfolioInfoCard = portfolioCards.find((card) => card.id === cardId);
+    if (
+      portoflioInfoObject &&
+      portoflioInfoObject?.data.id === portfolioInfoCard?.id &&
+      portfolioInfoCard
+    ) {
+      handlePatch(portoflioInfoObject, portfolioInfoCard);
+    } else if (
+      (!portoflioInfoObject && portfolioInfoCard) ||
+      (portoflioInfoObject?.data.id !== portfolioInfoCard?.id &&
+        portfolioInfoCard)
+    ) {
+      handlePost(portfolioInfoCard);
+    }
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
@@ -87,6 +118,12 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
+    const objToDelete = appDataArray.filter(
+      (obj) => obj.type === 'portfolioInfo',
+    );
+    const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
+    handleDelete(portfolioToDelete);
+
     setPortfolioCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
     );
