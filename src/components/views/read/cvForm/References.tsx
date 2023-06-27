@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { ReferencesObj } from './types';
 
 interface Props {
@@ -36,6 +37,21 @@ const References: FC<Props> = ({
   referencesData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const referencesInfoObject = appDataArray.find(
+    (obj) => obj.type === 'referencesInfo',
+  );
+  const handlePost = (newdata: ReferencesObj): void => {
+    postAppData({ data: newdata, type: 'referencesInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: ReferencesObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+  const handleDelete = (dataObj: any): void => {
+    deleteAppData({ id: dataObj.id });
+  };
+
   const [referencesCards, setReferencesCards] = useState(referencesData);
 
   useEffect(() => {
@@ -71,6 +87,23 @@ const References: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    const referencesInfoCard = referencesCards.find(
+      (card) => card.id === cardId,
+    );
+    if (
+      referencesInfoObject &&
+      referencesInfoObject?.data.id === referencesInfoCard?.id &&
+      referencesInfoCard
+    ) {
+      handlePatch(referencesInfoObject, referencesInfoCard);
+    } else if (
+      (!referencesInfoObject && referencesInfoCard) ||
+      (referencesInfoObject?.data.id !== referencesInfoCard?.id &&
+        referencesInfoCard)
+    ) {
+      handlePost(referencesInfoCard);
+    }
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
@@ -79,6 +112,12 @@ const References: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
+    const objToDelete = appDataArray.filter(
+      (obj) => obj.type === 'referencesInfo',
+    );
+    const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
+    handleDelete(portfolioToDelete);
+
     setReferencesCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
     );
