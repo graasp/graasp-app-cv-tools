@@ -33,8 +33,11 @@ const Review: FC<Props> = ({
   const renderedTemplate = <CvTemplate cvValues={cvValues} />;
 
   const handleDownload = async (): Promise<void> => {
-    const blob = await pdf(renderedTemplate).toBlob();
-    saveAs(blob, 'generated-cv.pdf');
+    const pdfBlob = await pdf(renderedTemplate).toBlob();
+    saveAs(pdfBlob, 'generated-cv.pdf');
+    const json = JSON.stringify(cvValues, null, 2); // Convert to JSON string with indentation
+    const jsonBlob = new Blob([json], { type: 'application/json' });
+    saveAs(jsonBlob, 'generated-cv.json');
   };
 
   const handleNext = (): void => {
