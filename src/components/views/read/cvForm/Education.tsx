@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { EducationInfoObj } from './types';
 
 interface Props {
@@ -36,6 +37,20 @@ const Education: FC<Props> = ({
   educationData,
   onCvValuesChange,
 }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const educationInfoObject = appDataArray.find(
+    (obj) => obj.type === 'educationInfo',
+  );
+  const handlePost = (newdata: EducationInfoObj): void => {
+    postAppData({ data: newdata, type: 'educationInfo' });
+  };
+  const handlePatch = (dataObj: any, newData: EducationInfoObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+  const handleDelete = (dataObj: any): void => {
+    deleteAppData({ id: dataObj.id });
+  };
   const [educationCards, setEducationCards] = useState(educationData);
 
   useEffect(() => {
@@ -89,6 +104,21 @@ const Education: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    const educationInfoCard = educationCards.find((card) => card.id === cardId);
+    if (
+      educationInfoObject &&
+      educationInfoObject?.data.id === educationInfoCard?.id &&
+      educationInfoCard
+    ) {
+      handlePatch(educationInfoObject, educationInfoCard);
+    } else if (
+      (!educationInfoObject && educationInfoCard) ||
+      (educationInfoObject?.data.id !== educationInfoCard?.id &&
+        educationInfoCard)
+    ) {
+      handlePost(educationInfoCard);
+    }
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
@@ -97,6 +127,11 @@ const Education: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
+    const objToDelete = appDataArray.filter(
+      (obj) => obj.type === 'educationInfo',
+    );
+    const educationToDelete = objToDelete.find((obj) => obj.data.id === cardId);
+    handleDelete(educationToDelete);
     setEducationCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
     );
