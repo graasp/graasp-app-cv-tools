@@ -302,7 +302,6 @@ const WorkExperience: FC<Props> = ({
                 )}
                 <Button
                   size="small"
-                  disabled={workCards.length === 1}
                   startIcon={<DeleteIcon />}
                   onClick={() => handleRemove(card.id)}
                 >
