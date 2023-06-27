@@ -215,13 +215,7 @@ const Portfolio: FC<Props> = ({
                                 ...prevShowFields,
                                 [card.id]: true,
                               }));
-                              // setIsPresent(e.target.checked);
-                              handleChange(
-                                card.id,
-                                'endDate',
-                                'OnGoing',
-                                // dayjs().format('YYYY-MM-DD'),
-                              );
+                              handleChange(card.id, 'endDate', 'OnGoing');
                             }}
                           />
                         </Box>
@@ -261,7 +255,6 @@ const Portfolio: FC<Props> = ({
                 )}
                 <Button
                   size="small"
-                  disabled={portfolioCards.length === 1}
                   startIcon={<DeleteIcon />}
                   onClick={() => handleRemove(card.id)}
                 >
