@@ -6,6 +6,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj } from './types';
 
@@ -27,10 +28,10 @@ const MotivationLetter: FC<Props> = ({
 }) => {
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const motivationObject = appDataArray.find(
-    (obj) => obj.type === 'motivationInfo',
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
   );
   const handlePost = (newdata: MotivationObj): void => {
-    postAppData({ data: newdata, type: 'motivationInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION });
   };
   const handlePatch = (dataObj: AppData, newData: MotivationObj): void => {
     patchAppData({ id: dataObj.id, data: newData });

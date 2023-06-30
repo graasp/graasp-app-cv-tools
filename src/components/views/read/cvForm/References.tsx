@@ -20,6 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { ReferencesObj } from './types';
 
@@ -42,10 +43,10 @@ const References: FC<Props> = ({
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
   const referencesInfoObject = appDataArray.find(
-    (obj) => obj.type === 'referencesInfo',
+    (obj) => obj.type === APP_DATA_TYPES.REFERENCES,
   );
   const handlePost = (newdata: ReferencesObj): void => {
-    postAppData({ data: newdata, type: 'referencesInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES });
   };
   const handlePatch = (dataObj: AppData, newData: ReferencesObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -115,7 +116,7 @@ const References: FC<Props> = ({
 
   const handleRemove = (cardId: string): void => {
     const objToDelete = appDataArray.filter(
-      (obj) => obj.type === 'referencesInfo',
+      (obj) => obj.type === APP_DATA_TYPES.REFERENCES,
     );
     const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
     if (typeof portfolioToDelete !== 'undefined') {

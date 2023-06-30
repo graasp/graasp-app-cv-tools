@@ -20,6 +20,7 @@ import {
 
 import { PDFViewer } from '@react-pdf/renderer';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { TEMPLATES } from './constants';
 import { CVInfoObj, TemplateObj } from './types';
@@ -46,10 +47,10 @@ const Template: FC<Props> = ({
 }) => {
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const templateInfoObject = appDataArray.find(
-    (obj) => obj.type === 'templateInfo',
+    (obj) => obj.type === APP_DATA_TYPES.TMEPLATE,
   );
   const handlePost = (newdata: TemplateObj): void => {
-    postAppData({ data: newdata, type: 'templateInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.TMEPLATE });
   };
   const handlePatch = (dataObj: AppData, newData: TemplateObj): void => {
     patchAppData({ id: dataObj.id, data: newData });

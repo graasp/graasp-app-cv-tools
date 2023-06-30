@@ -24,6 +24,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { PortfolioObj } from './types';
 
@@ -46,10 +47,10 @@ const Portfolio: FC<Props> = ({
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
   const portoflioInfoObject = appDataArray.find(
-    (obj) => obj.type === 'portfolioInfo',
+    (obj) => obj.type === APP_DATA_TYPES.PORTFOLIO,
   );
   const handlePost = (newdata: PortfolioObj): void => {
-    postAppData({ data: newdata, type: 'portfolioInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PORTFOLIO });
   };
   const handlePatch = (dataObj: AppData, newData: PortfolioObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -123,7 +124,7 @@ const Portfolio: FC<Props> = ({
 
   const handleRemove = (cardId: string): void => {
     const objToDelete = appDataArray.filter(
-      (obj) => obj.type === 'portfolioInfo',
+      (obj) => obj.type === APP_DATA_TYPES.PORTFOLIO,
     );
     const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
     if (typeof portfolioToDelete !== 'undefined') {

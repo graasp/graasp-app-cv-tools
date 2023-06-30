@@ -31,6 +31,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { PersonalInfoObj } from './types';
 
@@ -56,10 +57,10 @@ const PersonalInfo: FC<Props> = ({
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const personalInfoObject = appDataArray.find(
-    (obj) => obj.type === 'personalInfo',
+    (obj) => obj.type === APP_DATA_TYPES.PERSONALINFO,
   );
   const handlePost = (newdata: PersonalInfoObj): void => {
-    postAppData({ data: newdata, type: 'personalInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONALINFO });
   };
   const handlePatch = (dataObj: AppData, newData: PersonalInfoObj): void => {
     patchAppData({ id: dataObj.id, data: newData });

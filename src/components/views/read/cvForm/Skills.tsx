@@ -17,6 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { SkillsObj } from './types';
 
@@ -38,10 +39,10 @@ const Skills: FC<Props> = ({
 }) => {
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const skillsInfoObject = appDataArray.find(
-    (obj) => obj.type === 'skillsInfo',
+    (obj) => obj.type === APP_DATA_TYPES.SKILLS,
   );
   const handlePost = (newdata: SkillsObj): void => {
-    postAppData({ data: newdata, type: 'skillsInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
   };
   const handlePatch = (dataObj: AppData, newData: SkillsObj): void => {
     patchAppData({ id: dataObj.id, data: newData });

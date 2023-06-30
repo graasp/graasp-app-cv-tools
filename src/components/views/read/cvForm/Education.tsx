@@ -20,6 +20,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { EducationInfoObj } from './types';
 
@@ -42,10 +43,10 @@ const Education: FC<Props> = ({
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
   const educationInfoObject = appDataArray.find(
-    (obj) => obj.type === 'educationInfo',
+    (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
   );
   const handlePost = (newdata: EducationInfoObj): void => {
-    postAppData({ data: newdata, type: 'educationInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION });
   };
   const handlePatch = (dataObj: AppData, newData: EducationInfoObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -132,7 +133,7 @@ const Education: FC<Props> = ({
 
   const handleRemove = (cardId: string): void => {
     const objToDelete = appDataArray.filter(
-      (obj) => obj.type === 'educationInfo',
+      (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
     );
     const educationToDelete = objToDelete.find((obj) => obj.data.id === cardId);
     if (typeof educationToDelete !== 'undefined') {

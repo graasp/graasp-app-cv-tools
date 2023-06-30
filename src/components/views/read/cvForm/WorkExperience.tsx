@@ -26,6 +26,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { WorkExperienceObj } from './types';
 
@@ -47,9 +48,11 @@ const WorkExperience: FC<Props> = ({
 }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  const workInfoObject = appDataArray.find((obj) => obj.type === 'workInfo');
+  const workInfoObject = appDataArray.find(
+    (obj) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+  );
   const handlePost = (newdata: WorkExperienceObj): void => {
-    postAppData({ data: newdata, type: 'workInfo' });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.WORKEXPERIENCE });
   };
   const handlePatch = (dataObj: AppData, newData: WorkExperienceObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -125,7 +128,9 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    const objToDelete = appDataArray.filter((obj) => obj.type === 'workInfo');
+    const objToDelete = appDataArray.filter(
+      (obj) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+    );
     const workToDelete = objToDelete.find((obj) => obj.data.id === cardId);
     if (typeof workToDelete !== 'undefined') {
       handleDelete(workToDelete);
