@@ -138,7 +138,7 @@ const Skills: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A Skill
               </Typography>
-              {showFields[card.title] && (
+              {showFields[card.title] ? (
                 <Box className="skill">
                   <TextField
                     InputProps={{
@@ -155,6 +155,19 @@ const Skills: FC<Props> = ({
                     size="small"
                   />
                 </Box>
+              ) : (
+                Object.entries(card).map(([key, value]) => {
+                  if (key !== 'title' && value.length !== 0) {
+                    return (
+                      <Box key={key}>
+                        <Typography variant="subtitle2">
+                          {key}: {value}
+                        </Typography>
+                      </Box>
+                    );
+                  }
+                  return null;
+                })
               )}
               <CardActions>
                 {showFields[card.title] ? (

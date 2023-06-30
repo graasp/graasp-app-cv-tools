@@ -184,7 +184,7 @@ const Portfolio: FC<Props> = ({
               <Typography variant="body2" color="text.secondary">
                 Add A New Project To Your Portfolio
               </Typography>
-              {showFields[card.id] && (
+              {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
@@ -280,6 +280,23 @@ const Portfolio: FC<Props> = ({
                     </Box>
                   ))}
                 </>
+              ) : (
+                Object.entries(card).map(([key, value]) => {
+                  if (
+                    value !== '' &&
+                    typeof value !== 'undefined' &&
+                    mapping.some((item) => item.key === key)
+                  ) {
+                    return (
+                      <Box key={key}>
+                        <Typography variant="subtitle2">
+                          {key}: {value}
+                        </Typography>
+                      </Box>
+                    );
+                  }
+                  return null;
+                })
               )}
               <CardActions>
                 {showFields[card.id] ? (
