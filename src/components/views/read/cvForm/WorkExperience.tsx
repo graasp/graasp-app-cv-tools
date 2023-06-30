@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
+
+import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -50,10 +51,10 @@ const WorkExperience: FC<Props> = ({
   const handlePost = (newdata: WorkExperienceObj): void => {
     postAppData({ data: newdata, type: 'workInfo' });
   };
-  const handlePatch = (dataObj: any, newData: WorkExperienceObj): void => {
+  const handlePatch = (dataObj: AppData, newData: WorkExperienceObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const handleDelete = (dataObj: any): void => {
+  const handleDelete = (dataObj: AppData): void => {
     deleteAppData({ id: dataObj.id });
   };
 
@@ -100,6 +101,7 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
     const workInfoCard = workWithoutPresent.find((card) => card.id === cardId);
     if (
@@ -125,7 +127,9 @@ const WorkExperience: FC<Props> = ({
   const handleRemove = (cardId: string): void => {
     const objToDelete = appDataArray.filter((obj) => obj.type === 'workInfo');
     const workToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    handleDelete(workToDelete);
+    if (typeof workToDelete !== 'undefined') {
+      handleDelete(workToDelete);
+    }
 
     setWorkCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
     setShowFields((prevShowFields) => {
@@ -149,12 +153,14 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
     onCvValuesChange(workWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
     onCvValuesChange(workWithoutPresent);
     nextPage();

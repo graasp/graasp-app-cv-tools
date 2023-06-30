@@ -12,6 +12,8 @@ import {
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -59,7 +61,7 @@ const PersonalInfo: FC<Props> = ({
   const handlePost = (newdata: PersonalInfoObj): void => {
     postAppData({ data: newdata, type: 'personalInfo' });
   };
-  const handlePatch = (dataObj: any, newData: PersonalInfoObj): void => {
+  const handlePatch = (dataObj: AppData, newData: PersonalInfoObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
   const genders = [

@@ -1,5 +1,7 @@
 import { ChangeEvent, FC, RefObject, useRef, useState } from 'react';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
 import HomeIcon from '@mui/icons-material/Home';
@@ -49,7 +51,7 @@ const Template: FC<Props> = ({
   const handlePost = (newdata: TemplateObj): void => {
     postAppData({ data: newdata, type: 'templateInfo' });
   };
-  const handlePatch = (dataObj: any, newData: TemplateObj): void => {
+  const handlePatch = (dataObj: AppData, newData: TemplateObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
   const handleSelect = (templateId: string): void => {

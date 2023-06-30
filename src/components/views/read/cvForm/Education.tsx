@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
+
+import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -46,10 +47,10 @@ const Education: FC<Props> = ({
   const handlePost = (newdata: EducationInfoObj): void => {
     postAppData({ data: newdata, type: 'educationInfo' });
   };
-  const handlePatch = (dataObj: any, newData: EducationInfoObj): void => {
+  const handlePatch = (dataObj: AppData, newData: EducationInfoObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const handleDelete = (dataObj: any): void => {
+  const handleDelete = (dataObj: AppData): void => {
     deleteAppData({ id: dataObj.id });
   };
   const [educationCards, setEducationCards] = useState(educationData);
@@ -102,6 +103,7 @@ const Education: FC<Props> = ({
 
   const handleDone = (cardId: string): void => {
     const educationWithoutPresent = educationCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     const educationInfoCard = educationWithoutPresent.find(
@@ -133,7 +135,9 @@ const Education: FC<Props> = ({
       (obj) => obj.type === 'educationInfo',
     );
     const educationToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    handleDelete(educationToDelete);
+    if (typeof educationToDelete !== 'undefined') {
+      handleDelete(educationToDelete);
+    }
 
     setEducationCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
@@ -159,6 +163,7 @@ const Education: FC<Props> = ({
   };
   const handlePrev = (): void => {
     const educationWithoutPresent = educationCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     onCvValuesChange(educationWithoutPresent);
@@ -167,6 +172,7 @@ const Education: FC<Props> = ({
   };
   const handleNext = (): void => {
     const educationWithoutPresent = educationCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     onCvValuesChange(educationWithoutPresent);

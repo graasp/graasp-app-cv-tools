@@ -1,5 +1,7 @@
 import { FC, KeyboardEvent, useEffect, useState } from 'react';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -41,7 +43,7 @@ const Skills: FC<Props> = ({
   const handlePost = (newdata: SkillsObj): void => {
     postAppData({ data: newdata, type: 'skillsInfo' });
   };
-  const handlePatch = (dataObj: any, newData: SkillsObj): void => {
+  const handlePatch = (dataObj: AppData, newData: SkillsObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
   const [skillCards, setSkillCards] = useState(skillsData);

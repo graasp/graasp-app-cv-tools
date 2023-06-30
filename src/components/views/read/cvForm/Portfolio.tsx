@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 
 import { FC, useEffect, useState } from 'react';
+
+import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -50,10 +51,10 @@ const Portfolio: FC<Props> = ({
   const handlePost = (newdata: PortfolioObj): void => {
     postAppData({ data: newdata, type: 'portfolioInfo' });
   };
-  const handlePatch = (dataObj: any, newData: PortfolioObj): void => {
+  const handlePatch = (dataObj: AppData, newData: PortfolioObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const handleDelete = (dataObj: any): void => {
+  const handleDelete = (dataObj: AppData): void => {
     deleteAppData({ id: dataObj.id });
   };
 
@@ -93,6 +94,7 @@ const Portfolio: FC<Props> = ({
 
   const handleDone = (cardId: string): void => {
     const portfolioWithoutPresent = portfolioCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     const portfolioInfoCard = portfolioWithoutPresent.find(
@@ -124,7 +126,9 @@ const Portfolio: FC<Props> = ({
       (obj) => obj.type === 'portfolioInfo',
     );
     const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    handleDelete(portfolioToDelete);
+    if (typeof portfolioToDelete !== 'undefined') {
+      handleDelete(portfolioToDelete);
+    }
 
     setPortfolioCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),
@@ -151,6 +155,7 @@ const Portfolio: FC<Props> = ({
 
   const handlePrev = (): void => {
     const portfolioWithoutPresent = portfolioCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     onCvValuesChange(portfolioWithoutPresent);
@@ -159,6 +164,7 @@ const Portfolio: FC<Props> = ({
   };
   const handleNext = (): void => {
     const portfolioWithoutPresent = portfolioCards.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ present, ...rest }) => rest,
     );
     onCvValuesChange(portfolioWithoutPresent);

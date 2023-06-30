@@ -2,6 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneIcon from '@mui/icons-material/Done';
@@ -45,10 +47,10 @@ const References: FC<Props> = ({
   const handlePost = (newdata: ReferencesObj): void => {
     postAppData({ data: newdata, type: 'referencesInfo' });
   };
-  const handlePatch = (dataObj: any, newData: ReferencesObj): void => {
+  const handlePatch = (dataObj: AppData, newData: ReferencesObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const handleDelete = (dataObj: any): void => {
+  const handleDelete = (dataObj: AppData): void => {
     deleteAppData({ id: dataObj.id });
   };
 
@@ -116,7 +118,9 @@ const References: FC<Props> = ({
       (obj) => obj.type === 'referencesInfo',
     );
     const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    handleDelete(portfolioToDelete);
+    if (typeof portfolioToDelete !== 'undefined') {
+      handleDelete(portfolioToDelete);
+    }
 
     setReferencesCards((prevCards) =>
       prevCards.filter((card) => card.id !== cardId),

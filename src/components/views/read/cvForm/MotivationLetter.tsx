@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Box, Button, TextField, Typography } from '@mui/material';
@@ -30,7 +32,7 @@ const MotivationLetter: FC<Props> = ({
   const handlePost = (newdata: MotivationObj): void => {
     postAppData({ data: newdata, type: 'motivationInfo' });
   };
-  const handlePatch = (dataObj: any, newData: MotivationObj): void => {
+  const handlePatch = (dataObj: AppData, newData: MotivationObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
   const [motivationInfoState, setMotivationInfoState] =
