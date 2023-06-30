@@ -7,7 +7,8 @@ enum APP_DATA_TYPES {
   PORTFOLIO = 'portfolioInfo',
   MOTIVATION = 'motivationInfo',
   REFERENCES = 'referencesInfo',
-  TMEPLATE = 'templateInfo',
+  TEMPLATE = 'templateInfo',
+  SUBMISSION_STATUS = ' submissionStatus',
 }
 
 enum APP_DATA_VISIBILITY {

@@ -107,10 +107,10 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            educationData={cvValues.educationInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('educationInfo', data)
-            }
+            // educationData={cvValues.educationInfo}
+            // onCvValuesChange={(data) =>
+            //   handleCvValuesChange('educationInfo', data)
+            // }
           />
         )}
         {activeStep === 3 && (

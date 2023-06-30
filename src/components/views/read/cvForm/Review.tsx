@@ -42,6 +42,8 @@ const Review: FC<Props> = ({
 
   const handleNext = (): void => {
     nextPage();
+    // todo: save an app data that says the candidate is done!
+    // APP_DATA_TYPES.SUBMISSION_STATUS;
     homeStep();
   };
   const handlePrev = (): void => {

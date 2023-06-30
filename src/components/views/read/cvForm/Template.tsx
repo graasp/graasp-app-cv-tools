@@ -47,10 +47,10 @@ const Template: FC<Props> = ({
 }) => {
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const templateInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.TMEPLATE,
+    (obj) => obj.type === APP_DATA_TYPES.TEMPLATE,
   );
   const handlePost = (newdata: TemplateObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.TMEPLATE });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.TEMPLATE });
   };
   const handlePatch = (dataObj: AppData, newData: TemplateObj): void => {
     patchAppData({ id: dataObj.id, data: newData });

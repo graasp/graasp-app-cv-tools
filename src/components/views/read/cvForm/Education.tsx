@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { List } from 'immutable';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
@@ -29,36 +30,41 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  educationData: EducationInfoObj[];
-  onCvValuesChange: (data: EducationInfoObj[]) => void;
+  // educationData: EducationInfoObj[];
+  // onCvValuesChange: (data: EducationInfoObj[]) => void;
 }
 const Education: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  educationData,
-  onCvValuesChange,
+  // educationData,
+  // onCvValuesChange,
 }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  const educationInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
-  );
+  // const educationInfoObject = appDataArray.find(
+  //   (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
+  // );
+
   const handlePost = (newdata: EducationInfoObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION });
   };
-  const handlePatch = (dataObj: AppData, newData: EducationInfoObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
+  const handlePatch = (id: AppData['id'], newData: EducationInfoObj): void => {
+    patchAppData({ id, data: newData });
   };
-  const handleDelete = (dataObj: AppData): void => {
-    deleteAppData({ id: dataObj.id });
+  const handleDelete = (id: AppData['id']): void => {
+    deleteAppData({ id });
   };
-  const [educationCards, setEducationCards] = useState(educationData);
+  const [educationCards, setEducationCards] =
+    useState<List<AppData & { data: EducationInfoObj }>>();
 
   useEffect(() => {
+    const educationData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.EDUCATION,
+    ) as List<AppData & { data: EducationInfoObj }>;
     setEducationCards(educationData);
-  }, [educationData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
@@ -74,21 +80,31 @@ const Education: FC<Props> = ({
   }));
 
   const handleAdd = (): void => {
-    const newCardId = `card${educationCards.length + 1}`;
-    setEducationCards((prevCards) => [
-      ...prevCards,
-      {
-        id: newCardId,
-        degree: '',
-        institutionName: '',
-        major: '',
-        startDate: undefined,
-        endDate: undefined,
-        gpa: '',
-        country: '',
-        present: false,
-      },
-    ]);
+    const newCardId = `card${(educationCards?.size ?? 0) + 1}`;
+    handlePost({
+      id: newCardId,
+      degree: '',
+      institutionName: '',
+      major: '',
+      startDate: undefined,
+      endDate: undefined,
+      gpa: '',
+      country: '',
+      present: false,
+    });
+    // setEducationCards((prevCards) => [
+    //   ...prevCards,
+    //   {
+    //     degree: '',
+    //     institutionName: '',
+    //     major: '',
+    //     startDate: undefined,
+    //     endDate: undefined,
+    //     gpa: '',
+    //     country: '',
+    //     present: false,
+    //   },
+    // ]);
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -103,26 +119,30 @@ const Education: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const educationWithoutPresent = educationCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    const educationInfoCard = educationWithoutPresent.find(
+    // const educationWithoutPresent = educationCards.map(
+    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    //   ({ present, ...rest }) => rest,
+    // );
+    const educationInfoCard = educationCards?.find(
       (card) => card.id === cardId,
     );
-    if (
-      educationInfoObject &&
-      educationInfoObject?.data.id === educationInfoCard?.id &&
-      educationInfoCard
-    ) {
-      handlePatch(educationInfoObject, educationInfoCard);
-    } else if (
-      (!educationInfoObject && educationInfoCard) ||
-      (educationInfoObject?.data.id !== educationInfoCard?.id &&
-        educationInfoCard)
-    ) {
-      handlePost(educationInfoCard);
+    if (educationInfoCard) {
+      handlePatch(cardId, educationInfoCard.data);
     }
+
+    // if (
+    //   educationInfoObject &&
+    //   educationInfoObject?.data.id === educationInfoCard?.id &&
+    //   educationInfoCard
+    // ) {
+    //   handlePatch(educationInfoObject, educationInfoCard);
+    // } else if (
+    //   (!educationInfoObject && educationInfoCard) ||
+    //   (educationInfoObject?.data.id !== educationInfoCard?.id &&
+    //     educationInfoCard)
+    // ) {
+    //   handlePost(educationInfoCard);
+    // }
 
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
@@ -132,17 +152,11 @@ const Education: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    const objToDelete = appDataArray.filter(
-      (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
-    );
-    const educationToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    if (typeof educationToDelete !== 'undefined') {
-      handleDelete(educationToDelete);
-    }
+    handleDelete(cardId);
 
-    setEducationCards((prevCards) =>
-      prevCards.filter((card) => card.id !== cardId),
-    );
+    // setEducationCards((prevCards) =>
+    //   prevCards?.filter((card) => card.id !== cardId),
+    // );
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -156,27 +170,29 @@ const Education: FC<Props> = ({
     value: string | boolean,
   ): void => {
     setEducationCards((prevCards) => {
-      const updatedCards = prevCards.map((card) =>
-        card.id === cardId ? { ...card, [key]: value } : card,
+      const updatedCards = prevCards?.map((card) =>
+        card.id === cardId
+          ? { ...card, data: { ...card.data, [key]: value } }
+          : card,
       );
       return updatedCards;
     });
   };
   const handlePrev = (): void => {
-    const educationWithoutPresent = educationCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    onCvValuesChange(educationWithoutPresent);
+    // const educationWithoutPresent = educationCards.map(
+    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    //   ({ present, ...rest }) => rest,
+    // );
+    // onCvValuesChange(educationWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    const educationWithoutPresent = educationCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    onCvValuesChange(educationWithoutPresent);
+    // const educationWithoutPresent = educationCards.map(
+    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    //   ({ present, ...rest }) => rest,
+    // );
+    // onCvValuesChange(educationWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -193,7 +209,7 @@ const Education: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {educationCards.map((card) => (
+        {educationCards?.map((card) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
@@ -212,7 +228,7 @@ const Education: FC<Props> = ({
                           id="select-degree"
                           select
                           label="Degree"
-                          value={card.degree}
+                          value={card.data.degree}
                           onChange={(e) =>
                             handleChange(card.id, 'degree', e.target.value)
                           }
@@ -231,7 +247,7 @@ const Education: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.institutionName || ''}
+                          value={card.data.institutionName || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -246,7 +262,7 @@ const Education: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.major || ''}
+                          value={card.data.major || ''}
                           onChange={(e) =>
                             handleChange(card.id, 'major', e.target.value)
                           }
@@ -258,7 +274,9 @@ const Education: FC<Props> = ({
                           <DatePicker
                             label="From"
                             value={
-                              card.startDate ? dayjs(card.startDate) : undefined
+                              card.data.startDate
+                                ? dayjs(card.data.startDate)
+                                : undefined
                             }
                             maxDate={dayjs()}
                             onChange={(date) => {
@@ -275,10 +293,13 @@ const Education: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.present}
-                              minDate={dayjs(card.startDate)}
+                              disabled={card.data.endDate === 'OnGoing'}
+                              minDate={dayjs(card.data.startDate)}
                               value={
-                                card.endDate ? dayjs(card.endDate) : undefined
+                                card.data.endDate &&
+                                card.data.endDate !== 'OnGoing'
+                                  ? dayjs(card.data.endDate)
+                                  : undefined
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -292,14 +313,14 @@ const Education: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.present}
+                            checked={card.data.endDate === 'OnGoing'}
                             onChange={() => {
-                              handleChange(card.id, 'present', !card.present);
                               handleChange(
                                 card.id,
                                 'endDate',
-                                'OnGoing',
-                                // dayjs().format('YYYY-MM-DD'),
+                                card.data.endDate === 'OnGoing'
+                                  ? ''
+                                  : 'OnGoing',
                               );
                             }}
                           />
@@ -309,7 +330,7 @@ const Education: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.gpa || ''}
+                          value={card.data.gpa || ''}
                           onChange={(e) =>
                             handleChange(card.id, 'gpa', e.target.value)
                           }
@@ -321,7 +342,7 @@ const Education: FC<Props> = ({
                           id="select-country"
                           select
                           label="Country"
-                          value={card.country}
+                          value={card.data.country}
                           onChange={(e) =>
                             handleChange(card.id, 'country', e.target.value)
                           }
@@ -340,22 +361,24 @@ const Education: FC<Props> = ({
                   ))}
                 </>
               ) : (
-                Object.entries(card).map(([key, value]) => {
-                  if (
-                    value !== '' &&
-                    typeof value !== 'undefined' &&
-                    mapping.some((item) => item.key === key)
-                  ) {
-                    return (
-                      <Box key={key}>
-                        <Typography variant="subtitle2">
-                          {key}: {value}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return null;
-                })
+                Object.entries(card.data as EducationInfoObj).map(
+                  ([key, value]) => {
+                    if (
+                      value !== '' &&
+                      typeof value !== 'undefined' &&
+                      mapping.some((item) => item.key === key)
+                    ) {
+                      return (
+                        <Box key={key}>
+                          <Typography variant="subtitle2">
+                            {key}: {value}
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return null;
+                  },
+                )
               )}
               <CardActions>
                 {showFields[card.id] ? (
