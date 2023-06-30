@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
@@ -63,7 +64,6 @@ const WorkExperience: FC<Props> = ({
   }, [workData]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
-  const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -83,13 +83,10 @@ const WorkExperience: FC<Props> = ({
         country: '',
         jobDetails: '',
         keyAchievements: '',
+        present: false,
       },
     ]);
     setShowFields((prevShowFields) => ({
-      ...prevShowFields,
-      [newCardId]: false,
-    }));
-    setIsPresent((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
     }));
@@ -103,7 +100,8 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const workInfoCard = workCards.find((card) => card.id === cardId);
+    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
+    const workInfoCard = workWithoutPresent.find((card) => card.id === cardId);
     if (
       workInfoObject &&
       workInfoObject?.data.id === workInfoCard?.id &&
@@ -137,7 +135,11 @@ const WorkExperience: FC<Props> = ({
     });
   };
 
-  const handleChange = (cardId: string, key: string, value: string): void => {
+  const handleChange = (
+    cardId: string,
+    key: string,
+    value: string | boolean,
+  ): void => {
     setWorkCards((prevCards) => {
       const updatedCards = prevCards.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
@@ -147,12 +149,14 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
-    onCvValuesChange(workCards);
+    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
+    onCvValuesChange(workWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(workCards);
+    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
+    onCvValuesChange(workWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -230,7 +234,7 @@ const WorkExperience: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={isPresent[card.id]}
+                              disabled={card.present}
                               minDate={dayjs(card.startDate)}
                               value={
                                 card.endDate ? dayjs(card.endDate) : undefined
@@ -247,13 +251,9 @@ const WorkExperience: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={isPresent[card.id]}
+                            checked={card.present}
                             onChange={() => {
-                              setIsPresent((prevShowFields) => ({
-                                ...prevShowFields,
-                                [card.id]: true,
-                              }));
-                              // setIsPresent(e.target.checked);
+                              handleChange(card.id, 'present', !card.present);
                               handleChange(
                                 card.id,
                                 'endDate',

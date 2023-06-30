@@ -20,6 +20,7 @@ export type EducationInfoObj = {
   endDate: string | undefined;
   gpa: string;
   country: string;
+  present?: boolean;
 };
 
 export type WorkExperienceObj = {
@@ -31,6 +32,7 @@ export type WorkExperienceObj = {
   country: string;
   jobDetails: string;
   keyAchievements: string;
+  present?: boolean;
 };
 
 export type SkillsObj = {
@@ -45,6 +47,7 @@ export type PortfolioObj = {
   startDate: string | undefined;
   endDate: string | undefined;
   projectLink: string;
+  present?: boolean;
 };
 
 export type MotivationObj = {

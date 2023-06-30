@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 
 import { FC, useEffect, useState } from 'react';
@@ -63,7 +64,6 @@ const Portfolio: FC<Props> = ({
   }, [portfolioData]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
-  const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
 
   const handleAdd = (): void => {
     const newCardId = `card${portfolioCards.length + 1}`;
@@ -76,13 +76,10 @@ const Portfolio: FC<Props> = ({
         startDate: undefined,
         endDate: undefined,
         projectLink: '',
+        present: false,
       },
     ]);
     setShowFields((prevShowFields) => ({
-      ...prevShowFields,
-      [newCardId]: false,
-    }));
-    setIsPresent((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
     }));
@@ -95,7 +92,12 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const portfolioInfoCard = portfolioCards.find((card) => card.id === cardId);
+    const portfolioWithoutPresent = portfolioCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    const portfolioInfoCard = portfolioWithoutPresent.find(
+      (card) => card.id === cardId,
+    );
     if (
       portoflioInfoObject &&
       portoflioInfoObject?.data.id === portfolioInfoCard?.id &&
@@ -134,7 +136,11 @@ const Portfolio: FC<Props> = ({
     });
   };
 
-  const handleChange = (cardId: string, key: string, value: string): void => {
+  const handleChange = (
+    cardId: string,
+    key: string,
+    value: string | boolean,
+  ): void => {
     setPortfolioCards((prevCards) => {
       const updatedCards = prevCards.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
@@ -144,12 +150,18 @@ const Portfolio: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
-    onCvValuesChange(portfolioCards);
+    const portfolioWithoutPresent = portfolioCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    onCvValuesChange(portfolioWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(portfolioCards);
+    const portfolioWithoutPresent = portfolioCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    onCvValuesChange(portfolioWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -229,7 +241,7 @@ const Portfolio: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={isPresent[card.id]}
+                              disabled={card.present}
                               minDate={dayjs(card.startDate)}
                               value={
                                 card.endDate ? dayjs(card.endDate) : undefined
@@ -246,12 +258,9 @@ const Portfolio: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={isPresent[card.id]}
+                            checked={card.present}
                             onChange={() => {
-                              setIsPresent((prevShowFields) => ({
-                                ...prevShowFields,
-                                [card.id]: true,
-                              }));
+                              handleChange(card.id, 'present', !card.present);
                               handleChange(card.id, 'endDate', 'OnGoing');
                             }}
                           />

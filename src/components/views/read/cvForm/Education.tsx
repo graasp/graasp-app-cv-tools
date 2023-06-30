@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import countries from 'iso-3166-1/dist/iso-3166';
 
@@ -58,7 +59,6 @@ const Education: FC<Props> = ({
   }, [educationData]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
-  const [isPresent, setIsPresent] = useState<{ [key: string]: boolean }>({});
 
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
@@ -84,13 +84,10 @@ const Education: FC<Props> = ({
         endDate: undefined,
         gpa: '',
         country: '',
+        present: false,
       },
     ]);
     setShowFields((prevShowFields) => ({
-      ...prevShowFields,
-      [newCardId]: false,
-    }));
-    setIsPresent((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
     }));
@@ -104,7 +101,12 @@ const Education: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const educationInfoCard = educationCards.find((card) => card.id === cardId);
+    const educationWithoutPresent = educationCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    const educationInfoCard = educationWithoutPresent.find(
+      (card) => card.id === cardId,
+    );
     if (
       educationInfoObject &&
       educationInfoObject?.data.id === educationInfoCard?.id &&
@@ -143,7 +145,11 @@ const Education: FC<Props> = ({
     });
   };
 
-  const handleChange = (cardId: string, key: string, value: string): void => {
+  const handleChange = (
+    cardId: string,
+    key: string,
+    value: string | boolean,
+  ): void => {
     setEducationCards((prevCards) => {
       const updatedCards = prevCards.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
@@ -152,12 +158,18 @@ const Education: FC<Props> = ({
     });
   };
   const handlePrev = (): void => {
-    onCvValuesChange(educationCards);
+    const educationWithoutPresent = educationCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    onCvValuesChange(educationWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(educationCards);
+    const educationWithoutPresent = educationCards.map(
+      ({ present, ...rest }) => rest,
+    );
+    onCvValuesChange(educationWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -256,7 +268,7 @@ const Education: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={isPresent[card.id]}
+                              disabled={card.present}
                               minDate={dayjs(card.startDate)}
                               value={
                                 card.endDate ? dayjs(card.endDate) : undefined
@@ -273,13 +285,9 @@ const Education: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={isPresent[card.id]}
+                            checked={card.present}
                             onChange={() => {
-                              setIsPresent((prevShowFields) => ({
-                                ...prevShowFields,
-                                [card.id]: true,
-                              }));
-                              // setIsPresent(e.target.checked);
+                              handleChange(card.id, 'present', !card.present);
                               handleChange(
                                 card.id,
                                 'endDate',
