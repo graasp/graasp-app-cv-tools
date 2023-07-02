@@ -30,22 +30,10 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  // educationData: EducationInfoObj[];
-  // onCvValuesChange: (data: EducationInfoObj[]) => void;
 }
-const Education: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  // educationData,
-  // onCvValuesChange,
-}) => {
+const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  // const educationInfoObject = appDataArray.find(
-  //   (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
-  // );
 
   const handlePost = (newdata: EducationInfoObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION });
@@ -92,19 +80,6 @@ const Education: FC<Props> = ({
       country: '',
       present: false,
     });
-    // setEducationCards((prevCards) => [
-    //   ...prevCards,
-    //   {
-    //     degree: '',
-    //     institutionName: '',
-    //     major: '',
-    //     startDate: undefined,
-    //     endDate: undefined,
-    //     gpa: '',
-    //     country: '',
-    //     present: false,
-    //   },
-    // ]);
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -119,30 +94,12 @@ const Education: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    // const educationWithoutPresent = educationCards.map(
-    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //   ({ present, ...rest }) => rest,
-    // );
     const educationInfoCard = educationCards?.find(
       (card) => card.id === cardId,
     );
     if (educationInfoCard) {
       handlePatch(cardId, educationInfoCard.data);
     }
-
-    // if (
-    //   educationInfoObject &&
-    //   educationInfoObject?.data.id === educationInfoCard?.id &&
-    //   educationInfoCard
-    // ) {
-    //   handlePatch(educationInfoObject, educationInfoCard);
-    // } else if (
-    //   (!educationInfoObject && educationInfoCard) ||
-    //   (educationInfoObject?.data.id !== educationInfoCard?.id &&
-    //     educationInfoCard)
-    // ) {
-    //   handlePost(educationInfoCard);
-    // }
 
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
@@ -154,9 +111,6 @@ const Education: FC<Props> = ({
   const handleRemove = (cardId: string): void => {
     handleDelete(cardId);
 
-    // setEducationCards((prevCards) =>
-    //   prevCards?.filter((card) => card.id !== cardId),
-    // );
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -179,20 +133,10 @@ const Education: FC<Props> = ({
     });
   };
   const handlePrev = (): void => {
-    // const educationWithoutPresent = educationCards.map(
-    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //   ({ present, ...rest }) => rest,
-    // );
-    // onCvValuesChange(educationWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    // const educationWithoutPresent = educationCards.map(
-    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //   ({ present, ...rest }) => rest,
-    // );
-    // onCvValuesChange(educationWithoutPresent);
     nextPage();
     nextStep();
   };
