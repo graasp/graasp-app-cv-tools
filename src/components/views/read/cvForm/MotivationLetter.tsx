@@ -4,7 +4,7 @@ import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
@@ -63,9 +63,17 @@ const MotivationLetter: FC<Props> = ({
   return (
     <Box>
       <Box>
+        <Typography sx={{ m: '0.5rem' }}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        </Typography>
         {mapping.map((m) => (
           <Box key={m.key}>
-            <Typography>{m.label}</Typography>
             {m.key === 'motivationLetter' && (
               <TextField
                 label={m.label}
@@ -79,27 +87,39 @@ const MotivationLetter: FC<Props> = ({
                 }
                 multiline
                 required
+                fullWidth
+                margin="normal"
               />
             )}
           </Box>
         ))}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };
