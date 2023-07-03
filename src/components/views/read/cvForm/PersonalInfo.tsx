@@ -199,7 +199,7 @@ const PersonalInfo: FC<Props> = ({
               />
             )}
             {m.key === 'birthDate' && (
-              <Box style={{ marginTop: '16px', marginBottom: '16px' }}>
+              <Box marginTop="16px" marginBottom="16px">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label={m.label}
@@ -224,7 +224,7 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 id="select-gender"
                 select
-                label="Gender"
+                label={m.label}
                 value={personalInfoState.gender}
                 onChange={(e) =>
                   setPersonalInfoState((prev) => ({
@@ -245,7 +245,7 @@ const PersonalInfo: FC<Props> = ({
             )}
             {m.key === 'emailAddress' && (
               <TextField
-                label="Email Address"
+                label={m.label}
                 type="email"
                 value={personalInfoState.emailAddress}
                 onChange={(e) =>
@@ -264,7 +264,7 @@ const PersonalInfo: FC<Props> = ({
                 required
                 fullWidth
                 margin="normal"
-                label="Phone Number"
+                label={m.label}
                 value={personalInfoState.phoneNum}
                 onChange={(phone: string) =>
                   setPersonalInfoState((prev) => ({
@@ -293,7 +293,7 @@ const PersonalInfo: FC<Props> = ({
             {m.key === 'profileLinks' && (
               <TextField
                 type="url"
-                label="LinkedIn Link"
+                label={m.label}
                 value={personalInfoState.profileLinks}
                 onChange={(e) =>
                   setPersonalInfoState((prev) => ({
@@ -309,7 +309,7 @@ const PersonalInfo: FC<Props> = ({
             {m.key === 'personalLinks' && (
               <TextField
                 type="url"
-                label="Personal Web Link"
+                label={m.label}
                 value={personalInfoState.personalLink}
                 onChange={(e) =>
                   setPersonalInfoState((prev) => ({

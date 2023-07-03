@@ -12,7 +12,14 @@ import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, Checkbox, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -153,31 +160,36 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add as many educations you would like to add,
+          you can also remove any education you would like to remove from your
+          application, modify the information by clicking on edit, fill up all
+          the required fields, and when done editing just click on done button.
+        </Typography>
         {educationCards?.map((card) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                Education
+                Education {card.id}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              {/* <Typography variant="body2" color="text.secondary">
                 Add A New Education
-              </Typography>
+              </Typography> */}
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
-                      <Typography>{m.label}</Typography>
                       {m.key === 'degree' && (
                         <TextField
                           id="select-degree"
                           select
-                          label="Degree"
+                          label={m.label}
                           value={card.data.degree}
                           onChange={(e) =>
                             handleChange(card.id, 'degree', e.target.value)
                           }
                           required
-                          helperText="Please select your degree"
+                          fullWidth
                           margin="normal"
                         >
                           {degrees.map((option) => (
@@ -200,6 +212,8 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'major' && (
@@ -211,29 +225,43 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             handleChange(card.id, 'major', e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'startDate' && (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="From"
-                            value={
-                              card.data.startDate
-                                ? dayjs(card.data.startDate)
-                                : undefined
-                            }
-                            maxDate={dayjs()}
-                            onChange={(date) => {
-                              const formattedDate = date
-                                ? dayjs(date).format('YYYY-MM-DD')
-                                : '';
-                              handleChange(card.id, 'startDate', formattedDate);
-                            }}
-                          />
-                        </LocalizationProvider>
+                        <Box marginTop="16px" marginBottom="16px">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="From"
+                              value={
+                                card.data.startDate
+                                  ? dayjs(card.data.startDate)
+                                  : undefined
+                              }
+                              maxDate={dayjs()}
+                              onChange={(date) => {
+                                const formattedDate = date
+                                  ? dayjs(date).format('YYYY-MM-DD')
+                                  : '';
+                                handleChange(
+                                  card.id,
+                                  'startDate',
+                                  formattedDate,
+                                );
+                              }}
+                              slotProps={{ textField: { fullWidth: true } }}
+                            />
+                          </LocalizationProvider>
+                        </Box>
                       )}
                       {m.key === 'endDate' && (
-                        <Box display="flex" alignItems="center">
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          marginTop="16px"
+                          marginBottom="16px"
+                        >
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
@@ -253,6 +281,7 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
+                              slotProps={{ textField: { fullWidth: true } }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -279,19 +308,21 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             handleChange(card.id, 'gpa', e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'country' && (
                         <TextField
                           id="select-country"
                           select
-                          label="Country"
+                          label={m.label}
                           value={card.data.country}
                           onChange={(e) =>
                             handleChange(card.id, 'country', e.target.value)
                           }
                           required
-                          helperText="Please select your country"
+                          fullWidth
                           margin="normal"
                         >
                           {countriesArr.map((country) => (
@@ -359,22 +390,32 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           Add
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start', outline: 'none' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end', outline: 'none' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };
