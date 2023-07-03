@@ -190,7 +190,6 @@ const WorkExperience: FC<Props> = ({
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
-                      <Typography>{m.label}</Typography>
                       {m.key === 'jobTitle' && (
                         <TextField
                           id={m.key}

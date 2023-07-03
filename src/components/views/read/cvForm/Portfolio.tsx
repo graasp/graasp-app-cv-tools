@@ -14,6 +14,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -137,20 +138,29 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
-        {portfolioCards?.map((card) => (
-          <Card key={card.id}>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add as many Projects as you like and done, you
+          can also remove any Project you would like to remove from your
+          application, modify the information by clicking on edit, fill up all
+          the required fields, and when done editing just click on done button.
+        </Typography>
+        {portfolioCards?.map((card, index) => (
+          <Card
+            key={card.id}
+            style={{ marginTop: '16px', marginBottom: '16px' }}
+          >
             <CardContent>
               <Typography gutterBottom variant="h5">
-                Project
+                Project {index + 1}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Add A New Project To Your Portfolio
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
               </Typography>
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
-                      <Typography>{m.label}</Typography>
                       {m.key === 'projectTitle' && (
                         <TextField
                           id={m.key}
@@ -164,6 +174,8 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'projectDescription' && (
@@ -179,29 +191,43 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'startDate' && (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="From"
-                            value={
-                              card.data.startDate
-                                ? dayjs(card.data.startDate)
-                                : undefined
-                            }
-                            maxDate={dayjs()}
-                            onChange={(date) => {
-                              const formattedDate = date
-                                ? dayjs(date).format('YYYY-MM-DD')
-                                : '';
-                              handleChange(card.id, 'startDate', formattedDate);
-                            }}
-                          />
-                        </LocalizationProvider>
+                        <Box marginTop="16px" marginBottom="16px">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="From"
+                              value={
+                                card.data.startDate
+                                  ? dayjs(card.data.startDate)
+                                  : undefined
+                              }
+                              maxDate={dayjs()}
+                              onChange={(date) => {
+                                const formattedDate = date
+                                  ? dayjs(date).format('YYYY-MM-DD')
+                                  : '';
+                                handleChange(
+                                  card.id,
+                                  'startDate',
+                                  formattedDate,
+                                );
+                              }}
+                              slotProps={{ textField: { fullWidth: true } }}
+                            />
+                          </LocalizationProvider>
+                        </Box>
                       )}
                       {m.key === 'endDate' && (
-                        <Box display="flex" alignItems="center">
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          marginTop="16px"
+                          marginBottom="16px"
+                        >
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
@@ -220,6 +246,7 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
+                              slotProps={{ textField: { fullWidth: true } }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -245,6 +272,8 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             handleChange(card.id, 'projectLink', e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                     </Box>
@@ -305,22 +334,32 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           Add
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };
