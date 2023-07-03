@@ -163,12 +163,12 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                   />
                 </Box>
               ) : (
-                Object.entries(card.data as SkillsObj).map(([key, value]) => {
-                  if (key !== 'title' && value.length !== 0) {
+                Object.entries(card.data as SkillsObj).map(([key, values]) => {
+                  if (key !== 'title' && values.length !== 0) {
                     return (
                       <Box key={key}>
                         <Typography variant="subtitle2">
-                          {key}: {value}
+                          {key}: {Array.from(values).join(', ')}
                         </Typography>
                       </Box>
                     );
