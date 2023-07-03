@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { List } from 'immutable';
 
 import { FC, useEffect, useState } from 'react';
 
@@ -33,54 +34,43 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  portfolioData: PortfolioObj[];
-  onCvValuesChange: (data: PortfolioObj[]) => void;
 }
-const Portfolio: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  portfolioData,
-  onCvValuesChange,
-}) => {
+const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  const portoflioInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.PORTFOLIO,
-  );
+
   const handlePost = (newdata: PortfolioObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.PORTFOLIO });
   };
-  const handlePatch = (dataObj: AppData, newData: PortfolioObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
+  const handlePatch = (id: AppData['id'], newData: PortfolioObj): void => {
+    patchAppData({ id, data: newData });
   };
-  const handleDelete = (dataObj: AppData): void => {
-    deleteAppData({ id: dataObj.id });
+  const handleDelete = (id: AppData['id']): void => {
+    deleteAppData({ id });
   };
-
-  const [portfolioCards, setPortfolioCards] = useState(portfolioData);
+  const [portfolioCards, setPortfolioCards] =
+    useState<List<AppData & { data: PortfolioObj }>>();
 
   useEffect(() => {
+    const portfolioData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PORTFOLIO,
+    ) as List<AppData & { data: PortfolioObj }>;
     setPortfolioCards(portfolioData);
-  }, [portfolioData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
   const handleAdd = (): void => {
-    const newCardId = `card${portfolioCards.length + 1}`;
-    setPortfolioCards((prevCards) => [
-      ...prevCards,
-      {
-        id: newCardId,
-        projectTitle: '',
-        projectDescription: '',
-        startDate: undefined,
-        endDate: undefined,
-        projectLink: '',
-        present: false,
-      },
-    ]);
+    const newCardId = `card${(portfolioCards?.size ?? 0) + 1}`;
+    handlePost({
+      id: newCardId,
+      projectTitle: '',
+      projectDescription: '',
+      startDate: undefined,
+      endDate: undefined,
+      projectLink: '',
+      present: false,
+    });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -94,25 +84,9 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const portfolioWithoutPresent = portfolioCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    const portfolioInfoCard = portfolioWithoutPresent.find(
-      (card) => card.id === cardId,
-    );
-    if (
-      portoflioInfoObject &&
-      portoflioInfoObject?.data.id === portfolioInfoCard?.id &&
-      portfolioInfoCard
-    ) {
-      handlePatch(portoflioInfoObject, portfolioInfoCard);
-    } else if (
-      (!portoflioInfoObject && portfolioInfoCard) ||
-      (portoflioInfoObject?.data.id !== portfolioInfoCard?.id &&
-        portfolioInfoCard)
-    ) {
-      handlePost(portfolioInfoCard);
+    const portfolioCard = portfolioCards?.find((card) => card.id === cardId);
+    if (portfolioCard) {
+      handlePatch(cardId, portfolioCard.data);
     }
 
     setShowFields((prevShowFields) => {
@@ -123,17 +97,8 @@ const Portfolio: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    const objToDelete = appDataArray.filter(
-      (obj) => obj.type === APP_DATA_TYPES.PORTFOLIO,
-    );
-    const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    if (typeof portfolioToDelete !== 'undefined') {
-      handleDelete(portfolioToDelete);
-    }
+    handleDelete(cardId);
 
-    setPortfolioCards((prevCards) =>
-      prevCards.filter((card) => card.id !== cardId),
-    );
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -147,7 +112,7 @@ const Portfolio: FC<Props> = ({
     value: string | boolean,
   ): void => {
     setPortfolioCards((prevCards) => {
-      const updatedCards = prevCards.map((card) =>
+      const updatedCards = prevCards?.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
       );
       return updatedCards;
@@ -155,20 +120,10 @@ const Portfolio: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
-    const portfolioWithoutPresent = portfolioCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    onCvValuesChange(portfolioWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    const portfolioWithoutPresent = portfolioCards.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ present, ...rest }) => rest,
-    );
-    onCvValuesChange(portfolioWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -182,7 +137,7 @@ const Portfolio: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {portfolioCards.map((card) => (
+        {portfolioCards?.map((card) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
@@ -200,7 +155,7 @@ const Portfolio: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.projectTitle || ''}
+                          value={card.data.projectTitle || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -215,7 +170,7 @@ const Portfolio: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.projectDescription || ''}
+                          value={card.data.projectDescription || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -231,7 +186,9 @@ const Portfolio: FC<Props> = ({
                           <DatePicker
                             label="From"
                             value={
-                              card.startDate ? dayjs(card.startDate) : undefined
+                              card.data.startDate
+                                ? dayjs(card.data.startDate)
+                                : undefined
                             }
                             maxDate={dayjs()}
                             onChange={(date) => {
@@ -248,10 +205,12 @@ const Portfolio: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.present}
-                              minDate={dayjs(card.startDate)}
+                              disabled={card.data.present}
+                              minDate={dayjs(card.data.startDate)}
                               value={
-                                card.endDate ? dayjs(card.endDate) : undefined
+                                card.data.endDate
+                                  ? dayjs(card.data.endDate)
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -265,9 +224,13 @@ const Portfolio: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.present}
+                            checked={card.data.present}
                             onChange={() => {
-                              handleChange(card.id, 'present', !card.present);
+                              handleChange(
+                                card.id,
+                                'present',
+                                !card.data.present,
+                              );
                               handleChange(card.id, 'endDate', 'OnGoing');
                             }}
                           />
@@ -277,7 +240,7 @@ const Portfolio: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.projectLink || ''}
+                          value={card.data.projectLink || ''}
                           onChange={(e) =>
                             handleChange(card.id, 'projectLink', e.target.value)
                           }
@@ -288,22 +251,24 @@ const Portfolio: FC<Props> = ({
                   ))}
                 </>
               ) : (
-                Object.entries(card).map(([key, value]) => {
-                  if (
-                    value !== '' &&
-                    typeof value !== 'undefined' &&
-                    mapping.some((item) => item.key === key)
-                  ) {
-                    return (
-                      <Box key={key}>
-                        <Typography variant="subtitle2">
-                          {key}: {value}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return null;
-                })
+                Object.entries(card.data as PortfolioObj).map(
+                  ([key, value]) => {
+                    if (
+                      value !== '' &&
+                      typeof value !== 'undefined' &&
+                      mapping.some((item) => item.key === key)
+                    ) {
+                      return (
+                        <Box key={key}>
+                          <Typography variant="subtitle2">
+                            {key}: {value}
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return null;
+                  },
+                )
               )}
               <CardActions>
                 {showFields[card.id] ? (
