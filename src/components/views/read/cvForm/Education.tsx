@@ -166,11 +166,11 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           application, modify the information by clicking on edit, fill up all
           the required fields, and when done editing just click on done button.
         </Typography>
-        {educationCards?.map((card) => (
+        {educationCards?.map((card, index) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                Education {card.id}
+                Education {index + 1}
               </Typography>
               {/* <Typography variant="body2" color="text.secondary">
                 Add A New Education
@@ -385,7 +385,7 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           </Card>
         ))}
       </Box>
-      <Box>
+      <Box marginTop="16px" marginBottom="16px">
         <Button size="small" startIcon={<Add />} onClick={handleAdd}>
           Add
         </Button>
@@ -402,7 +402,7 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           color="primary"
           startIcon={<NavigateBeforeIcon />}
           onClick={handlePrev}
-          style={{ alignSelf: 'flex-start', outline: 'none' }}
+          style={{ alignSelf: 'flex-start' }}
         >
           Back
         </Button>
@@ -411,7 +411,7 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           color="primary"
           startIcon={<NavigateNextIcon />}
           onClick={handleNext}
-          style={{ alignSelf: 'flex-end', outline: 'none' }}
+          style={{ alignSelf: 'flex-end' }}
         >
           Next
         </Button>

@@ -15,6 +15,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -162,18 +163,25 @@ const WorkExperience: FC<Props> = ({
     { key: 'jobDetails', label: 'Job Details' },
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
+
   return (
     <Box>
       <Box>
-        {workCards?.map((card) => (
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add as many Jobs as you like, you can also
+          remove any Job you would like to remove from your application, modify
+          the information by clicking on edit, fill up all the required fields,
+          and when done editing just click on done button.
+        </Typography>
+        {workCards?.map((card, index) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                Work Experience
+                Work Experience {index + 1}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              {/* <Typography variant="body2" color="text.secondary">
                 Add A New Work Experience
-              </Typography>
+              </Typography> */}
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
@@ -188,6 +196,8 @@ const WorkExperience: FC<Props> = ({
                             handleChange(card.id, 'jobTitle', e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'institutionName' && (
@@ -203,29 +213,43 @@ const WorkExperience: FC<Props> = ({
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'startDate' && (
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="From"
-                            value={
-                              card.data.startDate
-                                ? dayjs(card.data.startDate)
-                                : undefined
-                            }
-                            maxDate={dayjs()}
-                            onChange={(date) => {
-                              const formattedDate = date
-                                ? dayjs(date).format('YYYY-MM-DD')
-                                : '';
-                              handleChange(card.id, 'startDate', formattedDate);
-                            }}
-                          />
-                        </LocalizationProvider>
+                        <Box marginTop="16px" marginBottom="16px">
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              label="From"
+                              value={
+                                card.data.startDate
+                                  ? dayjs(card.data.startDate)
+                                  : undefined
+                              }
+                              maxDate={dayjs()}
+                              onChange={(date) => {
+                                const formattedDate = date
+                                  ? dayjs(date).format('YYYY-MM-DD')
+                                  : '';
+                                handleChange(
+                                  card.id,
+                                  'startDate',
+                                  formattedDate,
+                                );
+                              }}
+                              slotProps={{ textField: { fullWidth: true } }}
+                            />
+                          </LocalizationProvider>
+                        </Box>
                       )}
                       {m.key === 'endDate' && (
-                        <Box display="flex" alignItems="center">
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          marginTop="16px"
+                          marginBottom="16px"
+                        >
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
@@ -244,6 +268,7 @@ const WorkExperience: FC<Props> = ({
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
+                              slotProps={{ textField: { fullWidth: true } }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -252,14 +277,10 @@ const WorkExperience: FC<Props> = ({
                             onChange={() => {
                               handleChange(
                                 card.id,
-                                'present',
-                                !card.data.present,
-                              );
-                              handleChange(
-                                card.id,
                                 'endDate',
-                                'OnGoing',
-                                // dayjs().format('YYYY-MM-DD'),
+                                card.data.endDate === 'OnGoing'
+                                  ? ''
+                                  : 'OnGoing',
                               );
                             }}
                           />
@@ -269,13 +290,13 @@ const WorkExperience: FC<Props> = ({
                         <TextField
                           id="select-country"
                           select
-                          label="Country"
+                          label={m.label}
                           value={card.data.country}
                           onChange={(e) =>
                             handleChange(card.id, 'country', e.target.value)
                           }
                           required
-                          helperText="Please select your country"
+                          fullWidth
                           margin="normal"
                         >
                           {countriesArr.map((country) => (
@@ -294,6 +315,8 @@ const WorkExperience: FC<Props> = ({
                             handleChange(card.id, 'jobDetails', e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'keyAchievements' && (
@@ -309,6 +332,8 @@ const WorkExperience: FC<Props> = ({
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                     </Box>
@@ -364,27 +389,37 @@ const WorkExperience: FC<Props> = ({
           </Card>
         ))}
       </Box>
-      <Box>
+      <Box marginTop="16px" marginBottom="16px">
         <Button size="small" startIcon={<Add />} onClick={handleAdd}>
           Add
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };
