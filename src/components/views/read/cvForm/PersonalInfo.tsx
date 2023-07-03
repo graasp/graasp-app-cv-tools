@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
@@ -17,11 +16,13 @@ import { AppData } from '@graasp/apps-query-client/dist/types';
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   Button,
+  ButtonGroup,
   IconButton,
   MenuItem,
   TextField,
@@ -33,6 +34,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
 
 interface Props {
@@ -141,11 +143,7 @@ const PersonalInfo: FC<Props> = ({
     setVisibility(!visibility);
   };
 
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
-  };
-  const handleNext = (): void => {
+  const handleSave = (): void => {
     // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
     if (personalInfoObject) {
       handlePatch(personalInfoObject, personalInfoState);
@@ -153,6 +151,12 @@ const PersonalInfo: FC<Props> = ({
       handlePost(personalInfoState);
     }
     onCvValuesChange(personalInfoState);
+  };
+  const handlePrev = (): void => {
+    prevPage();
+    prevStep();
+  };
+  const handleNext = (): void => {
     nextPage();
     nextStep();
   };
@@ -162,7 +166,6 @@ const PersonalInfo: FC<Props> = ({
       <Box>
         {mapping.map((m) => (
           <Fragment key={m.key}>
-            <Typography>{m.label}</Typography>
             {m.key === 'firstName' && (
               <TextField
                 label={m.label}
@@ -175,6 +178,8 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'lastName' && (
@@ -189,26 +194,31 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'birthDate' && (
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label={m.label}
-                  value={birthDate ? dayjs(birthDate) : undefined}
-                  maxDate={dayjs()}
-                  onChange={(date) => {
-                    const formattedDate = date
-                      ? dayjs(date).format('YYYY-MM-DD')
-                      : '';
-                    setBirthDate(formattedDate || undefined);
-                    setPersonalInfoState((prev) => ({
-                      ...prev,
-                      birthDate: formattedDate,
-                    }));
-                  }}
-                />
-              </LocalizationProvider>
+              <Box style={{ marginTop: '16px', marginBottom: '16px' }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label={m.label}
+                    value={birthDate ? dayjs(birthDate) : undefined}
+                    maxDate={dayjs()}
+                    onChange={(date) => {
+                      const formattedDate = date
+                        ? dayjs(date).format('YYYY-MM-DD')
+                        : '';
+                      setBirthDate(formattedDate || undefined);
+                      setPersonalInfoState((prev) => ({
+                        ...prev,
+                        birthDate: formattedDate,
+                      }));
+                    }}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </Box>
             )}
             {m.key === 'gender' && (
               <TextField
@@ -223,7 +233,7 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
-                helperText="Please select your gender"
+                fullWidth
                 margin="normal"
               >
                 {genders.map((option) => (
@@ -245,11 +255,16 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'phoneNum' && (
-              <PhoneInput
-                country="us"
+              <MuiPhone
+                required
+                fullWidth
+                margin="normal"
+                label="Phone Number"
                 value={personalInfoState.phoneNum}
                 onChange={(phone: string) =>
                   setPersonalInfoState((prev) => ({
@@ -271,6 +286,8 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'profileLinks' && (
@@ -285,6 +302,8 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'personalLinks' && (
@@ -299,15 +318,18 @@ const PersonalInfo: FC<Props> = ({
                   }))
                 }
                 required
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'personalPic' && (
-              <>
+              <Box display="flex" alignItems="center">
                 <Button
                   variant="contained"
                   color="primary"
                   startIcon={<UploadFileIcon />}
                   onClick={handleClick}
+                  style={{ marginTop: '16px', marginBottom: '16px' }}
                 >
                   Upload Image
                 </Button>
@@ -319,7 +341,7 @@ const PersonalInfo: FC<Props> = ({
                   onChange={onChange}
                 />
                 {uploadedFile && (
-                  <Box display="flex" alignItems="center">
+                  <Box display="flex" alignItems="center" marginLeft="8px">
                     <Typography>{uploadedFile.name}</Typography>
                     <IconButton onClick={handleFileRemove} color="primary">
                       <ClearIcon />
@@ -330,27 +352,46 @@ const PersonalInfo: FC<Props> = ({
                   </Box>
                 )}
                 {visibility && url && <img src={url} alt="Preview" />}
-              </>
+              </Box>
             )}
           </Fragment>
         ))}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Home
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start', outline: 'none' }}
+        >
+          Home
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          style={{ alignSelf: 'center', outline: 'none' }}
+        >
+          Save
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end', outline: 'none' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

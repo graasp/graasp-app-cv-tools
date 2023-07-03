@@ -9855,6 +9855,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-i18next: 11.17.3
+    react-international-phone: 2.2.3
     react-pdf: 7.1.2
     react-phone-input-2: 2.15.1
     react-router-dom: 6.11.1
@@ -15246,6 +15247,15 @@ __metadata:
     react-native:
       optional: true
   checksum: 6b4959eb6257c7096f70e6dbc1e436ccc19258c0a8202a28fcc812c098c3574f4a0f4ec8f9dd8c7cbdbee1ac055125ec918f99ea1e1655574248f1c1e06c612c
+  languageName: node
+  linkType: hard
+
+"react-international-phone@npm:2.2.3":
+  version: 2.2.3
+  resolution: "react-international-phone@npm:2.2.3"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: b8c1f4950d823e8b7dcb6d1403fd3422bf1fd6a8cf75c36a77428c68aec96dbeab5dd4eafa0c62dc30d87f32a16cb7e8d4a59e71e7b7d9c71ed755b1fc6ace72
   languageName: node
   linkType: hard
 
