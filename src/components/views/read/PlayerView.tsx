@@ -107,10 +107,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            // educationData={cvValues.educationInfo}
-            // onCvValuesChange={(data) =>
-            //   handleCvValuesChange('educationInfo', data)
-            // }
           />
         )}
         {activeStep === 3 && (
@@ -119,8 +115,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            workData={cvValues.workInfo}
-            onCvValuesChange={(data) => handleCvValuesChange('workInfo', data)}
           />
         )}
         {activeStep === 4 && (

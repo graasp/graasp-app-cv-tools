@@ -243,7 +243,7 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                                 card.data.endDate &&
                                 card.data.endDate !== 'OnGoing'
                                   ? dayjs(card.data.endDate)
-                                  : undefined
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {

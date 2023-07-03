@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { List } from 'immutable';
 import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
@@ -35,37 +36,34 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  workData: WorkExperienceObj[];
-  onCvValuesChange: (data: WorkExperienceObj[]) => void;
 }
 const WorkExperience: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  workData,
-  onCvValuesChange,
 }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  const workInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
-  );
+
   const handlePost = (newdata: WorkExperienceObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.WORKEXPERIENCE });
   };
-  const handlePatch = (dataObj: AppData, newData: WorkExperienceObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
+  const handlePatch = (id: AppData['id'], newData: WorkExperienceObj): void => {
+    patchAppData({ id, data: newData });
   };
-  const handleDelete = (dataObj: AppData): void => {
-    deleteAppData({ id: dataObj.id });
+  const handleDelete = (id: AppData['id']): void => {
+    deleteAppData({ id });
   };
-
-  const [workCards, setWorkCards] = useState(workData);
+  const [workCards, setWorkCards] =
+    useState<List<AppData & { data: WorkExperienceObj }>>();
 
   useEffect(() => {
+    const workData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+    ) as List<AppData & { data: WorkExperienceObj }>;
     setWorkCards(workData);
-  }, [workData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
@@ -75,21 +73,18 @@ const WorkExperience: FC<Props> = ({
   }));
 
   const handleAdd = (): void => {
-    const newCardId = `card${workCards.length + 1}`;
-    setWorkCards((prevCards) => [
-      ...prevCards,
-      {
-        id: newCardId,
-        jobTitle: '',
-        institutionName: '',
-        startDate: undefined,
-        endDate: undefined,
-        country: '',
-        jobDetails: '',
-        keyAchievements: '',
-        present: false,
-      },
-    ]);
+    const newCardId = `card${(workCards?.size ?? 0) + 1}`;
+    handlePost({
+      id: newCardId,
+      jobTitle: '',
+      institutionName: '',
+      startDate: undefined,
+      endDate: undefined,
+      country: '',
+      jobDetails: '',
+      keyAchievements: '',
+      present: false,
+    });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -104,20 +99,9 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
-    const workInfoCard = workWithoutPresent.find((card) => card.id === cardId);
-    if (
-      workInfoObject &&
-      workInfoObject?.data.id === workInfoCard?.id &&
-      workInfoCard
-    ) {
-      handlePatch(workInfoObject, workInfoCard);
-    } else if (
-      (!workInfoObject && workInfoCard) ||
-      (workInfoObject?.data.id !== workInfoCard?.id && workInfoCard)
-    ) {
-      handlePost(workInfoCard);
+    const workInfoCard = workCards?.find((card) => card.id === cardId);
+    if (workInfoCard) {
+      handlePatch(cardId, workInfoCard.data);
     }
 
     setShowFields((prevShowFields) => {
@@ -128,15 +112,8 @@ const WorkExperience: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    const objToDelete = appDataArray.filter(
-      (obj) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
-    );
-    const workToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    if (typeof workToDelete !== 'undefined') {
-      handleDelete(workToDelete);
-    }
+    handleDelete(cardId);
 
-    setWorkCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -150,24 +127,20 @@ const WorkExperience: FC<Props> = ({
     value: string | boolean,
   ): void => {
     setWorkCards((prevCards) => {
-      const updatedCards = prevCards.map((card) =>
-        card.id === cardId ? { ...card, [key]: value } : card,
+      const updatedCards = prevCards?.map((card) =>
+        card.id === cardId
+          ? { ...card, data: { ...card.data, [key]: value } }
+          : card,
       );
       return updatedCards;
     });
   };
 
   const handlePrev = (): void => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
-    onCvValuesChange(workWithoutPresent);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const workWithoutPresent = workCards.map(({ present, ...rest }) => rest);
-    onCvValuesChange(workWithoutPresent);
     nextPage();
     nextStep();
   };
@@ -183,7 +156,7 @@ const WorkExperience: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {workCards.map((card) => (
+        {workCards?.map((card) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
@@ -201,7 +174,7 @@ const WorkExperience: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.jobTitle || ''}
+                          value={card.data.jobTitle || ''}
                           onChange={(e) =>
                             handleChange(card.id, 'jobTitle', e.target.value)
                           }
@@ -212,7 +185,7 @@ const WorkExperience: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.institutionName || ''}
+                          value={card.data.institutionName || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -228,7 +201,9 @@ const WorkExperience: FC<Props> = ({
                           <DatePicker
                             label="From"
                             value={
-                              card.startDate ? dayjs(card.startDate) : undefined
+                              card.data.startDate
+                                ? dayjs(card.data.startDate)
+                                : undefined
                             }
                             maxDate={dayjs()}
                             onChange={(date) => {
@@ -245,10 +220,12 @@ const WorkExperience: FC<Props> = ({
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.present}
-                              minDate={dayjs(card.startDate)}
+                              disabled={card.data.present}
+                              minDate={dayjs(card.data.startDate)}
                               value={
-                                card.endDate ? dayjs(card.endDate) : undefined
+                                card.data.endDate
+                                  ? dayjs(card.data.endDate)
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -262,9 +239,13 @@ const WorkExperience: FC<Props> = ({
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.present}
+                            checked={card.data.present}
                             onChange={() => {
-                              handleChange(card.id, 'present', !card.present);
+                              handleChange(
+                                card.id,
+                                'present',
+                                !card.data.present,
+                              );
                               handleChange(
                                 card.id,
                                 'endDate',
@@ -280,7 +261,7 @@ const WorkExperience: FC<Props> = ({
                           id="select-country"
                           select
                           label="Country"
-                          value={card.country}
+                          value={card.data.country}
                           onChange={(e) =>
                             handleChange(card.id, 'country', e.target.value)
                           }
@@ -299,7 +280,7 @@ const WorkExperience: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.jobDetails || ''}
+                          value={card.data.jobDetails || ''}
                           onChange={(e) =>
                             handleChange(card.id, 'jobDetails', e.target.value)
                           }
@@ -310,7 +291,7 @@ const WorkExperience: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.keyAchievements || ''}
+                          value={card.data.keyAchievements || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -325,22 +306,24 @@ const WorkExperience: FC<Props> = ({
                   ))}
                 </>
               ) : (
-                Object.entries(card).map(([key, value]) => {
-                  if (
-                    value !== '' &&
-                    typeof value !== 'undefined' &&
-                    mapping.some((item) => item.key === key)
-                  ) {
-                    return (
-                      <Box key={key}>
-                        <Typography variant="subtitle2">
-                          {key}: {value}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return null;
-                })
+                Object.entries(card.data as WorkExperienceObj).map(
+                  ([key, value]) => {
+                    if (
+                      value !== '' &&
+                      typeof value !== 'undefined' &&
+                      mapping.some((item) => item.key === key)
+                    ) {
+                      return (
+                        <Box key={key}>
+                          <Typography variant="subtitle2">
+                            {key}: {value}
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return null;
+                  },
+                )
               )}
               <CardActions>
                 {showFields[card.id] ? (
