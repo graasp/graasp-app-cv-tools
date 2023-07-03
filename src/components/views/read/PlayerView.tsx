@@ -123,10 +123,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            skillsData={cvValues.skillsInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('skillsInfo', data)
-            }
           />
         )}
         {activeStep === 5 && (

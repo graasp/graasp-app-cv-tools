@@ -29,7 +29,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
-import { WorkExperienceObj } from './types';
+import { SkillsObj, WorkExperienceObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -135,12 +135,21 @@ const WorkExperience: FC<Props> = ({
       return updatedCards;
     });
   };
-
+  const handleSkillsPost = (newdata: SkillsObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
+  };
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
+  let counter = 0;
   const handleNext = (): void => {
+    if (counter === 0) {
+      counter += 1;
+      handleSkillsPost({ title: 'Tech Skills', skills: [] });
+      handleSkillsPost({ title: 'Lang Skills', skills: [] });
+      handleSkillsPost({ title: 'Other Skills', skills: [] });
+    }
     nextPage();
     nextStep();
   };

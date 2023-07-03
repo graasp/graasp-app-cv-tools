@@ -1,3 +1,5 @@
+import { List } from 'immutable';
+
 import { FC, KeyboardEvent, useEffect, useState } from 'react';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
@@ -26,32 +28,21 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  skillsData: SkillsObj[];
-  onCvValuesChange: (data: SkillsObj[]) => void;
 }
-const Skills: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  skillsData,
-  onCvValuesChange,
-}) => {
-  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
-  const skillsInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.SKILLS,
-  );
-  const handlePost = (newdata: SkillsObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
+const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+  const { patchAppData, appDataArray } = useAppDataContext();
+  const handlePatch = (id: AppData['id'], newData: SkillsObj): void => {
+    patchAppData({ id, data: newData });
   };
-  const handlePatch = (dataObj: AppData, newData: SkillsObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
-  };
-  const [skillCards, setSkillCards] = useState(skillsData);
+  const [skillCards, setSkillCards] =
+    useState<List<AppData & { data: SkillsObj }>>();
 
   useEffect(() => {
+    const skillsData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+    ) as List<AppData & { data: SkillsObj }>;
     setSkillCards(skillsData);
-  }, [skillsData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
@@ -61,19 +52,12 @@ const Skills: FC<Props> = ({
       [cardId]: true,
     }));
   };
-  const handleDone = (cardId: string): void => {
-    const skillsInfoCard = skillCards.find((card) => card.title === cardId);
-    if (
-      skillsInfoObject &&
-      skillsInfoObject?.data.title === skillsInfoCard?.title &&
-      skillsInfoCard
-    ) {
-      handlePatch(skillsInfoObject, skillsInfoCard);
-    } else if (
-      (!skillsInfoObject && skillsInfoCard) ||
-      (skillsInfoObject?.data.title !== skillsInfoCard?.title && skillsInfoCard)
-    ) {
-      handlePost(skillsInfoCard);
+  const handleDone = (cardId: string, appID: string): void => {
+    const skillsInfoCard = skillCards?.find(
+      (card) => card.data.title === cardId,
+    );
+    if (skillsInfoCard) {
+      handlePatch(appID, skillsInfoCard.data);
     }
 
     setShowFields((prevShowFields) => ({
@@ -81,12 +65,22 @@ const Skills: FC<Props> = ({
       [cardId]: false,
     }));
   };
-
   const removeSkill = (cardId: string, skillIndex: number): void => {
     setSkillCards((prevCards) => {
-      const updatedCards = [...prevCards];
-      const index = skillCards.findIndex((card) => card.title === cardId);
-      updatedCards[index].skills.splice(skillIndex, 1);
+      const updatedCards = prevCards?.map((card) => {
+        if (card.id === cardId) {
+          const updatedSkills = [...card.data.skills];
+          updatedSkills.splice(skillIndex, 1);
+          return {
+            ...card,
+            data: {
+              ...card.data,
+              skills: updatedSkills,
+            },
+          };
+        }
+        return card;
+      });
       return updatedCards;
     });
   };
@@ -96,70 +90,80 @@ const Skills: FC<Props> = ({
     value: string,
     e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
   ): void => {
-    const index = skillCards.findIndex((card) => card.title === cardId);
     if (e.key === ' ' && value.trim() !== '') {
-      const updatedSkillCards = [...skillCards];
-      const updatedSkills = [...updatedSkillCards[index].skills, value.trim()];
-      updatedSkillCards[index] = {
-        ...updatedSkillCards[index],
-        skills: updatedSkills,
-      };
-      setSkillCards(updatedSkillCards);
+      setSkillCards((prevCards) => {
+        const updatedCards = prevCards?.map((card) =>
+          card.id === cardId
+            ? {
+                ...card,
+                data: {
+                  ...card.data,
+                  skills: [...card.data.skills, value.trim()],
+                },
+              }
+            : card,
+        );
+        return updatedCards;
+      });
+
       e.currentTarget.value = '';
     } else if (e.key === 'Backspace' && value === '') {
-      // Remove the last skill when backspace is pressed and input field is empty
-      const updatedSkillCards = [...skillCards];
-      const updatedSkills = [...updatedSkillCards[index].skills];
-      updatedSkills.pop();
-      updatedSkillCards[index] = {
-        ...updatedSkillCards[index],
-        skills: updatedSkills,
-      };
-      setSkillCards(updatedSkillCards);
+      setSkillCards((prevCards) => {
+        const updatedCards = prevCards?.map((card) =>
+          card.id === cardId
+            ? {
+                ...card,
+                data: {
+                  ...card.data,
+                  skills: card.data.skills.slice(0, -1),
+                },
+              }
+            : card,
+        );
+        return updatedCards;
+      });
     }
   };
 
   const handlePrev = (): void => {
-    onCvValuesChange(skillCards);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(skillCards);
     nextPage();
     nextStep();
   };
   return (
     <Box>
       <Box>
-        {skillCards.map((card) => (
-          <Card key={card.title}>
+        {skillCards?.map((card) => (
+          <Card key={card.data.title}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                {card.title}
+                {card.data.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Add A Skill
               </Typography>
-              {showFields[card.title] ? (
+              {showFields[card.data.title] ? (
                 <Box className="skill">
                   <TextField
                     InputProps={{
-                      startAdornment: card.skills.map((skill, i) => (
+                      startAdornment: card.data.skills.map((skill, i) => (
                         <Chip
                           label={skill}
                           key={i}
-                          onDelete={() => removeSkill(card.title, i)}
+                          onDelete={() => removeSkill(card.id, i)}
                         />
                       )),
                       onKeyDown: (e) =>
-                        addSkill(card.title, e.currentTarget.value, e),
+                        addSkill(card.id, e.currentTarget.value, e),
                     }}
                     size="small"
                   />
                 </Box>
               ) : (
-                Object.entries(card).map(([key, value]) => {
+                Object.entries(card.data as SkillsObj).map(([key, value]) => {
                   if (key !== 'title' && value.length !== 0) {
                     return (
                       <Box key={key}>
@@ -173,11 +177,11 @@ const Skills: FC<Props> = ({
                 })
               )}
               <CardActions>
-                {showFields[card.title] ? (
+                {showFields[card.data.title] ? (
                   <Button
                     size="small"
                     startIcon={<DoneIcon />}
-                    onClick={() => handleDone(card.title)}
+                    onClick={() => handleDone(card.data.title, card.id)}
                   >
                     Done
                   </Button>
@@ -185,7 +189,7 @@ const Skills: FC<Props> = ({
                   <Button
                     size="small"
                     startIcon={<EditIcon />}
-                    onClick={() => handleEdit(card.title)}
+                    onClick={() => handleEdit(card.data.title)}
                   >
                     Edit
                   </Button>
