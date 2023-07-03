@@ -11,6 +11,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -136,14 +137,36 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you have 3 types of skills &quot;Tech Skills&quot;,
+          &quot;Language Skills&quot;, and &quot;Other Skills&quot;, each of
+          which you can fill as many skills as you have by clicking on edit
+          button, then in the box of text just enter any skill then you can
+          simply hit Spacebar it will be saved, deleting the skill can be done
+          either by clicking on the x button it will appear on the skill itself,
+          or by hitting Backspace from your keyboard. For &quot;Tech
+          Skills&quot;, enter any technological skill from
+          &quot;Programming&quot;, to &quot;Desgin&quot;, to
+          &quot;Editting&quot;, etc. For &quot;Language Skills&quot;, enter any
+          language that you can speak at good level such as &quot;English&quot;,
+          to &quot;French&quot;, to &quot;Arabic&quot;, etc. For &quot;Other
+          Skills&quot;, enter any other skill that you feel it doesn&apos;t fall
+          under &quot;Tech Skills&quot; or &quot;Language Skills&quot; for
+          example &quot;Team Leading&quot;, to &quot;Time Management&quot;, to
+          &quot;Multi Tasking&quot;, etc.
+        </Typography>
         {skillCards?.map((card) => (
-          <Card key={card.data.title}>
+          <Card
+            key={card.data.title}
+            style={{ marginTop: '16px', marginBottom: '16px' }}
+          >
             <CardContent>
               <Typography gutterBottom variant="h5">
                 {card.data.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Add A Skill
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
               </Typography>
               {showFields[card.data.title] ? (
                 <Box className="skill">
@@ -160,6 +183,8 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                         addSkill(card.id, e.currentTarget.value, e),
                     }}
                     size="small"
+                    fullWidth
+                    margin="normal"
                   />
                 </Box>
               ) : (
@@ -199,22 +224,32 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           </Card>
         ))}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

@@ -167,14 +167,18 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           the required fields, and when done editing just click on done button.
         </Typography>
         {educationCards?.map((card, index) => (
-          <Card key={card.id}>
+          <Card
+            key={card.id}
+            style={{ marginTop: '16px', marginBottom: '16px' }}
+          >
             <CardContent>
               <Typography gutterBottom variant="h5">
                 Education {index + 1}
               </Typography>
-              {/* <Typography variant="body2" color="text.secondary">
-                Add A New Education
-              </Typography> */}
+              <Typography variant="body2" color="text.secondary">
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
+              </Typography>
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (

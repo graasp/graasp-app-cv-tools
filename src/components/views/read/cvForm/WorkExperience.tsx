@@ -174,14 +174,18 @@ const WorkExperience: FC<Props> = ({
           and when done editing just click on done button.
         </Typography>
         {workCards?.map((card, index) => (
-          <Card key={card.id}>
+          <Card
+            key={card.id}
+            style={{ marginTop: '16px', marginBottom: '16px' }}
+          >
             <CardContent>
               <Typography gutterBottom variant="h5">
                 Work Experience {index + 1}
               </Typography>
-              {/* <Typography variant="body2" color="text.secondary">
-                Add A New Work Experience
-              </Typography> */}
+              <Typography variant="body2" color="text.secondary">
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
+              </Typography>
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
