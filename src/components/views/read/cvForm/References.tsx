@@ -1,3 +1,5 @@
+import { List } from 'immutable';
+
 import { FC, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -29,53 +31,42 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  referencesData: ReferencesObj[];
-  onCvValuesChange: (data: ReferencesObj[]) => void;
 }
-const References: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  referencesData,
-  onCvValuesChange,
-}) => {
+const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
-  const referencesInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.REFERENCES,
-  );
   const handlePost = (newdata: ReferencesObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES });
   };
-  const handlePatch = (dataObj: AppData, newData: ReferencesObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
+  const handlePatch = (id: AppData['id'], newData: ReferencesObj): void => {
+    patchAppData({ id, data: newData });
   };
-  const handleDelete = (dataObj: AppData): void => {
-    deleteAppData({ id: dataObj.id });
+  const handleDelete = (id: AppData['id']): void => {
+    deleteAppData({ id });
   };
 
-  const [referencesCards, setReferencesCards] = useState(referencesData);
+  const [referencesCards, setReferencesCards] =
+    useState<List<AppData & { data: ReferencesObj }>>();
 
   useEffect(() => {
+    const referencesData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES,
+    ) as List<AppData & { data: ReferencesObj }>;
     setReferencesCards(referencesData);
-  }, [referencesData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
   const handleAdd = (): void => {
-    const newCardId = `card${referencesCards.length + 1}`;
-    setReferencesCards((prevCards) => [
-      ...prevCards,
-      {
-        id: newCardId,
-        referenceName: '',
-        referenceRelation: '',
-        referenceCompany: '',
-        referencePhoneNum: '',
-        referenceEmail: '',
-      },
-    ]);
+    const newCardId = `card${(referencesCards?.size ?? 0) + 1}`;
+    handlePost({
+      id: newCardId,
+      referenceName: '',
+      referenceRelation: '',
+      referenceCompany: '',
+      referencePhoneNum: '',
+      referenceEmail: '',
+    });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -90,21 +81,11 @@ const References: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
-    const referencesInfoCard = referencesCards.find(
+    const referencesInfoCard = referencesCards?.find(
       (card) => card.id === cardId,
     );
-    if (
-      referencesInfoObject &&
-      referencesInfoObject?.data.id === referencesInfoCard?.id &&
-      referencesInfoCard
-    ) {
-      handlePatch(referencesInfoObject, referencesInfoCard);
-    } else if (
-      (!referencesInfoObject && referencesInfoCard) ||
-      (referencesInfoObject?.data.id !== referencesInfoCard?.id &&
-        referencesInfoCard)
-    ) {
-      handlePost(referencesInfoCard);
+    if (referencesInfoCard) {
+      handlePatch(cardId, referencesInfoCard.data);
     }
 
     setShowFields((prevShowFields) => {
@@ -115,17 +96,8 @@ const References: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    const objToDelete = appDataArray.filter(
-      (obj) => obj.type === APP_DATA_TYPES.REFERENCES,
-    );
-    const portfolioToDelete = objToDelete.find((obj) => obj.data.id === cardId);
-    if (typeof portfolioToDelete !== 'undefined') {
-      handleDelete(portfolioToDelete);
-    }
+    handleDelete(cardId);
 
-    setReferencesCards((prevCards) =>
-      prevCards.filter((card) => card.id !== cardId),
-    );
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -135,7 +107,7 @@ const References: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setReferencesCards((prevCards) => {
-      const updatedCards = prevCards.map((card) =>
+      const updatedCards = prevCards?.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
       );
       return updatedCards;
@@ -143,12 +115,10 @@ const References: FC<Props> = ({
   };
 
   const handlePrev = (): void => {
-    onCvValuesChange(referencesCards);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(referencesCards);
     nextPage();
     nextStep();
   };
@@ -163,7 +133,7 @@ const References: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {referencesCards.map((card) => (
+        {referencesCards?.map((card) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
@@ -181,7 +151,7 @@ const References: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceName || ''}
+                          value={card.data.referenceName || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -196,7 +166,7 @@ const References: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceRelation || ''}
+                          value={card.data.referenceRelation || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -211,7 +181,7 @@ const References: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceCompany || ''}
+                          value={card.data.referenceCompany || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -225,7 +195,7 @@ const References: FC<Props> = ({
                       {m.key === 'referencePhoneNum' && (
                         <PhoneInput
                           country="us"
-                          value={card.referencePhoneNum || ''}
+                          value={card.data.referencePhoneNum || ''}
                           onChange={(phone: string) =>
                             handleChange(card.id, 'referencePhoneNum', phone)
                           }
@@ -235,7 +205,7 @@ const References: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceEmail || ''}
+                          value={card.data.referenceEmail || ''}
                           onChange={(e) =>
                             handleChange(
                               card.id,
@@ -250,21 +220,23 @@ const References: FC<Props> = ({
                   ))}
                 </>
               ) : (
-                Object.entries(card).map(([key, value]) => {
-                  if (
-                    value !== '' &&
-                    mapping.some((item) => item.key === key)
-                  ) {
-                    return (
-                      <Box key={key}>
-                        <Typography variant="subtitle2">
-                          {key}: {value}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return null;
-                })
+                Object.entries(card.data as ReferencesObj).map(
+                  ([key, value]) => {
+                    if (
+                      value !== '' &&
+                      mapping.some((item) => item.key === key)
+                    ) {
+                      return (
+                        <Box key={key}>
+                          <Typography variant="subtitle2">
+                            {key}: {value}
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return null;
+                  },
+                )
               )}
               <CardActions>
                 {showFields[card.id] ? (

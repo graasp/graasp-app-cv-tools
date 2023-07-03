@@ -155,10 +155,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            referencesData={cvValues.referencesInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('referencesInfo', data)
-            }
           />
         )}
         {activeStep === 8 && (
