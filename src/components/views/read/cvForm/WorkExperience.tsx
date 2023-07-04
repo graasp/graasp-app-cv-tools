@@ -143,10 +143,12 @@ const WorkExperience: FC<Props> = ({
     prevPage();
     prevStep();
   };
-  let counter = 0;
+
   const handleNext = (): void => {
-    if (counter === 0) {
-      counter += 1;
+    const skillsData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+    );
+    if (skillsData.size === 0) {
       handleSkillsPost({ title: 'Tech Skills', skills: [] });
       handleSkillsPost({ title: 'Lang Skills', skills: [] });
       handleSkillsPost({ title: 'Other Skills', skills: [] });
