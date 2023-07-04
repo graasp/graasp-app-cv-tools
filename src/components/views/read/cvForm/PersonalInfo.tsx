@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import 'react-phone-input-2/lib/style.css';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
 
@@ -187,11 +186,16 @@ const PersonalInfo: FC<Props> = ({
   };
 
   const handleSave = (): void => {
-    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
+    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id
     if (personalInfoObject && personalInfoState) {
       handlePatch(personalInfoObject, personalInfoState.data);
     }
   };
+  const hasChanges =
+    personalInfoState &&
+    Object.keys(personalInfoState.data).some(
+      (key) => personalInfoState.data[key] !== personalInfoObject?.data[key],
+    );
   const handlePrev = (): void => {
     prevPage();
     prevStep();
@@ -381,6 +385,7 @@ const PersonalInfo: FC<Props> = ({
           startIcon={<SaveIcon />}
           onClick={handleSave}
           style={{ alignSelf: 'center' }}
+          disabled={!hasChanges}
         >
           Save
         </Button>
