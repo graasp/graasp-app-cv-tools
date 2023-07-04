@@ -138,6 +138,7 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Portfolio</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part you can add as many Projects as you like and done, you
           can also remove any Project you would like to remove from your

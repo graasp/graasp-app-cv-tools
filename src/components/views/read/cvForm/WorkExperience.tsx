@@ -169,11 +169,12 @@ const WorkExperience: FC<Props> = ({
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Work Expereince</Typography>
         <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add as many Jobs as you like, you can also
-          remove any Job you would like to remove from your application, modify
-          the information by clicking on edit, fill up all the required fields,
-          and when done editing just click on done button.
+          For this part you can add as many Experiences as you like, you can
+          also remove any Experience you would like to remove from your
+          application, modify the information by clicking on edit, fill up all
+          the required fields, and when done editing just click on done button.
         </Typography>
         {workCards?.map((card, index) => (
           <Card

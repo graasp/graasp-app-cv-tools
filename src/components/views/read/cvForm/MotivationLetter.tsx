@@ -63,6 +63,7 @@ const MotivationLetter: FC<Props> = ({
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Self Motivation</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part you can add a personal motivation, what are your goals
           wishing to achieve in your career, etc.

@@ -208,6 +208,7 @@ const PersonalInfo: FC<Props> = ({
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Personal Details</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part, you are supposed to fill all the required fields with
           your information, you can also upload a personal picture to have on

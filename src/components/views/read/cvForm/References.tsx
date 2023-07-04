@@ -133,6 +133,7 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
+        <Typography variant="h4">References</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part you can add as many References as you like and done, you
           can also remove any Reference you would like to remove from your

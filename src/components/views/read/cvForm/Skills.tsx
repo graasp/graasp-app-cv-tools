@@ -137,6 +137,7 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Skills</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part you have 3 types of skills &quot;Tech Skills&quot;,
           &quot;Language Skills&quot;, and &quot;Other Skills&quot;, each of
