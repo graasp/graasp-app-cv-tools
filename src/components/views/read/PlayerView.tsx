@@ -95,10 +95,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            personalInfo={cvValues.personalInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('personalInfo', data)
-            }
           />
         )}
         {activeStep === 2 && (

@@ -42,8 +42,6 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  personalInfo: PersonalInfoObj;
-  onCvValuesChange: (data: PersonalInfoObj) => void;
 }
 
 const PersonalInfo: FC<Props> = ({
@@ -51,19 +49,15 @@ const PersonalInfo: FC<Props> = ({
   prevPage,
   nextStep,
   prevStep,
-  personalInfo,
-  onCvValuesChange,
 }) => {
   // Below is an example of translating the comps.
   // const { t } = useTranslation();
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
-  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const { patchAppData, appDataArray } = useAppDataContext();
   const personalInfoObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.PERSONALINFO,
   );
-  const handlePost = (newdata: PersonalInfoObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONALINFO });
-  };
+
   const handlePatch = (dataObj: AppData, newData: PersonalInfoObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
@@ -85,11 +79,21 @@ const PersonalInfo: FC<Props> = ({
     { key: 'personalPic', label: 'Personal Picture' },
   ];
   const [birthDate, setBirthDate] = useState<string | undefined>();
-  const [personalInfoState, setPersonalInfoState] = useState(personalInfo);
+  const [personalInfoState, setPersonalInfoState] = useState<
+    AppData & { data: PersonalInfoObj }
+  >();
 
   useEffect(() => {
-    setPersonalInfoState(personalInfo);
-  }, [personalInfo]);
+    const personalData = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+    ) as AppData & { data: PersonalInfoObj };
+    setPersonalInfoState(personalData);
+  }, [appDataArray]);
+  // const [personalInfoState, setPersonalInfoState] = useState(personalInfo);
+
+  // useEffect(() => {
+  //   setPersonalInfoState(personalInfo);
+  // }, [personalInfo]);
 
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const [url, setUrl] = useState('');
@@ -102,39 +106,78 @@ const PersonalInfo: FC<Props> = ({
       inputRef.current.click();
     }
   };
+
+  const handleChange = (key: string, value: string): void => {
+    setPersonalInfoState((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          [key]: value,
+        },
+      };
+    });
+  };
+
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { files } = e.target;
     const file = files?.[0];
-
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         const dataUrl = reader.result;
         setUrl(dataUrl as string);
         setUploadedFile(file);
-        setPersonalInfoState((prev) => ({
-          ...prev,
-          personalPic: dataUrl as string,
-        }));
+        setPersonalInfoState((prev) => {
+          if (!prev) {
+            return prev; // Return the current state if it is undefined
+          }
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              personalPic: dataUrl as string,
+            },
+          };
+        });
       };
       reader.readAsDataURL(file);
     } else {
       setUrl('');
       setUploadedFile(null);
-      setPersonalInfoState((prev) => ({
-        ...prev,
-        personalPic: '',
-      }));
+      setPersonalInfoState((prev) => {
+        if (!prev) {
+          return prev; // Return the current state if it is undefined
+        }
+        return {
+          ...prev,
+          data: {
+            ...prev.data,
+            personalPic: '',
+          },
+        };
+      });
     }
   };
 
   const handleFileRemove = (): void => {
     setUrl('');
     setUploadedFile(null);
-    setPersonalInfoState((prev) => ({
-      ...prev,
-      personalPic: '',
-    }));
+    setPersonalInfoState((prev) => {
+      if (!prev) {
+        return prev; // Return the current state if it is undefined
+      }
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          personalPic: '',
+        },
+      };
+    });
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -145,12 +188,9 @@ const PersonalInfo: FC<Props> = ({
 
   const handleSave = (): void => {
     // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
-    if (personalInfoObject) {
-      handlePatch(personalInfoObject, personalInfoState);
-    } else {
-      handlePost(personalInfoState);
+    if (personalInfoObject && personalInfoState) {
+      handlePatch(personalInfoObject, personalInfoState.data);
     }
-    onCvValuesChange(personalInfoState);
   };
   const handlePrev = (): void => {
     prevPage();
@@ -175,13 +215,8 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.firstName || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    firstName: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.firstName || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth
@@ -191,13 +226,8 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.lastName || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    lastName: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.lastName || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth
@@ -215,10 +245,7 @@ const PersonalInfo: FC<Props> = ({
                         ? dayjs(date).format('YYYY-MM-DD')
                         : '';
                       setBirthDate(formattedDate || undefined);
-                      setPersonalInfoState((prev) => ({
-                        ...prev,
-                        birthDate: formattedDate,
-                      }));
+                      handleChange(m.key, formattedDate);
                     }}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
@@ -230,13 +257,8 @@ const PersonalInfo: FC<Props> = ({
                 id="select-gender"
                 select
                 label={m.label}
-                value={personalInfoState.gender}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    gender: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data?.gender || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 fullWidth
                 margin="normal"
@@ -252,13 +274,8 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 label={m.label}
                 type="email"
-                value={personalInfoState.emailAddress}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    emailAddress: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.emailAddress || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth
@@ -270,26 +287,16 @@ const PersonalInfo: FC<Props> = ({
                 fullWidth
                 margin="normal"
                 label={m.label}
-                value={personalInfoState.phoneNum}
-                onChange={(phone: string) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    phoneNum: phone,
-                  }))
-                }
+                value={personalInfoState?.data.phoneNum || ''}
+                onChange={(phone: string) => handleChange(m.key, phone)}
               />
             )}
             {m.key === 'address' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.address || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    address: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.address || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth
@@ -299,13 +306,8 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 type="url"
                 label={m.label}
-                value={personalInfoState.profileLinks}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    profileLinks: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.profileLinks || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth
@@ -315,13 +317,8 @@ const PersonalInfo: FC<Props> = ({
               <TextField
                 type="url"
                 label={m.label}
-                value={personalInfoState.personalLink}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    personalLink: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.personalLink || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
                 required
                 margin="normal"
                 fullWidth

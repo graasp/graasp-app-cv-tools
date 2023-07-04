@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 
 export interface MUIPhoneProps extends BaseTextFieldProps {
-  value: string;
+  value: string | undefined;
   onChange: (phone: string) => void;
 }
 

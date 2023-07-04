@@ -1,10 +1,14 @@
 import { ChangeEvent, FC, RefObject, useRef } from 'react';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Box, Button, Stack, Typography } from '@mui/material';
 
-import { CVInfoObj } from './types';
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { useAppDataContext } from '../../../context/AppDataContext';
+import { CVInfoObj, PersonalInfoObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -41,7 +45,28 @@ const Home: FC<Props> = ({
       inputRef.current.click();
     }
   };
+  const { postAppData, appDataArray } = useAppDataContext();
+  const handlePersonalPost = (newdata: PersonalInfoObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONALINFO });
+  };
   const handleNext = (): void => {
+    const personalData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+    );
+    if (personalData.size === 0) {
+      handlePersonalPost({
+        firstName: '',
+        lastName: '',
+        birthDate: undefined,
+        gender: '',
+        emailAddress: '',
+        phoneNum: '',
+        address: '',
+        profileLinks: '',
+        personalLink: '',
+        personalPic: '',
+      });
+    }
     nextPage();
     nextStep(); // Update the activeStep state
   };

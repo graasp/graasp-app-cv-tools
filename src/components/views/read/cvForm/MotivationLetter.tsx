@@ -81,6 +81,7 @@ const MotivationLetter: FC<Props> = ({
                   }))
                 }
                 multiline
+                minRows={10}
                 required
                 fullWidth
                 margin="normal"
