@@ -191,10 +191,21 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
               ) : (
                 Object.entries(card.data as SkillsObj).map(([key, values]) => {
                   if (key !== 'title' && values.length !== 0) {
+                    const valuesArray = Array.isArray(values)
+                      ? values
+                      : [values];
                     return (
                       <Box key={key}>
                         <Typography variant="subtitle2">
-                          {key}: {Array.from(values).join(', ')}
+                          {key}:{' '}
+                          {valuesArray.map((value) => (
+                            <Chip
+                              key={value}
+                              label={value}
+                              color="primary"
+                              style={{ marginLeft: '3px', marginRight: '3px' }}
+                            />
+                          ))}
                         </Typography>
                       </Box>
                     );
