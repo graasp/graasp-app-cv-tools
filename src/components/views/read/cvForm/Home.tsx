@@ -7,6 +7,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Box, Button, Stack, Typography } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { CVInfoObj, PersonalInfoObj } from './types';
 
@@ -31,10 +32,30 @@ const Home: FC<Props> = ({
       const reader = new FileReader();
       reader.onload = () => {
         const fileContent = reader.result as string;
-        const parsedData = JSON.parse(fileContent) as CVInfoObj;
-        onCvValuesUpload(parsedData);
 
-        templateStep();
+        const parsedData = JSON.parse(fileContent) as CVInfoObj;
+        if (
+          Object.keys(parsedData).every((key) =>
+            [
+              'personalInfo',
+              'educationInfo',
+              'workInfo',
+              'skillsInfo',
+              'portfolioInfo',
+              'motivationInfo',
+              'referencesInfo',
+              'templateInfo',
+            ].includes(key),
+          )
+        ) {
+          onCvValuesUpload(parsedData);
+          templateStep();
+        } else {
+          console.log('Error parsing');
+          showErrorToast(
+            'Invalid file content. Please upload a valid CV data file.',
+          );
+        }
       };
       reader.readAsText(file);
     }
