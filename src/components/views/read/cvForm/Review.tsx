@@ -5,7 +5,7 @@ import { FC } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Typography } from '@mui/material';
 
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 
@@ -61,30 +61,42 @@ const Review: FC<Props> = ({
           {renderedTemplate}
         </PDFViewer>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+          marginTop: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<DownloadIcon />}
-        onClick={handleDownload}
-      >
-        Download
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<CheckCircleIcon />}
-        onClick={handleNext}
-      >
-        Submit
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<DownloadIcon />}
+          onClick={handleDownload}
+          style={{ alignSelf: 'center' }}
+        >
+          Download
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<CheckCircleIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Finish
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

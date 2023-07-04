@@ -165,13 +165,9 @@ const PersonalInfo: FC<Props> = ({
     <Box>
       <Box>
         <Typography sx={{ m: '0.5rem' }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          For this part, you are supposed to fill all the required fields with
+          your information, you can also upload a personal picture to have on
+          your Cv.
         </Typography>
         {mapping.map((m) => (
           <Fragment key={m.key}>
@@ -378,7 +374,7 @@ const PersonalInfo: FC<Props> = ({
           color="primary"
           startIcon={<NavigateBeforeIcon />}
           onClick={handlePrev}
-          style={{ alignSelf: 'flex-start', outline: 'none' }}
+          style={{ alignSelf: 'flex-start' }}
         >
           Home
         </Button>
@@ -387,7 +383,7 @@ const PersonalInfo: FC<Props> = ({
           color="primary"
           startIcon={<SaveIcon />}
           onClick={handleSave}
-          style={{ alignSelf: 'center', outline: 'none' }}
+          style={{ alignSelf: 'center' }}
         >
           Save
         </Button>
@@ -396,7 +392,7 @@ const PersonalInfo: FC<Props> = ({
           color="primary"
           startIcon={<NavigateNextIcon />}
           onClick={handleNext}
-          style={{ alignSelf: 'flex-end', outline: 'none' }}
+          style={{ alignSelf: 'flex-end' }}
         >
           Next
         </Button>

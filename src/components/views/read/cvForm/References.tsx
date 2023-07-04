@@ -1,8 +1,6 @@
 import { List } from 'immutable';
 
 import { FC, useEffect, useState } from 'react';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
 
@@ -15,6 +13,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -24,6 +23,7 @@ import {
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import { MuiPhone } from './MuiPhone';
 import { ReferencesObj } from './types';
 
 interface Props {
@@ -133,20 +133,26 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
-        {referencesCards?.map((card) => (
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add as many References as you like and done, you
+          can also remove any Reference you would like to remove from your
+          application, modify the information by clicking on edit, fill up all
+          the required fields, and when done editing just click on done button.
+        </Typography>
+        {referencesCards?.map((card, index) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                References
+                References {index + 1}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Add A New Reference
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
               </Typography>
               {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
-                      <Typography>{m.label}</Typography>
                       {m.key === 'referenceName' && (
                         <TextField
                           id={m.key}
@@ -160,6 +166,8 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referenceRelation' && (
@@ -175,6 +183,8 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referenceCompany' && (
@@ -190,11 +200,16 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referencePhoneNum' && (
-                        <PhoneInput
-                          country="us"
+                        <MuiPhone
+                          required
+                          fullWidth
+                          margin="normal"
+                          label={m.label}
                           value={card.data.referencePhoneNum || ''}
                           onChange={(phone: string) =>
                             handleChange(card.id, 'referencePhoneNum', phone)
@@ -214,6 +229,8 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
                             )
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                     </Box>
@@ -273,22 +290,32 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           Add
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

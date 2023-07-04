@@ -11,6 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -120,11 +121,15 @@ const Template: FC<Props> = ({
 
   return (
     <Box>
+      <Typography sx={{ m: '0.5rem' }}>
+        For this part you can select the template that you would like to have on
+        your CV, by clicking on Select, proceeding to review the generated Cv.
+      </Typography>
       {TEMPLATES.map((template) => (
         <Card key={template.id}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
-              {template.name} - {template.id}
+              {template.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Select A Template
@@ -144,37 +149,49 @@ const Template: FC<Props> = ({
           </CardActions>
         </Card>
       ))}
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+          marginTop: '16px',
+        }}
       >
-        Back
-      </Button>
-      <input
-        type="file"
-        accept="application/pdf"
-        style={{ display: 'none' }}
-        ref={inputRef}
-        onChange={onChange}
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<HomeIcon />}
-        onClick={() => homeStep()}
-      >
-        Main
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<UploadFileIcon />}
-        onClick={handleClick}
-      >
-        Upload CV
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <input
+          type="file"
+          accept="application/pdf"
+          style={{ display: 'none' }}
+          ref={inputRef}
+          onChange={onChange}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<HomeIcon />}
+          onClick={() => homeStep()}
+          style={{ alignSelf: 'center' }}
+        >
+          Main
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<UploadFileIcon />}
+          onClick={handleClick}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Upload CV
+        </Button>
+      </ButtonGroup>
       {uploadedFile && (
         <Box display="flex" alignItems="center">
           <Typography>{uploadedFile.name}</Typography>
