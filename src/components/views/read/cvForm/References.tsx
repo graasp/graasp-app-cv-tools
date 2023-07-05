@@ -24,7 +24,7 @@ import {
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { MuiPhone } from './MuiPhone';
-import { ReferencesObj } from './types';
+import { CvStatusObj, ReferencesObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -114,11 +114,23 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     });
   };
 
+  const handleCvStatePost = (newdata: CvStatusObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CVSTATUSDATA });
+  };
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
+    const cvStatusData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
+    );
+    if (cvStatusData.size === 0) {
+      handleCvStatePost({
+        selectedTemplateId: '',
+        customCv: false,
+      });
+    }
     nextPage();
     nextStep();
   };

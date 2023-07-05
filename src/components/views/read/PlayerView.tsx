@@ -3,6 +3,7 @@ import { FC, useState } from 'react';
 import { Box } from '@mui/material';
 
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
+import Template from './cvForm/Cv';
 import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
@@ -12,7 +13,6 @@ import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
 import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
-import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
 import { CVInfoObj } from './cvForm/types';
 
@@ -34,7 +34,7 @@ const PlayerView: FC = () => {
     'Portfolio',
     'Motivation Letter',
     'References',
-    'Template',
+    'Cv',
     'Review',
   ];
 
@@ -63,17 +63,9 @@ const PlayerView: FC = () => {
       motivationLetter: '',
     },
     referencesInfo: [],
-    templateInfo: { selectedTemplateId: '' },
+    cvStateInfo: { selectedTemplateId: '', customCv: false },
   });
-  const handleCvValuesChange = <K extends keyof CVInfoObj>(
-    subkey: K,
-    newSubkeyValues: CVInfoObj[K],
-  ): void => {
-    setCvValues((prevCvValues) => ({
-      ...prevCvValues,
-      [subkey]: newSubkeyValues,
-    }));
-  };
+
   const handleUploadCvValues = (data: CVInfoObj): void => {
     setCvValues(data);
   };
@@ -150,13 +142,8 @@ const PlayerView: FC = () => {
             nextPage={nextPage}
             prevPage={prevPage}
             nextStep={nextStep}
-            homeStep={homeStep}
             prevStep={prevStep}
             cvValues={cvValues}
-            templateData={cvValues.templateInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('templateInfo', data)
-            }
           />
         )}
         {activeStep === 9 && (

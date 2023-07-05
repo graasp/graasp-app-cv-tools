@@ -63,8 +63,9 @@ export type ReferencesObj = {
   referenceEmail: string;
 };
 
-export type TemplateObj = {
+export type CvStatusObj = {
   selectedTemplateId: string;
+  customCv: boolean;
 };
 
 export type CVInfoObj = {
@@ -75,5 +76,5 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
-  templateInfo: TemplateObj;
+  cvStateInfo: CvStatusObj;
 };

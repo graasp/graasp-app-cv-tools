@@ -28,7 +28,7 @@ const Review: FC<Props> = ({
   cvValues,
 }) => {
   const { component: CvTemplate } = TEMPLATES.find(
-    (t) => t.id === cvValues.templateInfo.selectedTemplateId,
+    (t) => t.id === cvValues.cvStateInfo.selectedTemplateId,
   ) || { component: FirstTemplate };
   const renderedTemplate = <CvTemplate cvValues={cvValues} />;
 
