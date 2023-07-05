@@ -4,6 +4,7 @@ import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveIcon from '@mui/icons-material/Save';
 import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
@@ -15,47 +16,48 @@ interface Props {
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  motivationInfo: MotivationObj;
-  onCvValuesChange: (data: MotivationObj) => void;
 }
 const MotivationLetter: FC<Props> = ({
   nextPage,
   prevPage,
   nextStep,
   prevStep,
-  motivationInfo,
-  onCvValuesChange,
 }) => {
-  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const { patchAppData, appDataArray } = useAppDataContext();
   const motivationObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
   );
-  const handlePost = (newdata: MotivationObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION });
-  };
   const handlePatch = (dataObj: AppData, newData: MotivationObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const [motivationInfoState, setMotivationInfoState] =
-    useState(motivationInfo);
+
+  const [motivationInfoState, setMotivationInfoState] = useState<
+    AppData & { data: MotivationObj }
+  >();
 
   useEffect(() => {
-    setMotivationInfoState(motivationInfo);
-  }, [motivationInfo]);
+    const motivationData = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION,
+    ) as AppData & { data: MotivationObj };
+    setMotivationInfoState(motivationData);
+  }, [appDataArray]);
 
+  const handleSave = (): void => {
+    // search in appdata so if we find the object of the same type 'motivationInfo' patch its data by its id
+    if (motivationObject && motivationInfoState) {
+      handlePatch(motivationObject, motivationInfoState.data);
+    }
+  };
+  const hasChanges =
+    motivationInfoState &&
+    Object.keys(motivationInfoState.data).some(
+      (key) => motivationInfoState.data[key] !== motivationObject?.data[key],
+    );
   const handlePrev = (): void => {
-    onCvValuesChange(motivationInfoState);
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id, otherwise just post the object
-    if (motivationObject) {
-      handlePatch(motivationObject, motivationInfoState);
-    } else {
-      handlePost(motivationInfoState);
-    }
-    onCvValuesChange(motivationInfoState);
     nextPage();
     nextStep();
   };
@@ -74,12 +76,20 @@ const MotivationLetter: FC<Props> = ({
               <TextField
                 label={m.label}
                 id={m.key}
-                value={motivationInfoState.motivationLetter || ''}
+                value={motivationInfoState?.data.motivationLetter || ''}
                 onChange={(e) =>
-                  setMotivationInfoState((prev) => ({
-                    ...prev,
-                    motivationLetter: e.target.value,
-                  }))
+                  setMotivationInfoState((prev) => {
+                    if (!prev) {
+                      return prev;
+                    }
+                    return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        motivationLetter: e.target.value,
+                      },
+                    };
+                  })
                 }
                 multiline
                 minRows={10}
@@ -106,6 +116,16 @@ const MotivationLetter: FC<Props> = ({
           style={{ alignSelf: 'flex-start' }}
         >
           Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          style={{ alignSelf: 'center' }}
+          disabled={!hasChanges}
+        >
+          Save
         </Button>
         <Button
           variant="contained"

@@ -28,7 +28,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
-import { PortfolioObj } from './types';
+import { MotivationObj, PortfolioObj } from './types';
 
 interface Props {
   nextPage: () => void;
@@ -120,11 +120,22 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     });
   };
 
+  const handleMotivationPost = (newdata: MotivationObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION });
+  };
   const handlePrev = (): void => {
     prevPage();
     prevStep();
   };
   const handleNext = (): void => {
+    const motivationData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION,
+    );
+    if (motivationData.size === 0) {
+      handleMotivationPost({
+        motivationLetter: '',
+      });
+    }
     nextPage();
     nextStep();
   };
