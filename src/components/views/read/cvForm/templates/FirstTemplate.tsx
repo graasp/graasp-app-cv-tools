@@ -50,7 +50,7 @@ const FirstTemplate: TemplateComponent = ({
                 justifyContent: 'center',
               }}
             >
-              {personalInfo.personalPic && (
+              {personalInfo?.personalPic && (
                 <Image
                   style={{
                     width: '60px',
@@ -68,7 +68,7 @@ const FirstTemplate: TemplateComponent = ({
                   color: 'white',
                 }}
               >
-                {personalInfo.firstName} {personalInfo.lastName}
+                {personalInfo?.firstName} {personalInfo?.lastName}
               </Text>
               <Text
                 style={{
@@ -78,7 +78,7 @@ const FirstTemplate: TemplateComponent = ({
                   color: 'white',
                 }}
               >
-                {personalInfo.gender} - {personalInfo.birthDate}
+                {personalInfo?.gender} - {personalInfo?.birthDate}
               </Text>
               <Text
                 style={{
@@ -88,7 +88,7 @@ const FirstTemplate: TemplateComponent = ({
                   color: 'white',
                 }}
               >
-                {personalInfo.address}
+                {personalInfo?.address}
               </Text>
             </View>
             <View
@@ -108,7 +108,7 @@ const FirstTemplate: TemplateComponent = ({
                 color: 'white',
               }}
             >
-              {personalInfo.emailAddress}
+              {personalInfo?.emailAddress}
             </Text>
             <Text
               style={{
@@ -118,7 +118,7 @@ const FirstTemplate: TemplateComponent = ({
                 color: 'white',
               }}
             >
-              +{personalInfo.phoneNum}
+              +{personalInfo?.phoneNum}
             </Text>
             <Text
               style={{
@@ -128,7 +128,7 @@ const FirstTemplate: TemplateComponent = ({
                 color: 'white',
               }}
             >
-              {personalInfo.profileLinks}
+              {personalInfo?.profileLinks}
             </Text>
             <Text
               style={{
@@ -138,7 +138,7 @@ const FirstTemplate: TemplateComponent = ({
                 color: 'white',
               }}
             >
-              {personalInfo.personalLink}
+              {personalInfo?.personalLink}
             </Text>
           </View>
         </View>
@@ -153,7 +153,7 @@ const FirstTemplate: TemplateComponent = ({
         >
           <Text>Education</Text>
           <Divider />
-          {educationInfo.map((item: EducationInfoObj, index) => (
+          {educationInfo?.map((item: EducationInfoObj, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               <Text style={{ fontSize: '13px' }}>
                 {item.major} - {item.institutionName}
@@ -185,7 +185,7 @@ const FirstTemplate: TemplateComponent = ({
           ))}
           <Text>Employment History</Text>
           <Divider />
-          {workInfo.map((item: WorkExperienceObj, index) => (
+          {workInfo?.map((item: WorkExperienceObj, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               {Object.entries(item)
                 .filter(([key]) => key !== 'id') // Exclude the key "id"
@@ -200,7 +200,7 @@ const FirstTemplate: TemplateComponent = ({
           ))}
           <Text>Skills</Text>
           <Divider />
-          {skillsInfo.map(
+          {skillsInfo?.map(
             (item: SkillsObj, index) =>
               item.skills.length > 0 && (
                 <View key={index} style={{ marginBottom: 10 }}>
@@ -219,7 +219,7 @@ const FirstTemplate: TemplateComponent = ({
 
           <Text>Portfolio & Projects</Text>
           <Divider />
-          {portfolioInfo.map((item: PortfolioObj, index) => (
+          {portfolioInfo?.map((item: PortfolioObj, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               {Object.entries(item)
                 .filter(([key]) => key !== 'id') // Exclude the key "id"
@@ -234,10 +234,10 @@ const FirstTemplate: TemplateComponent = ({
           ))}
           <Text>Self-Motivation</Text>
           <Divider />
-          <Text>{motivationInfo.motivationLetter}</Text>
+          <Text>{motivationInfo?.motivationLetter}</Text>
           <Text>References</Text>
           <Divider />
-          {referencesInfo.map((item: ReferencesObj, index) => (
+          {referencesInfo?.map((item: ReferencesObj, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               {Object.entries(item)
                 .filter(([key]) => key !== 'id') // Exclude the key "id"

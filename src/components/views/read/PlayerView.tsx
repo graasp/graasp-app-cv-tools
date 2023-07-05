@@ -66,9 +66,6 @@ const PlayerView: FC = () => {
     cvStateInfo: { selectedTemplateId: '', customCv: false },
   });
 
-  const handleUploadCvValues = (data: CVInfoObj): void => {
-    setCvValues(data);
-  };
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
       <FormLayout activeStep={activeStep} steps={steps}>
@@ -78,7 +75,6 @@ const PlayerView: FC = () => {
             nextPage={nextPage}
             nextStep={nextStep}
             templateStep={templateStep}
-            onCvValuesUpload={(cvData) => handleUploadCvValues(cvData)}
           />
         )}
         {activeStep === 1 && (
@@ -143,7 +139,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             nextStep={nextStep}
             prevStep={prevStep}
-            cvValues={cvValues}
           />
         )}
         {activeStep === 9 && (

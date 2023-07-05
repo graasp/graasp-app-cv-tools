@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, RefObject, useEffect, useRef, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData, Data } from '@graasp/apps-query-client/dist/types';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
@@ -29,26 +29,31 @@ import { PDFViewer } from '@react-pdf/renderer';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { TEMPLATES } from './constants';
-import { CVInfoObj, CvStatusObj } from './types';
+import {
+  CvStatusObj,
+  EducationInfoObj,
+  MotivationObj,
+  PersonalInfoObj,
+  PortfolioObj,
+  ReferencesObj,
+  SkillsObj,
+  WorkExperienceObj,
+} from './types';
 
 interface Props {
   nextPage: () => void;
   prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  cvValues: CVInfoObj;
 }
-const Template: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  cvValues,
-}) => {
+const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const cvStatusObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
   );
+  const cvValues = appDataArray.find(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
+  )?.data;
 
   const handlePatch = (dataObj: AppData, newData: CvStatusObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -160,6 +165,68 @@ const Template: FC<Props> = ({
     Object.keys(cvInfoState.data).some(
       (key) => cvInfoState.data[key] !== cvStatusObject?.data[key],
     );
+
+  const personalInfoObject = appDataArray.find(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+  )?.data as PersonalInfoObj;
+  const educationInfoObject = appDataArray.filter(
+    (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
+  );
+
+  const educationDataArray: Data[] = [];
+  educationInfoObject.map((card) => {
+    educationDataArray.push(card.data);
+    return null;
+  });
+
+  const workInfoObject = appDataArray.filter(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+  );
+  const workDataArray: Data[] = [];
+  workInfoObject.map((card) => {
+    workDataArray.push(card.data);
+    return null;
+  });
+
+  const skillsInfoObject = appDataArray.filter(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+  );
+  const skillsDataArray: Data[] = [];
+  skillsInfoObject.map((card) => {
+    skillsDataArray.push(card.data);
+    return null;
+  });
+
+  const portfolioInfoObject = appDataArray.filter(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PORTFOLIO,
+  );
+  const portfolioDataArray: Data[] = [];
+  portfolioInfoObject.map((card) => {
+    portfolioDataArray.push(card.data);
+    return null;
+  });
+
+  const motivationObject = appDataArray.find(
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
+  )?.data as MotivationObj;
+  const referencesInfoObject = appDataArray.filter(
+    (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES,
+  );
+  const referencesDataArray: Data[] = [];
+  referencesInfoObject.map((card) => {
+    referencesDataArray.push(card.data);
+    return null;
+  });
+  const cvObj = {
+    personalInfo: personalInfoObject,
+    educationInfo: educationDataArray as EducationInfoObj[],
+    workInfo: workDataArray as WorkExperienceObj[],
+    skillsInfo: skillsDataArray as SkillsObj[],
+    portfolioInfo: portfolioDataArray as PortfolioObj[],
+    motivationInfo: motivationObject,
+    referencesInfo: referencesDataArray as ReferencesObj[],
+  };
+
   const handlePrev = (): void => {
     prevPage();
     prevStep();
@@ -199,7 +266,11 @@ const Template: FC<Props> = ({
               Select A Template
             </Typography>
             <PDFViewer showToolbar={false} style={{ width: '100%' }}>
-              <template.component cvValues={cvValues} />
+              {cvValues ? (
+                <template.component cvValues={cvValues} />
+              ) : (
+                <template.component cvValues={cvObj} />
+              )}
             </PDFViewer>
           </CardContent>
           <CardActions>

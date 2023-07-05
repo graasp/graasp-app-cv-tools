@@ -15,14 +15,13 @@ interface Props {
   nextPage: () => void;
   nextStep: () => void;
   templateStep: () => void;
-  onCvValuesUpload: (cvData: CVInfoObj) => void;
 }
-const Home: FC<Props> = ({
-  nextPage,
-  nextStep,
-  templateStep,
-  onCvValuesUpload,
-}) => {
+const Home: FC<Props> = ({ nextPage, nextStep, templateStep }) => {
+  const { postAppData, appDataArray } = useAppDataContext();
+
+  const handleCvPost = (newdata: CVInfoObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_VALUES });
+  };
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { files } = e.target;
@@ -48,7 +47,8 @@ const Home: FC<Props> = ({
             ].includes(key),
           )
         ) {
-          onCvValuesUpload(parsedData);
+          // onCvValuesUpload(parsedData);
+          handleCvPost(parsedData);
           templateStep();
         } else {
           console.log('Error parsing');
@@ -66,7 +66,7 @@ const Home: FC<Props> = ({
       inputRef.current.click();
     }
   };
-  const { postAppData, appDataArray } = useAppDataContext();
+
   const handlePersonalPost = (newdata: PersonalInfoObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONALINFO });
   };
