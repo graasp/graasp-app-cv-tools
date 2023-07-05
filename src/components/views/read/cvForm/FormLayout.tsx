@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react';
 
-import { Box, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Box, Step, StepLabel, Stepper } from '@mui/material';
 
 interface Props {
   children: ReactNode;
@@ -8,8 +8,7 @@ interface Props {
   steps: string[];
 }
 const FormLayout: FC<Props> = ({ children, activeStep, steps }: Props) => (
-  <div>
-    <Typography variant="h5">My Items/ CV App - Candidate Interface</Typography>
+  <Box>
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       <Box>
         <Stepper activeStep={activeStep} alternativeLabel>
@@ -24,7 +23,7 @@ const FormLayout: FC<Props> = ({ children, activeStep, steps }: Props) => (
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       {children}
     </Box>
-  </div>
+  </Box>
 );
 
 export default FormLayout;
