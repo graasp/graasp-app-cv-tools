@@ -108,29 +108,34 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   let handleDownload = async (): Promise<void> => {};
 
   if (cvValues) {
-    const { component: CvTemplate } = TEMPLATES.find(
-      (t) => t.id === cvValues.cvStateInfo.selectedTemplateId,
-    ) || { component: FirstTemplate };
-    renderedTemplate = <CvTemplate cvValues={cvValues} />;
-    handleDownload = async (): Promise<void> => {
-      const pdfBlob = await pdf(renderedTemplate).toBlob();
-      saveAs(pdfBlob, 'generated-cv.pdf');
-      const json = JSON.stringify(cvValues, null, 2); // Convert to JSON string with indentation
-      const jsonBlob = new Blob([json], { type: 'application/json' });
-      saveAs(jsonBlob, 'cv-data.json');
-    };
+    if (cvValues.cvStateInfo.selectedTemplateId) {
+      const { component: CvTemplate } = TEMPLATES.find(
+        (t) => t.id === cvValues.cvStateInfo.selectedTemplateId,
+      ) || { component: FirstTemplate };
+      renderedTemplate = <CvTemplate cvValues={cvValues} />;
+      handleDownload = async (): Promise<void> => {
+        const pdfBlob = await pdf(renderedTemplate).toBlob();
+        if (!cvValues.cvStateInfo.customCv) {
+          saveAs(pdfBlob, 'generated-cv.pdf');
+        }
+      };
+    }
   } else if (cvObj) {
-    const { component: CvTemplate } = TEMPLATES.find(
-      (t) => t.id === cvObj.cvStateInfo.selectedTemplateId,
-    ) || { component: FirstTemplate };
-    renderedTemplate = <CvTemplate cvValues={cvObj} />;
-    handleDownload = async (): Promise<void> => {
-      const pdfBlob = await pdf(renderedTemplate).toBlob();
-      saveAs(pdfBlob, 'generated-cv.pdf');
-      const json = JSON.stringify(cvObj, null, 2); // Convert to JSON string with indentation
-      const jsonBlob = new Blob([json], { type: 'application/json' });
-      saveAs(jsonBlob, 'cv-data.json');
-    };
+    if (cvObj.cvStateInfo.selectedTemplateId) {
+      const { component: CvTemplate } = TEMPLATES.find(
+        (t) => t.id === cvObj.cvStateInfo.selectedTemplateId,
+      ) || { component: FirstTemplate };
+      renderedTemplate = <CvTemplate cvValues={cvObj} />;
+      handleDownload = async (): Promise<void> => {
+        const pdfBlob = await pdf(renderedTemplate).toBlob();
+        if (!cvObj.cvStateInfo.customCv) {
+          saveAs(pdfBlob, 'generated-cv.pdf');
+        }
+        const json = JSON.stringify(cvObj, null, 2); // Convert to JSON string with indentation
+        const jsonBlob = new Blob([json], { type: 'application/json' });
+        saveAs(jsonBlob, 'cv-data.json');
+      };
+    }
   }
 
   const handleStatusPost = (newdata: SubmissionStatus): void => {
@@ -151,21 +156,33 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
       <Typography sx={{ m: '0.5rem' }}>
         For this part, and the final part of the your progress, as a final step,
         and after filling all the required fields from previous sections, select
-        the template or uploaded your custom Cv, all you can do here is that you
+        the template or uploaded your custom CV, all you can do here is that you
         can review the filled information, and confirm that they are as you are
         expecting, thn you can download the pdf file from the Download button,
         as well as a json file which contains all of your input data, to use
         next time, so no need to fill up the fields again, if there is no
         changes, finally you can click on Submit to state that you are done.
-        your Cv.
+        your CV.
       </Typography>
       <Box justifyContent="center" display="flex">
-        <PDFViewer
-          showToolbar={false}
-          style={{ minHeight: '75vh', minWidth: '50%' }}
-        >
-          {renderedTemplate}
-        </PDFViewer>
+        {cvValues.cvStateInfo.customCv || cvObj.cvStateInfo.customCv ? (
+          <Box justifyContent="center" display="flex">
+            <embed
+              src={`${
+                cvValues.cvStateInfo.fileUrl || cvObj.cvStateInfo.fileUrl
+              }#toolbar=0`}
+              type="application/pdf"
+              style={{ minHeight: '350px', width: '100%' }}
+            />
+          </Box>
+        ) : (
+          <PDFViewer
+            showToolbar={false}
+            style={{ minHeight: '75vh', minWidth: '50%' }}
+          >
+            {renderedTemplate}
+          </PDFViewer>
+        )}
       </Box>
       <ButtonGroup
         style={{

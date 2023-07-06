@@ -66,6 +66,7 @@ export type ReferencesObj = {
 export type CvStatusObj = {
   selectedTemplateId: string;
   customCv: boolean;
+  fileUrl?: string;
 };
 
 export type CVInfoObj = {

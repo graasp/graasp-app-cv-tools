@@ -15,7 +15,7 @@ const FormLayout: FC<Props> = ({
   modifyActiveStep,
 }: Props) => {
   const handleStepClick = (stepIndex: number): void => {
-    if (stepIndex !== steps.length - 1) {
+    if (stepIndex !== steps.length - 1 && stepIndex !== steps.length - 2) {
       modifyActiveStep(stepIndex);
     }
   };

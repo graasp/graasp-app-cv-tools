@@ -3,18 +3,14 @@ import { ChangeEvent, FC, RefObject, useEffect, useRef, useState } from 'react';
 import { AppData, Data } from '@graasp/apps-query-client/dist/types';
 
 import ClearIcon from '@mui/icons-material/Clear';
-import DoneIcon from '@mui/icons-material/Done';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   Button,
   ButtonGroup,
   Card,
-  CardActions,
   CardContent,
   FormControl,
   FormControlLabel,
@@ -28,7 +24,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
-import { TEMPLATES } from './constants';
+import FirstTemplate from './templates/FirstTemplate';
 import {
   CVInfoObj,
   CvStatusObj,
@@ -71,12 +67,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     setCvValuesState(cvData);
   }, [appDataArray]);
 
-  const inputRef: RefObject<HTMLInputElement> = useRef(null);
-  const [url, setUrl] = useState('');
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [visibility, setVisibility] = useState(false);
-  const [templateSelection, setTemplateSelection] = useState(false);
-  const [radioValue, setRadioValue] = useState('generatedCv');
   const [cvInfoState, setCvInfoState] = useState<
     AppData & { data: CvStatusObj }
   >();
@@ -87,6 +77,15 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     ) as AppData & { data: CvStatusObj };
     setCvInfoState(cvStatusData);
   }, [appDataArray]);
+
+  const inputRef: RefObject<HTMLInputElement> = useRef(null);
+  const [url, setUrl] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [radioValue, setRadioValue] = useState(
+    cvValuesState?.data.cvStateInfo.customCv || cvInfoState?.data.customCv
+      ? 'customCv'
+      : 'generatedCv',
+  );
 
   const handleClick = (): void => {
     // Clear the value of the file input before opening the file selection dialog
@@ -115,7 +114,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleFileRemove = (): void => {
-    setVisibility(false);
     setUrl('');
     setUploadedFile(null);
     if (inputRef.current) {
@@ -123,11 +121,8 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     }
   };
 
-  const handleVisibility = (): void => {
-    setVisibility(!visibility);
-  };
-  const handleRadioGroup = (templateId?: string): void => {
-    if (radioValue === 'generatedCv' && templateId) {
+  const handleRadioGroup = (): void => {
+    if (radioValue === 'generatedCv') {
       if (cvValuesState) {
         setCvValuesState((prev) => {
           if (!prev) {
@@ -137,8 +132,10 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
             ...prev,
             data: {
               ...prev.data,
-              selectedTemplateId: templateId,
-              customCv: false,
+              cvStateInfo: {
+                selectedTemplateId: 'formalTemplate',
+                customCv: false,
+              },
             },
           };
         });
@@ -152,12 +149,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
           ...prev,
           data: {
             ...prev.data,
-            selectedTemplateId: templateId,
+            selectedTemplateId: 'formalTemplate',
             customCv: false,
           },
         };
       });
-      setTemplateSelection(true);
     } else if (radioValue === 'customCv' && uploadedFile) {
       if (cvValuesState) {
         setCvValuesState((prev) => {
@@ -168,8 +164,12 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
             ...prev,
             data: {
               ...prev.data,
-              selectedTemplateId: '',
-              customCv: true,
+              cvStateInfo: {
+                selectedTemplateId: '',
+                customCv: true,
+                fileUrl: url,
+                fileUploaded: uploadedFile,
+              },
             },
           };
         });
@@ -185,10 +185,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
             ...prev.data,
             selectedTemplateId: '',
             customCv: true,
+            fileUrl: url,
+            fileUploaded: uploadedFile,
           },
         };
       });
-      setTemplateSelection(false);
     }
   };
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -197,26 +198,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   useEffect(() => {
     if (radioValue === 'customCv' && uploadedFile) {
       handleRadioGroup();
+    } else if (radioValue === 'generatedCv') {
+      handleRadioGroup();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radioValue, uploadedFile]);
-
-  const handleSave = (): void => {
-    if (cvStatusObject && cvInfoState) {
-      handlePatch(cvStatusObject, cvInfoState.data);
-    } else if (cvValues && cvValuesState) {
-      handleCvValuesPatch(cvValues, cvValuesState.data);
-    }
-  };
-  const hasChanges =
-    (cvInfoState &&
-      Object.keys(cvInfoState.data).some(
-        (key) => cvInfoState.data[key] !== cvStatusObject?.data[key],
-      )) ||
-    (cvValuesState &&
-      Object.keys(cvValuesState.data).some(
-        (key) => cvValuesState.data[key] !== cvValues?.data[key],
-      ));
 
   const personalInfoObject = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
@@ -283,6 +269,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
+    if (cvStatusObject && cvInfoState) {
+      handlePatch(cvStatusObject, cvInfoState.data);
+    } else if (cvValues && cvValuesState) {
+      handleCvValuesPatch(cvValues, cvValuesState.data);
+    }
     nextStep();
   };
 
@@ -290,11 +281,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     <Box>
       <Typography sx={{ m: '0.5rem' }}>
         For this part you can either pickup and select the template that you
-        would like to have on your Cv applied on the information you provided in
-        the previous sections, by making sure the &quot;Generated Cv&quot; is
-        checked, then click on Select, or upload your own custom Cv, by
+        would like to have on your CV applied on the information you provided in
+        the previous sections, by making sure the &quot;Generated CV&quot; is
+        checked, then click on Select, or upload your own custom CV, by
         uploading the file first, and making sure it&apos;s in pdf format, then
-        make sure that &quot;Custom Cv&quot; is checked, then Save and proceed
+        make sure that &quot;Custom CV&quot; is checked, then Save and proceed
         to next section by clicking on Next.
       </Typography>
       <FormControl>
@@ -302,50 +293,12 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
           <FormControlLabel
             value="generatedCv"
             control={<Radio />}
-            label="Generated Cv"
+            label="Generated CV"
           />
-        </RadioGroup>
-      </FormControl>
-      {TEMPLATES.map((template) => (
-        <Card key={template.id}>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {template.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Select A Template
-            </Typography>
-            <PDFViewer
-              showToolbar={false}
-              style={{ width: '100%', minHeight: '350px' }}
-            >
-              {cvValues ? (
-                <template.component cvValues={cvValues.data} />
-              ) : (
-                <template.component cvValues={cvObj} />
-              )}
-            </PDFViewer>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              startIcon={<DoneIcon />}
-              onClick={() => {
-                handleRadioGroup(template.id);
-              }}
-              disabled={templateSelection}
-            >
-              Select
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
-      <FormControl>
-        <RadioGroup value={radioValue} onChange={handleChange}>
           <FormControlLabel
             value="customCv"
             control={<Radio />}
-            label="Custom Cv"
+            label="Custom CV"
             disabled={!uploadedFile}
           />
         </RadioGroup>
@@ -363,6 +316,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
         color="primary"
         startIcon={<UploadFileIcon />}
         onClick={handleClick}
+        style={{ display: 'flex' }}
       >
         Upload CV
       </Button>
@@ -372,20 +326,34 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
           <IconButton onClick={handleFileRemove} color="primary">
             <ClearIcon />
           </IconButton>
-          <IconButton onClick={handleVisibility} color="primary">
-            <VisibilityIcon />
-          </IconButton>
         </Box>
       )}
-      {visibility && (
-        <Box justifyContent="center" display="flex">
-          <embed
-            src={`${url}#toolbar=0`}
-            type="application/pdf"
-            style={{ minHeight: '75vh', minWidth: '50%' }}
-          />
-        </Box>
-      )}
+      <Card>
+        <CardContent>
+          {radioValue === 'generatedCv' && (
+            <PDFViewer
+              showToolbar={false}
+              style={{ width: '100%', minHeight: '350px' }}
+            >
+              {cvValues ? (
+                <FirstTemplate cvValues={cvValues.data} />
+              ) : (
+                <FirstTemplate cvValues={cvObj} />
+              )}
+            </PDFViewer>
+          )}
+          {uploadedFile && radioValue === 'customCv' && (
+            <Box justifyContent="center" display="flex">
+              <embed
+                src={`${url}#toolbar=0`}
+                type="application/pdf"
+                style={{ minHeight: '350px', width: '100%' }}
+              />
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+
       <ButtonGroup
         style={{
           display: 'flex',
@@ -402,16 +370,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
           style={{ alignSelf: 'flex-start' }}
         >
           Back
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<SaveIcon />}
-          onClick={handleSave}
-          style={{ alignSelf: 'center' }}
-          disabled={!hasChanges}
-        >
-          Save
         </Button>
         <Button
           variant="contained"
