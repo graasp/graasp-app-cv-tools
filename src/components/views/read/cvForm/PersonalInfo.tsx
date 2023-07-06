@@ -74,6 +74,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   const [personalInfoState, setPersonalInfoState] = useState<
     AppData & { data: PersonalInfoObj }
   >();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const personalData = appDataArray.find(
@@ -179,9 +180,62 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleSave = (): void => {
-    // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id
-    if (personalInfoObject && personalInfoState) {
-      handlePatch(personalInfoObject, personalInfoState.data);
+    // // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id
+    // if (personalInfoObject && personalInfoState) {
+    //   handlePatch(personalInfoObject, personalInfoState.data);
+    // }
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Perform validation for each required field
+    if (!personalInfoState?.data.firstName.trim()) {
+      updatedErrors.firstName = 'First Name is required';
+      isValid = false;
+    } else {
+      updatedErrors.firstName = ''; // Clear the error message if the field is valid
+    }
+
+    if (!personalInfoState?.data.lastName.trim()) {
+      updatedErrors.lastName = 'Last Name is required';
+      isValid = false;
+    } else {
+      updatedErrors.lastName = ''; // Clear the error message if the field is valid
+    }
+
+    if (!personalInfoState?.data.emailAddress.trim()) {
+      updatedErrors.emailAddress = 'Email Address is required';
+      isValid = false;
+    } else {
+      updatedErrors.emailAddress = ''; // Clear the error message if the field is valid
+    }
+
+    if (!personalInfoState?.data.phoneNum.trim()) {
+      updatedErrors.phoneNum = 'Phone Number is required';
+      isValid = false;
+    } else {
+      updatedErrors.phoneNum = ''; // Clear the error message if the field is valid
+    }
+
+    if (!personalInfoState?.data.profileLinks.trim()) {
+      updatedErrors.profileLinks = 'Profile Links is required';
+      isValid = false;
+    } else {
+      updatedErrors.profileLinks = ''; // Clear the error message if the field is valid
+    }
+
+    // Update the error state
+    setErrors(updatedErrors);
+
+    // Save the data if it's valid
+    if (isValid) {
+      // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
+      const personalInfoObj = appDataArray.find(
+        (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+      ) as AppData & { data: PersonalInfoObj };
+
+      if (personalInfoObj && personalInfoState) {
+        handlePatch(personalInfoObj, personalInfoState.data);
+      }
     }
   };
   const hasChanges =
@@ -216,6 +270,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 required
                 margin="normal"
                 fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'lastName' && (
@@ -227,6 +283,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 required
                 margin="normal"
                 fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'birthDate' && (
@@ -255,7 +313,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 label={m.label}
                 value={personalInfoState?.data?.gender || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
-                required
                 fullWidth
                 margin="normal"
               >
@@ -275,6 +332,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 required
                 margin="normal"
                 fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'phoneNum' && (
@@ -285,6 +344,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 label={m.label}
                 value={personalInfoState?.data.phoneNum || ''}
                 onChange={(phone: string) => handleChange(m.key, phone)}
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'address' && (
@@ -293,7 +354,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 id={m.key}
                 value={personalInfoState?.data.address || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
-                required
                 margin="normal"
                 fullWidth
               />
@@ -307,6 +367,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 required
                 margin="normal"
                 fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'personalLinks' && (
@@ -315,7 +377,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 label={m.label}
                 value={personalInfoState?.data.personalLink || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
-                required
                 margin="normal"
                 fullWidth
               />
