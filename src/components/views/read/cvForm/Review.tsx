@@ -151,7 +151,18 @@ const Review: FC<Props> = ({ nextPage, prevPage, homeStep, prevStep }) => {
   };
   return (
     <Box>
-      <Typography>Generated CV</Typography>
+      <Typography variant="h4">Review</Typography>
+      <Typography sx={{ m: '0.5rem' }}>
+        For this part, and the final part of the your progress, as a final step,
+        and after filling all the required fields from previous sections, select
+        the template or uploaded your custom Cv, all you can do here is that you
+        can review the filled information, and confirm that they are as you are
+        expecting, thn you can download the pdf file from the Download button,
+        as well as a json file which contains all of your input data, to use
+        next time, so no need to fill up the fields again, if there is no
+        changes, finally you can click on Submit to state that you are done.
+        your Cv.
+      </Typography>
       <Box justifyContent="center" display="flex">
         <PDFViewer
           showToolbar={false}

@@ -319,7 +319,10 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
             <Typography variant="body2" color="text.secondary">
               Select A Template
             </Typography>
-            <PDFViewer showToolbar={false} style={{ width: '100%' }}>
+            <PDFViewer
+              showToolbar={false}
+              style={{ width: '100%', minHeight: '350px' }}
+            >
               {cvValues ? (
                 <template.component cvValues={cvValues.data} />
               ) : (
