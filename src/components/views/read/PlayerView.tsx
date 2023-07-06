@@ -14,7 +14,6 @@ import References from './cvForm/References';
 import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
 import WorkExperience from './cvForm/WorkExperience';
-import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
   const [page, setPage] = useState(1);
@@ -24,7 +23,7 @@ const PlayerView: FC = () => {
   const nextStep = (): void => setActiveStep(activeStep + 1);
   const prevStep = (): void => setActiveStep(activeStep - 1);
   const homeStep = (): void => setActiveStep(0);
-  const templateStep = (): void => setActiveStep(8);
+  const reviewStep = (): void => setActiveStep(8);
   const steps = [
     'Home',
     'Personal Info',
@@ -38,34 +37,6 @@ const PlayerView: FC = () => {
     'Review',
   ];
 
-  const [cvValues, setCvValues] = useState<CVInfoObj>({
-    personalInfo: {
-      firstName: '',
-      lastName: '',
-      birthDate: undefined,
-      gender: '',
-      emailAddress: '',
-      phoneNum: '',
-      address: '',
-      profileLinks: '',
-      personalLink: '',
-      personalPic: '',
-    },
-    educationInfo: [],
-    workInfo: [],
-    skillsInfo: [
-      { title: 'Tech Skills', skills: [] },
-      { title: 'Lang Skills', skills: [] },
-      { title: 'Other Skills', skills: [] },
-    ],
-    portfolioInfo: [],
-    motivationInfo: {
-      motivationLetter: '',
-    },
-    referencesInfo: [],
-    cvStateInfo: { selectedTemplateId: '', customCv: false },
-  });
-
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
       <FormLayout activeStep={activeStep} steps={steps}>
@@ -74,7 +45,7 @@ const PlayerView: FC = () => {
           <Home
             nextPage={nextPage}
             nextStep={nextStep}
-            templateStep={templateStep}
+            reviewStep={reviewStep}
           />
         )}
         {activeStep === 1 && (
@@ -147,7 +118,6 @@ const PlayerView: FC = () => {
             prevPage={prevPage}
             homeStep={homeStep}
             prevStep={prevStep}
-            cvValues={cvValues}
           />
         )}
       </FormLayout>

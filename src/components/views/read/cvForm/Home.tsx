@@ -14,9 +14,9 @@ import { CVInfoObj, PersonalInfoObj } from './types';
 interface Props {
   nextPage: () => void;
   nextStep: () => void;
-  templateStep: () => void;
+  reviewStep: () => void;
 }
-const Home: FC<Props> = ({ nextPage, nextStep, templateStep }) => {
+const Home: FC<Props> = ({ nextPage, nextStep, reviewStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
 
   const handleCvPost = (newdata: CVInfoObj): void => {
@@ -43,13 +43,12 @@ const Home: FC<Props> = ({ nextPage, nextStep, templateStep }) => {
               'portfolioInfo',
               'motivationInfo',
               'referencesInfo',
-              'templateInfo',
+              'cvStateInfo',
             ].includes(key),
           )
         ) {
-          // onCvValuesUpload(parsedData);
           handleCvPost(parsedData);
-          templateStep();
+          reviewStep();
         } else {
           console.log('Error parsing');
           showErrorToast(

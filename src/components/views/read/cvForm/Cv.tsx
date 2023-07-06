@@ -30,6 +30,7 @@ import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { TEMPLATES } from './constants';
 import {
+  CVInfoObj,
   CvStatusObj,
   EducationInfoObj,
   MotivationObj,
@@ -53,11 +54,24 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   );
   const cvValues = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
-  )?.data;
-
+  );
   const handlePatch = (dataObj: AppData, newData: CvStatusObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
+  const handleCvValuesPatch = (dataObj: AppData, newData: CVInfoObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+
+  const [cvValuesState, setCvValuesState] = useState<
+    AppData & { data: CVInfoObj }
+  >();
+
+  useEffect(() => {
+    const cvData = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
+    ) as AppData & { data: CVInfoObj };
+    setCvValuesState(cvData);
+  }, [appDataArray]);
 
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const [url, setUrl] = useState('');
@@ -116,6 +130,22 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   };
   const handleRadioGroup = (templateId?: string): void => {
     if (radioValue === 'generatedCv' && templateId) {
+      if (cvValuesState) {
+        setCvValuesState((prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              selectedTemplateId: templateId,
+              customCv: false,
+            },
+          };
+        });
+      }
+
       setCvInfoState((prev) => {
         if (!prev) {
           return prev;
@@ -131,6 +161,22 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
       });
       setTemplateSelection(true);
     } else if (radioValue === 'customCv' && uploadedFile) {
+      if (cvValuesState) {
+        setCvValuesState((prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              selectedTemplateId: '',
+              customCv: true,
+            },
+          };
+        });
+      }
+
       setCvInfoState((prev) => {
         if (!prev) {
           return prev;
@@ -144,6 +190,7 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
           },
         };
       });
+      setTemplateSelection(false);
     }
   };
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -153,18 +200,25 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     if (radioValue === 'customCv' && uploadedFile) {
       handleRadioGroup();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [radioValue, uploadedFile]);
 
   const handleSave = (): void => {
     if (cvStatusObject && cvInfoState) {
       handlePatch(cvStatusObject, cvInfoState.data);
+    } else if (cvValues && cvValuesState) {
+      handleCvValuesPatch(cvValues, cvValuesState.data);
     }
   };
   const hasChanges =
-    cvInfoState &&
-    Object.keys(cvInfoState.data).some(
-      (key) => cvInfoState.data[key] !== cvStatusObject?.data[key],
-    );
+    (cvInfoState &&
+      Object.keys(cvInfoState.data).some(
+        (key) => cvInfoState.data[key] !== cvStatusObject?.data[key],
+      )) ||
+    (cvValuesState &&
+      Object.keys(cvValuesState.data).some(
+        (key) => cvValuesState.data[key] !== cvValues?.data[key],
+      ));
 
   const personalInfoObject = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
@@ -267,7 +321,7 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
             </Typography>
             <PDFViewer showToolbar={false} style={{ width: '100%' }}>
               {cvValues ? (
-                <template.component cvValues={cvValues} />
+                <template.component cvValues={cvValues.data} />
               ) : (
                 <template.component cvValues={cvObj} />
               )}

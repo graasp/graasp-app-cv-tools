@@ -78,3 +78,5 @@ export type CVInfoObj = {
   referencesInfo: ReferencesObj[];
   cvStateInfo: CvStatusObj;
 };
+
+export type SubmissionStatus = { message: string };

@@ -8,6 +8,7 @@ enum APP_DATA_TYPES {
   MOTIVATION = 'motivationInfo',
   REFERENCES = 'referencesInfo',
   CVSTATUSDATA = 'cvStateInfo',
+  SUBMISSION_STATUS = ' submissionStatus',
   CV_VALUES = ' cvValues',
 }
 
