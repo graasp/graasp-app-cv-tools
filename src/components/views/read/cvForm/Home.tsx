@@ -15,6 +15,7 @@ interface Props {
   nextStep: () => void;
   reviewStep: () => void;
 }
+
 const Home: FC<Props> = ({ nextStep, reviewStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
 
@@ -22,6 +23,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.CV_VALUES });
   };
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
+
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { files } = e.target;
     const file = files?.[0];
@@ -30,29 +32,47 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
       const reader = new FileReader();
       reader.onload = () => {
         const fileContent = reader.result as string;
+        const { Validator } = require('jsonschema');
+        const schema = {
+          type: 'object',
+          properties: {
+            personalInfo: { type: 'object' },
+            educationInfo: { type: 'array', items: { type: 'object' } },
+            workInfo: { type: 'array', items: { type: 'object' } },
+            skillsInfo: { type: 'array', items: { type: 'object' } },
+            portfolioInfo: { type: 'array', items: { type: 'object' } },
+            motivationInfo: { type: 'object' },
+            referencesInfo: { type: 'array', items: { type: 'object' } },
+            cvStateInfo: { type: 'object' },
+          },
+          required: [
+            'personalInfo',
+            'educationInfo',
+            'workInfo',
+            'skillsInfo',
+            'portfolioInfo',
+            'motivationInfo',
+            'referencesInfo',
+            'cvStateInfo',
+          ],
+        };
+        const validator = new Validator();
+        try {
+          const parsedData = JSON.parse(fileContent) as CVInfoObj;
+          const validationResult = validator.validate(parsedData, schema);
 
-        const parsedData = JSON.parse(fileContent) as CVInfoObj;
-        if (
-          Object.keys(parsedData).every((key) =>
-            [
-              'personalInfo',
-              'educationInfo',
-              'workInfo',
-              'skillsInfo',
-              'portfolioInfo',
-              'motivationInfo',
-              'referencesInfo',
-              'cvStateInfo',
-            ].includes(key),
-          )
-        ) {
-          handleCvPost(parsedData);
-          reviewStep();
-        } else {
-          console.log('Error parsing');
-          showErrorToast(
-            'Invalid file content. Please upload a valid CV data file.',
-          );
+          if (validationResult.valid) {
+            handleCvPost(parsedData);
+            reviewStep();
+          } else {
+            console.log('Error validating');
+            console.log(validationResult.errors);
+            showErrorToast(
+              'Invalid file content. Please upload a valid CV data file.',
+            );
+          }
+        } catch (err) {
+          console.error('boom');
         }
       };
       reader.readAsText(file);

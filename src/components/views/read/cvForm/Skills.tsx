@@ -144,7 +144,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
           or by hitting Backspace from your keyboard. For &quot;Tech
           Skills&quot;, enter any technological skill from
           &quot;Programming&quot;, to &quot;Desgin&quot;, to
-          &quot;Editting&quot;, etc. For &quot;Language Skills&quot;, enter any
+          &quot;Editing&quot;, etc. For &quot;Language Skills&quot;, enter any
           language that you can speak at good level such as &quot;English&quot;,
           to &quot;French&quot;, to &quot;Arabic&quot;, etc. For &quot;Other
           Skills&quot;, enter any other skill that you feel it doesn&apos;t fall

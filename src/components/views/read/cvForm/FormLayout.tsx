@@ -23,15 +23,13 @@ const FormLayout: FC<Props> = ({
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
         <Box>
-          <Stepper activeStep={activeStep} alternativeLabel>
+          <Stepper nonLinear activeStep={activeStep} alternativeLabel>
             {steps.map((label, index) => (
               <Step
                 key={index}
                 onClick={() => handleStepClick(index)}
                 style={{ cursor: 'pointer' }}
-                // onMouseOver={(e) => {
-                //   e.currentTarget.style.color = 'blue';
-                // }}
+                // completed={}
               >
                 <StepLabel>{label}</StepLabel>
               </Step>
