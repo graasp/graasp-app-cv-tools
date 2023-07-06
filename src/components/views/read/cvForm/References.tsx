@@ -27,12 +27,10 @@ import { MuiPhone } from './MuiPhone';
 import { CvStatusObj, ReferencesObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+const References: FC<Props> = ({ nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
   const handlePost = (newdata: ReferencesObj): void => {
@@ -118,7 +116,6 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.CVSTATUSDATA });
   };
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
@@ -131,7 +128,7 @@ const References: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
         customCv: false,
       });
     }
-    nextPage();
+
     nextStep();
   };
 

@@ -42,12 +42,10 @@ import {
 } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const cvStatusObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
@@ -282,11 +280,9 @@ const Template: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   };
 
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    nextPage();
     nextStep();
   };
 

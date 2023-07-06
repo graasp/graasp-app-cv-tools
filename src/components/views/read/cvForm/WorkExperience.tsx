@@ -33,17 +33,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { SkillsObj, WorkExperienceObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const WorkExperience: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-}) => {
+const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -140,7 +133,6 @@ const WorkExperience: FC<Props> = ({
     postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
   };
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
 
@@ -153,7 +145,6 @@ const WorkExperience: FC<Props> = ({
       handleSkillsPost({ title: 'Lang Skills', skills: [] });
       handleSkillsPost({ title: 'Other Skills', skills: [] });
     }
-    nextPage();
     nextStep();
   };
   const mapping = [

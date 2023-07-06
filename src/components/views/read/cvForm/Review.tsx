@@ -29,12 +29,10 @@ import {
 } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   homeStep: () => void;
   prevStep: () => void;
 }
-const Review: FC<Props> = ({ nextPage, prevPage, homeStep, prevStep }) => {
+const Review: FC<Props> = ({ homeStep, prevStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
   const personalInfoObject = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
@@ -139,14 +137,12 @@ const Review: FC<Props> = ({ nextPage, prevPage, homeStep, prevStep }) => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.SUBMISSION_STATUS });
   };
   const handleNext = (): void => {
-    nextPage();
     // todo: save an app data that says the candidate is done!
     // APP_DATA_TYPES.SUBMISSION_STATUS;
     handleStatusPost({ message: 'Submission Done' });
     homeStep();
   };
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   return (

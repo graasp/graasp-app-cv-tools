@@ -31,12 +31,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj, PortfolioObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -124,7 +122,6 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION });
   };
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
@@ -136,7 +133,7 @@ const Portfolio: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
         motivationLetter: '',
       });
     }
-    nextPage();
+
     nextStep();
   };
   const mapping = [

@@ -37,18 +37,11 @@ import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
 
-const PersonalInfo: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-}) => {
+const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   // Below is an example of translating the comps.
   // const { t } = useTranslation();
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
@@ -197,11 +190,9 @@ const PersonalInfo: FC<Props> = ({
       (key) => personalInfoState.data[key] !== personalInfoObject?.data[key],
     );
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    nextPage();
     nextStep();
   };
   // Flex-wrap: wrap;

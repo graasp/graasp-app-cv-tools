@@ -12,11 +12,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { CVInfoObj, PersonalInfoObj } from './types';
 
 interface Props {
-  nextPage: () => void;
   nextStep: () => void;
   reviewStep: () => void;
 }
-const Home: FC<Props> = ({ nextPage, nextStep, reviewStep }) => {
+const Home: FC<Props> = ({ nextStep, reviewStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
 
   const handleCvPost = (newdata: CVInfoObj): void => {
@@ -87,7 +86,6 @@ const Home: FC<Props> = ({ nextPage, nextStep, reviewStep }) => {
         personalPic: '',
       });
     }
-    nextPage();
     nextStep(); // Update the activeStep state
   };
   return (

@@ -12,17 +12,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const MotivationLetter: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-}) => {
+const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const motivationObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
@@ -54,11 +47,9 @@ const MotivationLetter: FC<Props> = ({
       (key) => motivationInfoState.data[key] !== motivationObject?.data[key],
     );
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    nextPage();
     nextStep();
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];

@@ -33,12 +33,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { EducationInfoObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+const Education: FC<Props> = ({ nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -140,11 +138,9 @@ const Education: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
     });
   };
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    nextPage();
     nextStep();
   };
 

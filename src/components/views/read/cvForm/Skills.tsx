@@ -25,12 +25,10 @@ import { useAppDataContext } from '../../../context/AppDataContext';
 import { SkillsObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
 }
-const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
+const Skills: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const handlePatch = (id: AppData['id'], newData: SkillsObj): void => {
     patchAppData({ id, data: newData });
@@ -127,11 +125,9 @@ const Skills: FC<Props> = ({ nextPage, prevPage, nextStep, prevStep }) => {
   };
 
   const handlePrev = (): void => {
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    nextPage();
     nextStep();
   };
   return (

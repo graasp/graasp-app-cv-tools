@@ -16,12 +16,10 @@ import Skills from './cvForm/Skills';
 import WorkExperience from './cvForm/WorkExperience';
 
 const PlayerView: FC = () => {
-  const [page, setPage] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
-  const nextPage = (): void => setPage(page + 1);
-  const prevPage = (): void => setPage(page - 1);
   const nextStep = (): void => setActiveStep(activeStep + 1);
   const prevStep = (): void => setActiveStep(activeStep - 1);
+  const modifyActiveStep = (index: number): void => setActiveStep(index);
   const homeStep = (): void => setActiveStep(0);
   const reviewStep = (): void => setActiveStep(8);
   const steps = [
@@ -39,87 +37,38 @@ const PlayerView: FC = () => {
 
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
-      <FormLayout activeStep={activeStep} steps={steps}>
+      <FormLayout
+        activeStep={activeStep}
+        steps={steps}
+        modifyActiveStep={modifyActiveStep}
+      >
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && (
-          <Home
-            nextPage={nextPage}
-            nextStep={nextStep}
-            reviewStep={reviewStep}
-          />
+          <Home nextStep={nextStep} reviewStep={reviewStep} />
         )}
         {activeStep === 1 && (
-          <PersonalInfo
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <PersonalInfo nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 2 && (
-          <Education
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <Education nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 3 && (
-          <WorkExperience
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <WorkExperience nextStep={nextStep} prevStep={prevStep} />
         )}
-        {activeStep === 4 && (
-          <Skills
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        )}
+        {activeStep === 4 && <Skills nextStep={nextStep} prevStep={prevStep} />}
         {activeStep === 5 && (
-          <Portfolio
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <Portfolio nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 6 && (
-          <MotivationLetter
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <MotivationLetter nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 7 && (
-          <References
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <References nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 8 && (
-          <Template
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
+          <Template nextStep={nextStep} prevStep={prevStep} />
         )}
-        {activeStep === 9 && (
-          <Review
-            nextPage={nextPage}
-            prevPage={prevPage}
-            homeStep={homeStep}
-            prevStep={prevStep}
-          />
-        )}
+        {activeStep === 9 && <Review homeStep={homeStep} prevStep={prevStep} />}
       </FormLayout>
     </Box>
   );
