@@ -113,6 +113,30 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
         },
       };
     });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [key]: '', // Clear the error message for the field being edited
+    }));
+  };
+  const handleInputBlur = (key: string, label: string): void => {
+    if (
+      !personalInfoState ||
+      !(personalInfoState as AppData & { data: PersonalInfoObj }).data[key]
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [key]: `${label} is required`, // Set the error message for the empty required field
+      }));
+    } else {
+      const value = (personalInfoState as AppData & { data: PersonalInfoObj })
+        .data[key] as string;
+      if (!value.trim()) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [key]: `${label} is required`, // Set the error message for the empty required field
+        }));
+      }
+    }
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -180,10 +204,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleSave = (): void => {
-    // // search in appdata so if we find the object of the same type 'personalInfo' patch its data by its id
-    // if (personalInfoObject && personalInfoState) {
-    //   handlePatch(personalInfoObject, personalInfoState.data);
-    // }
     let isValid = true;
     const updatedErrors = { ...errors };
 
@@ -192,38 +212,37 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       updatedErrors.firstName = 'First Name is required';
       isValid = false;
     } else {
-      updatedErrors.firstName = ''; // Clear the error message if the field is valid
+      updatedErrors.firstName = '';
     }
 
     if (!personalInfoState?.data.lastName.trim()) {
       updatedErrors.lastName = 'Last Name is required';
       isValid = false;
     } else {
-      updatedErrors.lastName = ''; // Clear the error message if the field is valid
+      updatedErrors.lastName = '';
     }
 
     if (!personalInfoState?.data.emailAddress.trim()) {
       updatedErrors.emailAddress = 'Email Address is required';
       isValid = false;
     } else {
-      updatedErrors.emailAddress = ''; // Clear the error message if the field is valid
+      updatedErrors.emailAddress = '';
     }
 
     if (!personalInfoState?.data.phoneNum.trim()) {
       updatedErrors.phoneNum = 'Phone Number is required';
       isValid = false;
     } else {
-      updatedErrors.phoneNum = ''; // Clear the error message if the field is valid
+      updatedErrors.phoneNum = '';
     }
 
     if (!personalInfoState?.data.profileLinks.trim()) {
       updatedErrors.profileLinks = 'Profile Links is required';
       isValid = false;
     } else {
-      updatedErrors.profileLinks = ''; // Clear the error message if the field is valid
+      updatedErrors.profileLinks = '';
     }
 
-    // Update the error state
     setErrors(updatedErrors);
 
     // Save the data if it's valid
@@ -247,7 +266,59 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    nextStep();
+    // const hasErrors = Object.values(errors).some(
+    //   (error) => error.trim() !== '',
+    // );
+    // if (
+    //   !personalInfoState?.data.firstName.trim() ||
+    //   !personalInfoState?.data.lastName.trim() ||
+    //   !personalInfoState?.data.emailAddress.trim() ||
+    //   !personalInfoState?.data.phoneNum.trim() ||
+    //   !personalInfoState?.data.profileLinks.trim() ||
+    //   hasErrors
+    // ) {
+    //   return;
+    // } // If there are errors, prevent proceeding to the next step
+
+    // // No errors, proceed to the next step
+    // nextStep();
+
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Perform validation for each required field
+    if (!personalInfoState?.data.firstName.trim()) {
+      updatedErrors.firstName = 'First Name is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.lastName.trim()) {
+      updatedErrors.lastName = 'Last Name is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.emailAddress.trim()) {
+      updatedErrors.emailAddress = 'Email Address is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.phoneNum.trim()) {
+      updatedErrors.phoneNum = 'Phone Number is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.profileLinks.trim()) {
+      updatedErrors.profileLinks = 'Profile Links is required';
+      isValid = false;
+    }
+
+    // Update the error state
+    setErrors(updatedErrors);
+
+    // Proceed to the next step if all required fields are filled
+    if (isValid) {
+      nextStep();
+    }
   };
   // Flex-wrap: wrap;
   return (
@@ -267,6 +338,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 id={m.key}
                 value={personalInfoState?.data.firstName || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
                 margin="normal"
                 fullWidth
@@ -280,6 +352,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 id={m.key}
                 value={personalInfoState?.data.lastName || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
                 margin="normal"
                 fullWidth
@@ -329,6 +402,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 type="email"
                 value={personalInfoState?.data.emailAddress || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
                 margin="normal"
                 fullWidth
@@ -344,6 +418,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 label={m.label}
                 value={personalInfoState?.data.phoneNum || ''}
                 onChange={(phone: string) => handleChange(m.key, phone)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 error={!!errors[m.key]}
                 helperText={errors[m.key]}
               />
@@ -364,6 +439,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 label={m.label}
                 value={personalInfoState?.data.profileLinks || ''}
                 onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
                 margin="normal"
                 fullWidth
