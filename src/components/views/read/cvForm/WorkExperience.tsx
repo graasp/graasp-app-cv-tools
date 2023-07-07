@@ -60,6 +60,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
   }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [saved, setSaved] = useState(false);
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -95,14 +97,64 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
   const handleDone = (cardId: string): void => {
     const workInfoCard = workCards?.find((card) => card.id === cardId);
     if (workInfoCard) {
-      handlePatch(cardId, workInfoCard.data);
-    }
+      let isValid = true;
+      const updatedErrors = { ...errors };
 
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = { ...prevShowFields };
-      updatedShowFields[cardId] = false;
-      return updatedShowFields;
-    });
+      if (!workInfoCard.data.jobTitle.trim()) {
+        updatedErrors[`${cardId}-jobTitle`] = 'Job Title is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-jobTitle`] = '';
+      }
+
+      if (!workInfoCard.data.institutionName.trim()) {
+        updatedErrors[`${cardId}-institutionName`] =
+          'Institution Name is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-institutionName`] = '';
+      }
+
+      if (!workInfoCard.data.startDate?.trim()) {
+        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-startDate`] = '';
+      }
+
+      if (!workInfoCard.data.endDate?.trim()) {
+        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-endDate`] = '';
+      }
+
+      if (!workInfoCard.data.country.trim()) {
+        updatedErrors[`${cardId}-country`] = 'Country is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-country`] = '';
+      }
+
+      if (!workInfoCard.data.jobDetails.trim()) {
+        updatedErrors[`${cardId}-jobDetails`] = 'Job Details is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-jobDetails`] = '';
+      }
+
+      setErrors(updatedErrors);
+
+      if (isValid) {
+        setSaved(true);
+        handlePatch(cardId, workInfoCard.data);
+        setShowFields((prevShowFields) => {
+          const updatedShowFields = { ...prevShowFields };
+          updatedShowFields[cardId] = false;
+          return updatedShowFields;
+        });
+      }
+    }
   };
 
   const handleRemove = (cardId: string): void => {
@@ -128,6 +180,10 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       );
       return updatedCards;
     });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`${cardId}-${key}`]: '',
+    }));
   };
   const handleSkillsPost = (newdata: SkillsObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
@@ -140,12 +196,77 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     const skillsData = appDataArray.filter(
       (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
     );
-    if (skillsData.size === 0) {
-      handleSkillsPost({ title: 'Tech Skills', skills: [] });
-      handleSkillsPost({ title: 'Lang Skills', skills: [] });
-      handleSkillsPost({ title: 'Other Skills', skills: [] });
+
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Check each card for unfilled required fields
+    workCards?.forEach((card) => {
+      if (!card.data.jobTitle.trim()) {
+        updatedErrors[`${card.id}-jobTitle`] = 'Job Title is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-jobTitle`] = '';
+      }
+
+      if (!card.data.institutionName.trim()) {
+        updatedErrors[`${card.id}-institutionName`] =
+          'Institution Name is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-institutionName`] = '';
+      }
+
+      if (!card.data.startDate?.trim()) {
+        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-startDate`] = '';
+      }
+      if (!card.data.endDate?.trim()) {
+        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-endDate`] = '';
+      }
+
+      if (!card.data.country.trim()) {
+        updatedErrors[`${card.id}-country`] = 'Country is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-country`] = '';
+      }
+
+      if (!card.data.jobDetails.trim()) {
+        updatedErrors[`${card.id}-jobDetails`] = 'Job Details is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-jobDetails`] = '';
+      }
+
+      // Check if the card has any unfilled required fields
+      if (!isValid) {
+        setShowFields((prevShowFields) => ({
+          ...prevShowFields,
+          [card.id]: true,
+        }));
+      }
+    });
+
+    setErrors(updatedErrors);
+
+    if (isValid && saved) {
+      if (skillsData.size === 0) {
+        handleSkillsPost({ title: 'Tech Skills', skills: [] });
+        handleSkillsPost({ title: 'Lang Skills', skills: [] });
+        handleSkillsPost({ title: 'Other Skills', skills: [] });
+      }
+      nextStep();
+    } else if (!saved && isValid) {
+      console.error(
+        'Please save your progress by clicking on Done button of the card you added',
+      );
     }
-    nextStep();
   };
   const mapping = [
     { key: 'jobTitle', label: 'Job Title' },
@@ -195,6 +316,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-jobTitle`]}
+                          helperText={errors[`${card.id}-jobTitle`]}
                         />
                       )}
                       {m.key === 'institutionName' && (
@@ -212,6 +335,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-institutionName`]}
+                          helperText={errors[`${card.id}-isntitutionName`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -235,7 +360,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                                   formattedDate,
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-startDate`],
+                                  helperText: errors[`${card.id}-startDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                         </Box>
@@ -265,7 +396,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-endDate`],
+                                  helperText: errors[`${card.id}-endDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -295,6 +432,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-country`]}
+                          helperText={errors[`${card.id}-country`]}
                         >
                           {countriesArr.map((country) => (
                             <MenuItem key={country.value} value={country.value}>
@@ -314,6 +453,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-jobDetails`]}
+                          helperText={errors[`${card.id}-jobDetails`]}
                         />
                       )}
                       {m.key === 'keyAchievements' && (
@@ -328,7 +469,6 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                               e.target.value,
                             )
                           }
-                          required
                           fullWidth
                           margin="normal"
                         />

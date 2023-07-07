@@ -58,6 +58,8 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [saved, setSaved] = useState(false);
 
   const handleAdd = (): void => {
     const newCardId = `card${(portfolioCards?.size ?? 0) + 1}`;
@@ -85,14 +87,50 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   const handleDone = (cardId: string): void => {
     const portfolioCard = portfolioCards?.find((card) => card.id === cardId);
     if (portfolioCard) {
-      handlePatch(cardId, portfolioCard.data);
-    }
+      let isValid = true;
+      const updatedErrors = { ...errors };
 
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = { ...prevShowFields };
-      updatedShowFields[cardId] = false;
-      return updatedShowFields;
-    });
+      if (!portfolioCard.data.projectTitle.trim()) {
+        updatedErrors[`${cardId}-projectTitle`] = 'Project Title is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-projectTitle`] = '';
+      }
+
+      if (!portfolioCard.data.projectDescription.trim()) {
+        updatedErrors[`${cardId}-projectDescription`] =
+          'Project Description is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-projectDescription`] = '';
+      }
+
+      if (!portfolioCard.data.startDate?.trim()) {
+        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-startDate`] = '';
+      }
+
+      if (!portfolioCard.data.endDate?.trim()) {
+        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-endDate`] = '';
+      }
+
+      setErrors(updatedErrors);
+
+      if (isValid) {
+        setSaved(true);
+        handlePatch(cardId, portfolioCard.data);
+        setShowFields((prevShowFields) => {
+          const updatedShowFields = { ...prevShowFields };
+          updatedShowFields[cardId] = false;
+          return updatedShowFields;
+        });
+      }
+    }
   };
 
   const handleRemove = (cardId: string): void => {
@@ -112,10 +150,16 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   ): void => {
     setPortfolioCards((prevCards) => {
       const updatedCards = prevCards?.map((card) =>
-        card.id === cardId ? { ...card, [key]: value } : card,
+        card.id === cardId
+          ? { ...card, data: { ...card.data, [key]: value } }
+          : card,
       );
       return updatedCards;
     });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`${cardId}-${key}`]: '',
+    }));
   };
 
   const handleMotivationPost = (newdata: MotivationObj): void => {
@@ -128,13 +172,63 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     const motivationData = appDataArray.filter(
       (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION,
     );
-    if (motivationData.size === 0) {
-      handleMotivationPost({
-        motivationLetter: '',
-      });
-    }
 
-    nextStep();
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Check each card for unfilled required fields
+    portfolioCards?.forEach((card) => {
+      if (!card.data.projectTitle.trim()) {
+        updatedErrors[`${card.id}-projectTitle`] = 'Project Title is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-projectTitle`] = '';
+      }
+
+      if (!card.data.projectDescription.trim()) {
+        updatedErrors[`${card.id}-projectDescription`] =
+          'Project Description is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-projectDescription`] = '';
+      }
+
+      if (!card.data.startDate?.trim()) {
+        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-startDate`] = '';
+      }
+      if (!card.data.endDate?.trim()) {
+        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-endDate`] = '';
+      }
+
+      // Check if the card has any unfilled required fields
+      if (!isValid) {
+        setShowFields((prevShowFields) => ({
+          ...prevShowFields,
+          [card.id]: true,
+        }));
+      }
+    });
+
+    setErrors(updatedErrors);
+
+    if (isValid && saved) {
+      if (motivationData.size === 0) {
+        handleMotivationPost({
+          motivationLetter: '',
+        });
+      }
+      nextStep();
+    } else if (!saved && isValid) {
+      console.error(
+        'Please save your progress by clicking on Done button of the card you added',
+      );
+    }
   };
   const mapping = [
     { key: 'projectTitle', label: 'Project Title' },
@@ -185,6 +279,8 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-projectTitle`]}
+                          helperText={errors[`${card.id}-projectTitle`]}
                         />
                       )}
                       {m.key === 'projectDescription' && (
@@ -202,6 +298,8 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-projectDescription`]}
+                          helperText={errors[`${card.id}-projectDescription`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -225,7 +323,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                                   formattedDate,
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-startDate`],
+                                  helperText: errors[`${card.id}-startDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                         </Box>
@@ -255,7 +359,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-endDate`],
+                                  helperText: errors[`${card.id}-endDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -280,7 +390,6 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           onChange={(e) =>
                             handleChange(card.id, 'projectLink', e.target.value)
                           }
-                          required
                           fullWidth
                           margin="normal"
                         />
