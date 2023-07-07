@@ -35,9 +35,12 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     setMotivationInfoState(motivationData);
   }, [appDataArray]);
 
+  const [saved, setSaved] = useState(false);
+
   const handleSave = (): void => {
     // search in appdata so if we find the object of the same type 'motivationInfo' patch its data by its id
     if (motivationObject && motivationInfoState) {
+      setSaved(true);
       handlePatch(motivationObject, motivationInfoState.data);
     }
   };
@@ -50,7 +53,11 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    nextStep();
+    if (saved) {
+      nextStep();
+    } else {
+      console.error('Please save your progress by clicking on Save button');
+    }
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   return (
@@ -84,7 +91,6 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
                 }
                 multiline
                 minRows={10}
-                required
                 fullWidth
                 margin="normal"
               />

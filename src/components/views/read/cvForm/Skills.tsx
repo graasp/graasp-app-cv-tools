@@ -44,8 +44,10 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
   }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [editing, setEditing] = useState(false);
 
   const handleEdit = (cardId: string): void => {
+    setEditing(true);
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [cardId]: true,
@@ -56,6 +58,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
       (card) => card.data.title === cardId,
     );
     if (skillsInfoCard) {
+      setEditing(false);
       handlePatch(appID, skillsInfoCard.data);
     }
 
@@ -128,7 +131,11 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    nextStep();
+    if (!editing) {
+      nextStep();
+    } else {
+      console.error('Please save your progress by clicking on Done button');
+    }
   };
   return (
     <Box>

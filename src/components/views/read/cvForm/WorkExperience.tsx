@@ -407,7 +407,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.data.present}
+                            checked={card.data.endDate === 'OnGoing'}
                             onChange={() => {
                               handleChange(
                                 card.id,
