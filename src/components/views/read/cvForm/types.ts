@@ -9,6 +9,7 @@ export type PersonalInfoObj = {
   profileLinks: string;
   personalLink: string;
   personalPic: string;
+  saved: boolean;
 };
 
 export type EducationInfoObj = {

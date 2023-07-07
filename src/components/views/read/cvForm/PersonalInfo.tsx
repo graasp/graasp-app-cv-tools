@@ -86,7 +86,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   const [url, setUrl] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [visibility, setVisibility] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   const handleClick = (): void => {
     if (inputRef.current) {
@@ -199,7 +198,18 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleSave = (): void => {
-    setSaved(true);
+    setPersonalInfoState((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          saved: true,
+        },
+      };
+    });
     let isValid = true;
     const updatedErrors = { ...errors };
 
@@ -221,6 +231,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     if (!personalInfoState?.data.birthDate?.trim()) {
       updatedErrors.birthDate = 'Birth Date is required';
       isValid = false;
+    } else {
+      updatedErrors.birthDate = '';
     }
 
     if (!personalInfoState?.data.emailAddress.trim()) {
@@ -246,6 +258,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
+    console.log(personalInfoState);
     // Save the data if it's valid
     if (isValid) {
       // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
@@ -304,9 +317,9 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     setErrors(updatedErrors);
 
     // Proceed to the next step if all required fields are filled
-    if (isValid && saved) {
+    if (isValid && personalInfoState?.data.saved) {
       nextStep();
-    } else if (!saved && isValid) {
+    } else if (!personalInfoState?.data.saved && isValid) {
       console.error(
         'Please save your progress by clicking on Save button before proceeding on',
       );

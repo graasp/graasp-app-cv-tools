@@ -104,6 +104,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
         profileLinks: '',
         personalLink: '',
         personalPic: '',
+        saved: false,
       });
     }
     nextStep(); // Update the activeStep state
