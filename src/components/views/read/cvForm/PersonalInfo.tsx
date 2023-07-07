@@ -67,7 +67,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'phoneNum', label: 'Phone Number' },
     { key: 'address', label: 'Address' },
     { key: 'profileLinks', label: 'Profile Links' },
-    { key: 'personalLinks', label: 'Personal Links' },
+    { key: 'personalLink', label: 'Personal Links' },
     { key: 'personalPic', label: 'Personal Picture' },
   ];
   const [birthDate, setBirthDate] = useState<string | undefined>();
@@ -82,16 +82,12 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     ) as AppData & { data: PersonalInfoObj };
     setPersonalInfoState(personalData);
   }, [appDataArray]);
-  // const [personalInfoState, setPersonalInfoState] = useState(personalInfo);
-
-  // useEffect(() => {
-  //   setPersonalInfoState(personalInfo);
-  // }, [personalInfo]);
 
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const [url, setUrl] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [visibility, setVisibility] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const handleClick = (): void => {
     if (inputRef.current) {
@@ -133,7 +129,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       if (!value.trim()) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [key]: `${label} is required`, // Set the error message for the empty required field
+          [key]: `${label} is required`,
         }));
       }
     }
@@ -167,7 +163,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       setUploadedFile(null);
       setPersonalInfoState((prev) => {
         if (!prev) {
-          return prev; // Return the current state if it is undefined
+          return prev;
         }
         return {
           ...prev,
@@ -185,7 +181,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     setUploadedFile(null);
     setPersonalInfoState((prev) => {
       if (!prev) {
-        return prev; // Return the current state if it is undefined
+        return prev;
       }
       return {
         ...prev,
@@ -204,6 +200,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleSave = (): void => {
+    setSaved(true);
     let isValid = true;
     const updatedErrors = { ...errors };
 
@@ -220,6 +217,11 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       isValid = false;
     } else {
       updatedErrors.lastName = '';
+    }
+
+    if (!personalInfoState?.data.birthDate?.trim()) {
+      updatedErrors.birthDate = 'Birth Date is required';
+      isValid = false;
     }
 
     if (!personalInfoState?.data.emailAddress.trim()) {
@@ -266,23 +268,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    // const hasErrors = Object.values(errors).some(
-    //   (error) => error.trim() !== '',
-    // );
-    // if (
-    //   !personalInfoState?.data.firstName.trim() ||
-    //   !personalInfoState?.data.lastName.trim() ||
-    //   !personalInfoState?.data.emailAddress.trim() ||
-    //   !personalInfoState?.data.phoneNum.trim() ||
-    //   !personalInfoState?.data.profileLinks.trim() ||
-    //   hasErrors
-    // ) {
-    //   return;
-    // } // If there are errors, prevent proceeding to the next step
-
-    // // No errors, proceed to the next step
-    // nextStep();
-
     let isValid = true;
     const updatedErrors = { ...errors };
 
@@ -294,6 +279,11 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
 
     if (!personalInfoState?.data.lastName.trim()) {
       updatedErrors.lastName = 'Last Name is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.birthDate?.trim()) {
+      updatedErrors.birthDate = 'Birth Date is required';
       isValid = false;
     }
 
@@ -312,12 +302,15 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       isValid = false;
     }
 
-    // Update the error state
     setErrors(updatedErrors);
 
     // Proceed to the next step if all required fields are filled
-    if (isValid) {
+    if (isValid && saved) {
       nextStep();
+    } else if (!saved && isValid) {
+      console.error(
+        'Please save your progress by clicking on Save button before proceeding on',
+      );
     }
   };
   // Flex-wrap: wrap;
@@ -374,7 +367,13 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                       setBirthDate(formattedDate || undefined);
                       handleChange(m.key, formattedDate);
                     }}
-                    slotProps={{ textField: { fullWidth: true } }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!errors[m.key],
+                        helperText: errors[m.key],
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Box>
@@ -447,7 +446,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 helperText={errors[m.key]}
               />
             )}
-            {m.key === 'personalLinks' && (
+            {m.key === 'personalLink' && (
               <TextField
                 type="url"
                 label={m.label}
