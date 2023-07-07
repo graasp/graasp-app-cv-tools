@@ -60,6 +60,8 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
   }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [saved, setSaved] = useState(false);
 
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
@@ -103,14 +105,64 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       (card) => card.id === cardId,
     );
     if (educationInfoCard) {
-      handlePatch(cardId, educationInfoCard.data);
-    }
+      let isValid = true;
+      const updatedErrors = { ...errors };
 
-    setShowFields((prevShowFields) => {
-      const updatedShowFields = { ...prevShowFields };
-      updatedShowFields[cardId] = false;
-      return updatedShowFields;
-    });
+      if (!educationInfoCard.data.degree.trim()) {
+        updatedErrors[`${cardId}-degree`] = 'Degree is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-degree`] = '';
+      }
+
+      if (!educationInfoCard.data.institutionName.trim()) {
+        updatedErrors[`${cardId}-institutionName`] =
+          'Institution Name is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-institutionName`] = '';
+      }
+
+      if (!educationInfoCard.data.major.trim()) {
+        updatedErrors[`${cardId}-major`] = 'Major is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-major`] = '';
+      }
+
+      if (!educationInfoCard.data.startDate?.trim()) {
+        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-startDate`] = '';
+      }
+
+      if (!educationInfoCard.data.endDate?.trim()) {
+        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-endDate`] = '';
+      }
+
+      if (!educationInfoCard.data.country.trim()) {
+        updatedErrors[`${cardId}-country`] = 'Country is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${cardId}-country`] = '';
+      }
+
+      setErrors(updatedErrors);
+
+      if (isValid) {
+        setSaved(true);
+        handlePatch(cardId, educationInfoCard.data);
+        setShowFields((prevShowFields) => {
+          const updatedShowFields = { ...prevShowFields };
+          updatedShowFields[cardId] = false;
+          return updatedShowFields;
+        });
+      }
+    }
   };
 
   const handleRemove = (cardId: string): void => {
@@ -136,12 +188,80 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       );
       return updatedCards;
     });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`${cardId}-${key}`]: '',
+    }));
   };
   const handlePrev = (): void => {
     prevStep();
   };
   const handleNext = (): void => {
-    nextStep();
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Check each card for unfilled required fields
+    educationCards?.forEach((card) => {
+      if (!card.data.degree.trim()) {
+        updatedErrors[`${card.id}-degree`] = 'Degree is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-degree`] = '';
+      }
+
+      if (!card.data.institutionName.trim()) {
+        updatedErrors[`${card.id}-institutionName`] =
+          'Institution Name is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-institutionName`] = '';
+      }
+
+      if (!card.data.major.trim()) {
+        updatedErrors[`${card.id}-major`] = 'Major is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-major`] = '';
+      }
+
+      if (!card.data.startDate?.trim()) {
+        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-startDate`] = '';
+      }
+      if (!card.data.endDate?.trim()) {
+        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-endDate`] = '';
+      }
+
+      if (!card.data.country.trim()) {
+        updatedErrors[`${card.id}-country`] = 'Country is required';
+        isValid = false;
+      } else {
+        updatedErrors[`${card.id}-country`] = '';
+      }
+
+      // Check if the card has any unfilled required fields
+      if (!isValid) {
+        setShowFields((prevShowFields) => ({
+          ...prevShowFields,
+          [card.id]: true,
+        }));
+      }
+    });
+
+    setErrors(updatedErrors);
+
+    if (isValid && saved) {
+      nextStep();
+    } else if (!saved && isValid) {
+      console.error(
+        'Please save your progress by clicking on Done button of the card you added',
+      );
+    }
   };
 
   const mapping = [
@@ -182,7 +302,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                     <Box key={m.key}>
                       {m.key === 'degree' && (
                         <TextField
-                          id="select-degree"
+                          id={m.key}
                           select
                           label={m.label}
                           value={card.data.degree}
@@ -192,6 +312,8 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-degree`]}
+                          helperText={errors[`${card.id}-degree`]}
                         >
                           {degrees.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -215,6 +337,8 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-institutionName`]}
+                          helperText={errors[`${card.id}-institutionName`]}
                         />
                       )}
                       {m.key === 'major' && (
@@ -228,6 +352,8 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-major`]}
+                          helperText={errors[`${card.id}-major`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -251,7 +377,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                                   formattedDate,
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-startDate`],
+                                  helperText: errors[`${card.id}-startDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                         </Box>
@@ -282,7 +414,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
-                              slotProps={{ textField: { fullWidth: true } }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors[`${card.id}-endDate`],
+                                  helperText: errors[`${card.id}-endDate`],
+                                },
+                              }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
@@ -308,7 +446,6 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           onChange={(e) =>
                             handleChange(card.id, 'gpa', e.target.value)
                           }
-                          required
                           fullWidth
                           margin="normal"
                         />
@@ -317,14 +454,16 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                         <TextField
                           id="select-country"
                           select
+                          required
                           label={m.label}
                           value={card.data.country}
                           onChange={(e) =>
                             handleChange(card.id, 'country', e.target.value)
                           }
-                          required
                           fullWidth
                           margin="normal"
+                          error={!!errors[`${card.id}-country`]}
+                          helperText={errors[`${card.id}-country`]}
                         >
                           {countriesArr.map((country) => (
                             <MenuItem key={country.value} value={country.value}>
