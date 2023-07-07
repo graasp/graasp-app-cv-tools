@@ -67,8 +67,8 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       id: newCardId,
       projectTitle: '',
       projectDescription: '',
-      startDate: undefined,
-      endDate: undefined,
+      startDate: null,
+      endDate: null,
       projectLink: '',
       present: false,
     });
@@ -310,7 +310,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                               value={
                                 card.data.startDate
                                   ? dayjs(card.data.startDate)
-                                  : undefined
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -403,6 +403,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                     if (
                       value !== '' &&
                       typeof value !== 'undefined' &&
+                      value !== null &&
                       mapping.some((item) => item.key === key)
                     ) {
                       return (

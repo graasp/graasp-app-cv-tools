@@ -96,7 +96,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
       handlePersonalPost({
         firstName: '',
         lastName: '',
-        birthDate: undefined,
+        birthDate: null,
         gender: '',
         emailAddress: '',
         phoneNum: '',

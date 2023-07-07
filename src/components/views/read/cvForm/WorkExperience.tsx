@@ -74,8 +74,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       id: newCardId,
       jobTitle: '',
       institutionName: '',
-      startDate: undefined,
-      endDate: undefined,
+      startDate: null,
+      endDate: null,
       country: '',
       jobDetails: '',
       keyAchievements: '',
@@ -347,7 +347,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                               value={
                                 card.data.startDate
                                   ? dayjs(card.data.startDate)
-                                  : undefined
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -482,6 +482,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                     if (
                       value !== '' &&
                       typeof value !== 'undefined' &&
+                      value !== null &&
                       mapping.some((item) => item.key === key)
                     ) {
                       return (

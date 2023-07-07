@@ -81,8 +81,8 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       degree: '',
       institutionName: '',
       major: '',
-      startDate: undefined,
-      endDate: undefined,
+      startDate: null,
+      endDate: null,
       gpa: '',
       country: '',
       present: false,
@@ -364,7 +364,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                               value={
                                 card.data.startDate
                                   ? dayjs(card.data.startDate)
-                                  : undefined
+                                  : null
                               }
                               maxDate={dayjs()}
                               onChange={(date) => {
@@ -481,6 +481,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                     if (
                       value !== '' &&
                       typeof value !== 'undefined' &&
+                      value !== null &&
                       mapping.some((item) => item.key === key)
                     ) {
                       return (

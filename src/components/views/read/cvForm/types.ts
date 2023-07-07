@@ -1,7 +1,7 @@
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
-  birthDate: string | undefined;
+  birthDate: string | null;
   gender: string;
   emailAddress: string;
   phoneNum: string;
@@ -16,8 +16,8 @@ export type EducationInfoObj = {
   degree: string;
   institutionName: string;
   major: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   gpa: string;
   country: string;
   present?: boolean;
@@ -27,8 +27,8 @@ export type WorkExperienceObj = {
   id: string;
   jobTitle: string;
   institutionName: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   country: string;
   jobDetails: string;
   keyAchievements: string;
@@ -44,8 +44,8 @@ export type PortfolioObj = {
   id: string;
   projectTitle: string;
   projectDescription: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   projectLink: string;
   present?: boolean;
 };

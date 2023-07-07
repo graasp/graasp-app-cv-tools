@@ -70,7 +70,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'personalLink', label: 'Personal Links' },
     { key: 'personalPic', label: 'Personal Picture' },
   ];
-  const [birthDate, setBirthDate] = useState<string | undefined>();
   const [personalInfoState, setPersonalInfoState] = useState<
     AppData & { data: PersonalInfoObj }
   >();
@@ -358,13 +357,16 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label={m.label}
-                    value={birthDate ? dayjs(birthDate) : undefined}
+                    value={
+                      personalInfoState?.data.birthDate
+                        ? dayjs(personalInfoState?.data.birthDate)
+                        : null
+                    }
                     maxDate={dayjs()}
                     onChange={(date) => {
                       const formattedDate = date
                         ? dayjs(date).format('YYYY-MM-DD')
                         : '';
-                      setBirthDate(formattedDate || undefined);
                       handleChange(m.key, formattedDate);
                     }}
                     slotProps={{
