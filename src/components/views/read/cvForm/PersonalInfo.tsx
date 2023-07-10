@@ -198,18 +198,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleSave = (): void => {
-    setPersonalInfoState((prev) => {
-      if (!prev) {
-        return prev;
-      }
-      return {
-        ...prev,
-        data: {
-          ...prev.data,
-          saved: true,
-        },
-      };
-    });
     let isValid = true;
     const updatedErrors = { ...errors };
 
@@ -267,7 +255,10 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       ) as AppData & { data: PersonalInfoObj };
 
       if (personalInfoObj && personalInfoState) {
-        handlePatch(personalInfoObj, personalInfoState.data);
+        handlePatch(personalInfoObj, {
+          ...personalInfoState.data,
+          saved: true,
+        });
       }
     }
   };

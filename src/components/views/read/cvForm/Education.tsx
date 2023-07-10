@@ -61,7 +61,6 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [saved, setSaved] = useState(false);
 
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
@@ -85,7 +84,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       endDate: null,
       gpa: '',
       country: '',
-      present: false,
+      saved: false,
     });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -154,8 +153,10 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       setErrors(updatedErrors);
 
       if (isValid) {
-        setSaved(true);
-        handlePatch(cardId, educationInfoCard.data);
+        handlePatch(cardId, {
+          ...educationInfoCard.data,
+          saved: true,
+        });
         setShowFields((prevShowFields) => {
           const updatedShowFields = { ...prevShowFields };
           updatedShowFields[cardId] = false;
@@ -255,11 +256,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    if (isValid && saved) {
+    const allSaved = educationCards?.map((card) => card.data.saved);
+
+    if (isValid && allSaved?.every((saved) => saved)) {
       nextStep();
-    } else if (!saved && isValid) {
+    } else if (isValid && !allSaved?.every((saved) => saved)) {
       console.error(
-        'Please save your progress by clicking on Done button of the card you added',
+        'Please save your progress by clicking on the Done button of the card you added',
       );
     }
   };

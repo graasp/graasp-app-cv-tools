@@ -21,7 +21,7 @@ export type EducationInfoObj = {
   endDate: string | null;
   gpa: string;
   country: string;
-  present?: boolean;
+  saved: boolean;
 };
 
 export type WorkExperienceObj = {
