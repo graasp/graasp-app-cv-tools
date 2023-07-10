@@ -59,7 +59,6 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [saved, setSaved] = useState(false);
 
   const handleAdd = (): void => {
     const newCardId = `card${(portfolioCards?.size ?? 0) + 1}`;
@@ -70,7 +69,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       startDate: null,
       endDate: null,
       projectLink: '',
-      present: false,
+      saved: false,
     });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -122,8 +121,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       setErrors(updatedErrors);
 
       if (isValid) {
-        setSaved(true);
-        handlePatch(cardId, portfolioCard.data);
+        handlePatch(cardId, { ...portfolioCard.data, saved: true });
         setShowFields((prevShowFields) => {
           const updatedShowFields = { ...prevShowFields };
           updatedShowFields[cardId] = false;
@@ -217,16 +215,18 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    if (isValid && saved) {
+    const allSaved = portfolioCards?.map((card) => card.data.saved);
+
+    if (isValid && allSaved?.every((saved) => saved)) {
       if (motivationData.size === 0) {
         handleMotivationPost({
           motivationLetter: '',
         });
       }
       nextStep();
-    } else if (!saved && isValid) {
+    } else if (isValid && !allSaved?.every((saved) => saved)) {
       console.error(
-        'Please save your progress by clicking on Done button of the card you added',
+        'Please save your progress by clicking on the Done button of the card you added',
       );
     }
   };
@@ -344,7 +344,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.data.present}
+                              disabled={card.data.endDate === 'OnGoing'}
                               minDate={dayjs(card.data.startDate)}
                               value={
                                 card.data.endDate
@@ -370,7 +370,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.data.present}
+                            checked={card.data.endDate === 'OnGoing'}
                             onChange={() => {
                               handleChange(
                                 card.id,

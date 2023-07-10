@@ -33,7 +33,7 @@ export type WorkExperienceObj = {
   country: string;
   jobDetails: string;
   keyAchievements: string;
-  present?: boolean;
+  saved: boolean;
 };
 
 export type SkillsObj = {
@@ -48,7 +48,7 @@ export type PortfolioObj = {
   startDate: string | null;
   endDate: string | null;
   projectLink: string;
-  present?: boolean;
+  saved: boolean;
 };
 
 export type MotivationObj = {
@@ -62,6 +62,7 @@ export type ReferencesObj = {
   referenceCompany: string;
   referencePhoneNum: string;
   referenceEmail: string;
+  saved: boolean;
 };
 
 export type CvStatusObj = {

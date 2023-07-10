@@ -64,6 +64,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
       referenceCompany: '',
       referencePhoneNum: '',
       referenceEmail: '',
+      saved: false,
     });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -83,7 +84,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
       (card) => card.id === cardId,
     );
     if (referencesInfoCard) {
-      handlePatch(cardId, referencesInfoCard.data);
+      handlePatch(cardId, { ...referencesInfoCard.data, saved: true });
     }
 
     setShowFields((prevShowFields) => {
@@ -128,8 +129,15 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
         customCv: false,
       });
     }
+    const allSaved = referencesCards?.map((card) => card.data.saved);
 
-    nextStep();
+    if (allSaved?.every((saved) => saved)) {
+      nextStep();
+    } else if (!allSaved?.every((saved) => saved)) {
+      console.error(
+        'Please save your progress by clicking on the Done button of the card you added',
+      );
+    }
   };
 
   const mapping = [

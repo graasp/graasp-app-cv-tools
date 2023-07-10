@@ -61,7 +61,6 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [saved, setSaved] = useState(false);
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -79,7 +78,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       country: '',
       jobDetails: '',
       keyAchievements: '',
-      present: false,
+      saved: false,
     });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
@@ -146,8 +145,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       setErrors(updatedErrors);
 
       if (isValid) {
-        setSaved(true);
-        handlePatch(cardId, workInfoCard.data);
+        handlePatch(cardId, { ...workInfoCard.data, saved: true });
         setShowFields((prevShowFields) => {
           const updatedShowFields = { ...prevShowFields };
           updatedShowFields[cardId] = false;
@@ -255,16 +253,18 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    if (isValid && saved) {
+    const allSaved = workCards?.map((card) => card.data.saved);
+
+    if (isValid && allSaved?.every((saved) => saved)) {
       if (skillsData.size === 0) {
         handleSkillsPost({ title: 'Tech Skills', skills: [] });
         handleSkillsPost({ title: 'Lang Skills', skills: [] });
         handleSkillsPost({ title: 'Other Skills', skills: [] });
       }
       nextStep();
-    } else if (!saved && isValid) {
+    } else if (isValid && !allSaved?.every((saved) => saved)) {
       console.error(
-        'Please save your progress by clicking on Done button of the card you added',
+        'Please save your progress by clicking on the Done button of the card you added',
       );
     }
   };
@@ -381,7 +381,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.data.present}
+                              disabled={card.data.endDate === 'OnGoing'}
                               minDate={dayjs(card.data.startDate)}
                               value={
                                 card.data.endDate
