@@ -4,7 +4,7 @@ import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -41,7 +41,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
     useAppDataContext();
 
   const handlePost = (newdata: EducationInfoObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION_INFO });
   };
   const handlePatch = (id: AppData['id'], newData: EducationInfoObj): void => {
     patchAppData({ id, data: newData });
@@ -54,7 +54,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const educationData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.EDUCATION,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
     ) as List<AppData & { data: EducationInfoObj }>;
     setEducationCards(educationData);
   }, [appDataArray]);

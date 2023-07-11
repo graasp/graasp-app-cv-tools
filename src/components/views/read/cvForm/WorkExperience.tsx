@@ -4,7 +4,7 @@ import countries from 'iso-3166-1/dist/iso-3166';
 
 import { FC, useEffect, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -41,7 +41,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     useAppDataContext();
 
   const handlePost = (newdata: WorkExperienceObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.WORKEXPERIENCE });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.WORK_EXPERIENCE_INFO });
   };
   const handlePatch = (id: AppData['id'], newData: WorkExperienceObj): void => {
     patchAppData({ id, data: newData });
@@ -54,7 +54,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const workData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
     ) as List<AppData & { data: WorkExperienceObj }>;
     setWorkCards(workData);
   }, [appDataArray]);
@@ -184,7 +184,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     }));
   };
   const handleSkillsPost = (newdata: SkillsObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS_INFO });
   };
   const handlePrev = (): void => {
     prevStep();
@@ -192,7 +192,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
   const handleNext = (): void => {
     const skillsData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
     );
 
     let isValid = true;

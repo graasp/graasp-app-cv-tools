@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, RefObject, useEffect, useRef, useState } from 'react';
 
-import { AppData, Data } from '@graasp/apps-query-client/dist/types';
+import { AppData, Data } from '@graasp/apps-query-client';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -44,7 +44,7 @@ interface Props {
 const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const cvStatusObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
+    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
   );
   const cvValues = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
@@ -73,7 +73,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const cvStatusData = appDataArray.find(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
     ) as AppData & { data: CvStatusObj };
     setCvInfoState(cvStatusData);
   }, [appDataArray]);
@@ -82,7 +82,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const [url, setUrl] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [radioValue, setRadioValue] = useState(
-    cvValuesState?.data.cvStateInfo.customCv || cvInfoState?.data.customCv
+    cvValuesState?.data.cvStatusInfo.customCv || cvInfoState?.data.customCv
       ? 'customCv'
       : 'generatedCv',
   );
@@ -205,10 +205,10 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   }, [radioValue, uploadedFile]);
 
   const personalInfoObject = appDataArray.find(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
   )?.data as PersonalInfoObj;
   const educationInfoObject = appDataArray.filter(
-    (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
+    (obj) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
   );
 
   const educationDataArray: Data[] = [];
@@ -218,7 +218,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   });
 
   const workInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
   );
   const workDataArray: Data[] = [];
   workInfoObject.map((card) => {
@@ -227,7 +227,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   });
 
   const skillsInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
   );
   const skillsDataArray: Data[] = [];
   skillsInfoObject.map((card) => {
@@ -236,7 +236,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   });
 
   const portfolioInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.PORTFOLIO,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
   );
   const portfolioDataArray: Data[] = [];
   portfolioInfoObject.map((card) => {
@@ -245,10 +245,10 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   });
 
   const motivationObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
   )?.data as MotivationObj;
   const referencesInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
   );
   const referencesDataArray: Data[] = [];
   referencesInfoObject.map((card) => {

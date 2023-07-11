@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -24,6 +24,7 @@ import {
   ButtonGroup,
   IconButton,
   MenuItem,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -39,15 +40,16 @@ import { PersonalInfoObj } from './types';
 interface Props {
   nextStep: () => void;
   prevStep: () => void;
+  onError: (isError: boolean) => void;
 }
 
-const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
+const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
   // Below is an example of translating the comps.
   // const { t } = useTranslation();
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
   const { patchAppData, appDataArray } = useAppDataContext();
   const personalInfoObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+    (obj) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
   );
 
   const handlePatch = (dataObj: AppData, newData: PersonalInfoObj): void => {
@@ -77,7 +79,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const personalData = appDataArray.find(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
     ) as AppData & { data: PersonalInfoObj };
     setPersonalInfoState(personalData);
   }, [appDataArray]);
@@ -111,6 +113,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       ...prevErrors,
       [key]: '', // Clear the error message for the field being edited
     }));
+    onError(false);
   };
   const handleInputBlur = (key: string, label: string): void => {
     if (
@@ -121,6 +124,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
         ...prevErrors,
         [key]: `${label} is required`, // Set the error message for the empty required field
       }));
+      onError(true);
     } else {
       const value = (personalInfoState as AppData & { data: PersonalInfoObj })
         .data[key] as string;
@@ -129,6 +133,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
           ...prevErrors,
           [key]: `${label} is required`,
         }));
+        onError(true);
       }
     }
   };
@@ -251,7 +256,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
     if (isValid) {
       // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
       const personalInfoObj = appDataArray.find(
-        (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+        (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
       ) as AppData & { data: PersonalInfoObj };
 
       if (personalInfoObj && personalInfoState) {
@@ -314,6 +319,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
       console.error(
         'Please save your progress by clicking on Save button before proceeding on',
       );
+    } else {
+      onError(true);
     }
   };
   // Flex-wrap: wrap;
@@ -497,13 +504,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
           </Fragment>
         ))}
       </Box>
-      <ButtonGroup
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '16px',
-        }}
-      >
+      <Stack justifyContent="space-between" marginBottom="16px" direction="row">
         <Button
           variant="contained"
           color="primary"
@@ -532,7 +533,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep }) => {
         >
           Next
         </Button>
-      </ButtonGroup>
+      </Stack>
     </Box>
   );
 };

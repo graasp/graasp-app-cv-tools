@@ -39,7 +39,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     useAppDataContext();
 
   const handlePost = (newdata: PortfolioObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.PORTFOLIO });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PROJECTS_INFO });
   };
   const handlePatch = (id: AppData['id'], newData: PortfolioObj): void => {
     patchAppData({ id, data: newData });
@@ -52,7 +52,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const portfolioData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.PORTFOLIO,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
     ) as List<AppData & { data: PortfolioObj }>;
     setPortfolioCards(portfolioData);
   }, [appDataArray]);
@@ -161,14 +161,14 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleMotivationPost = (newdata: MotivationObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION_INFO });
   };
   const handlePrev = (): void => {
     prevStep();
   };
   const handleNext = (): void => {
     const motivationData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
     );
 
     let isValid = true;
@@ -240,7 +240,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Portfolio</Typography>
+        <Typography variant="h4">Projects</Typography>
         <Typography sx={{ m: '0.5rem' }}>
           For this part you can add as many Projects as you like and done, you
           can also remove any Project you would like to remove from your

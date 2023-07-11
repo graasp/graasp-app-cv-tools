@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -18,7 +18,7 @@ interface Props {
 const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const motivationObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
   );
   const handlePatch = (dataObj: AppData, newData: MotivationObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
@@ -30,7 +30,7 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const motivationData = appDataArray.find(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
     ) as AppData & { data: MotivationObj };
     setMotivationInfoState(motivationData);
   }, [appDataArray]);

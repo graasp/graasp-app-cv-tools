@@ -2,7 +2,7 @@ import { List } from 'immutable';
 
 import { FC, useEffect, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -34,7 +34,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
   const handlePost = (newdata: ReferencesObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES_INFO });
   };
   const handlePatch = (id: AppData['id'], newData: ReferencesObj): void => {
     patchAppData({ id, data: newData });
@@ -48,7 +48,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const referencesData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
     ) as List<AppData & { data: ReferencesObj }>;
     setReferencesCards(referencesData);
   }, [appDataArray]);
@@ -114,14 +114,14 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleCvStatePost = (newdata: CvStatusObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.CVSTATUSDATA });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_STATUS_DATA });
   };
   const handlePrev = (): void => {
     prevStep();
   };
   const handleNext = (): void => {
     const cvStatusData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
     );
     if (cvStatusData.size === 0) {
       handleCvStatePost({

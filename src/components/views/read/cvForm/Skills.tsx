@@ -2,7 +2,7 @@ import { List } from 'immutable';
 
 import { FC, KeyboardEvent, useEffect, useState } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
 import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
@@ -38,7 +38,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const skillsData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
     ) as List<AppData & { data: SkillsObj }>;
     setSkillCards(skillsData);
   }, [appDataArray]);

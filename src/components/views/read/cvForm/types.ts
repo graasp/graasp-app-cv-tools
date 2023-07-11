@@ -79,7 +79,7 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
-  cvStateInfo: CvStatusObj;
+  cvStatusInfo: CvStatusObj;
 };
 
 export type SubmissionStatus = { message: string };

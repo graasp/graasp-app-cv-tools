@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver';
 
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
-import { AppData, Data } from '@graasp/apps-query-client/dist/types';
+import { AppData, Data } from '@graasp/apps-query-client';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -35,10 +35,10 @@ interface Props {
 const Review: FC<Props> = ({ homeStep, prevStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
   const personalInfoObject = appDataArray.find(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
   )?.data as PersonalInfoObj;
   const educationInfoObject = appDataArray.filter(
-    (obj) => obj.type === APP_DATA_TYPES.EDUCATION,
+    (obj) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
   );
 
   const educationDataArray: Data[] = [];
@@ -48,7 +48,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   });
 
   const workInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.WORKEXPERIENCE,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
   );
   const workDataArray: Data[] = [];
   workInfoObject.map((card) => {
@@ -57,7 +57,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   });
 
   const skillsInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
   );
   const skillsDataArray: Data[] = [];
   skillsInfoObject.map((card) => {
@@ -66,7 +66,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   });
 
   const portfolioInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.PORTFOLIO,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
   );
   const portfolioDataArray: Data[] = [];
   portfolioInfoObject.map((card) => {
@@ -75,10 +75,10 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   });
 
   const motivationObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION,
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
   )?.data as MotivationObj;
   const referencesInfoObject = appDataArray.filter(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES,
+    (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
   );
   const referencesDataArray: Data[] = [];
   referencesInfoObject.map((card) => {
@@ -86,7 +86,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     return null;
   });
   const cvStatusObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.CVSTATUSDATA,
+    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
   )?.data as CvStatusObj;
   const cvObj = {
     personalInfo: personalInfoObject,
@@ -100,22 +100,22 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   };
   const cvValues = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
-  )?.data as CVInfoObj;
+  )?.data as CVInfoObj | undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let renderedTemplate: any = null;
+  let renderedTemplate: JSX.Element | undefined;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let handleDownload = async (): Promise<void> => {};
 
   if (cvValues) {
-    if (cvValues.cvStateInfo.selectedTemplateId) {
+    if (cvValues.cvStatusInfo.selectedTemplateId) {
       const { component: CvTemplate } = TEMPLATES.find(
-        (t) => t.id === cvValues.cvStateInfo.selectedTemplateId,
+        (t) => t.id === cvValues.cvStatusInfo.selectedTemplateId,
       ) || { component: FirstTemplate };
       renderedTemplate = <CvTemplate cvValues={cvValues} />;
       handleDownload = async (): Promise<void> => {
         const pdfBlob = await pdf(renderedTemplate).toBlob();
-        if (!cvValues.cvStateInfo.customCv) {
+        if (!cvValues.cvStatusInfo.customCv) {
           saveAs(pdfBlob, 'generated-cv.pdf');
         }
       };
@@ -142,8 +142,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.SUBMISSION_STATUS });
   };
   const handleNext = (): void => {
-    // todo: save an app data that says the candidate is done!
-    // APP_DATA_TYPES.SUBMISSION_STATUS;
+    // instead of appdata, make it appactions
     handleStatusPost({ message: 'Submission Done' });
     homeStep();
   };
@@ -165,11 +164,11 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
         your CV.
       </Typography>
       <Box justifyContent="center" display="flex">
-        {cvValues.cvStateInfo.customCv || cvObj.cvStateInfo.customCv ? (
+        {cvValues?.cvStatusInfo.customCv || cvObj.cvStateInfo.customCv ? (
           <Box justifyContent="center" display="flex">
             <embed
               src={`${
-                cvValues.cvStateInfo.fileUrl || cvObj.cvStateInfo.fileUrl
+                cvValues?.cvStatusInfo.fileUrl || cvObj.cvStateInfo.fileUrl
               }#toolbar=0`}
               type="application/pdf"
               style={{ minHeight: '350px', width: '100%' }}

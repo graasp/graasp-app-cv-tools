@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
 
-import { Box } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Box, Step, StepLabel, Stepper } from '@mui/material';
 
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import Template from './cvForm/Cv';
@@ -28,26 +29,79 @@ const PlayerView: FC = () => {
     'Education',
     'Work Experience',
     'Skills',
-    'Portfolio',
+    'Projects',
     'Motivation Letter',
     'References',
     'Cv',
     'Review',
   ];
+  const [stepState, setStepState] = useState<
+    ('done' | 'error' | 'inprogress')[]
+  >(steps.map(() => 'inprogress'));
 
+  const handleStepClick = (stepIndex: number): void => {
+    if (
+      stepIndex !== steps.length - 1 &&
+      stepIndex !== steps.length - 2 &&
+      stepState[activeStep] !== 'error'
+    ) {
+      modifyActiveStep(stepIndex);
+    }
+  };
+  const stepper = (
+    <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+      {steps.map((label, index) => (
+        <Step
+          key={index}
+          onClick={() => handleStepClick(index)}
+          style={{
+            cursor:
+              index !== steps.length - 1 && index !== steps.length - 2
+                ? 'pointer'
+                : 'default',
+          }}
+          completed={stepState[index] === 'done'}
+        >
+          <StepLabel
+            StepIconComponent={
+              stepState[index] === 'error' ? ErrorIcon : undefined
+            }
+            error={stepState[index] === 'error'}
+          >
+            {label}
+          </StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+
+  const handleStepState = (
+    index: number,
+    state: 'done' | 'error' | 'inprogress',
+  ): void =>
+    setStepState((prev) => {
+      const newState = [...prev];
+      newState[index] = state;
+      return newState;
+    });
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
-      <FormLayout
-        activeStep={activeStep}
-        steps={steps}
-        modifyActiveStep={modifyActiveStep}
-      >
+      <FormLayout stepper={stepper}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && (
           <Home nextStep={nextStep} reviewStep={reviewStep} />
         )}
         {activeStep === 1 && (
-          <PersonalInfo nextStep={nextStep} prevStep={prevStep} />
+          <PersonalInfo
+            onError={(isError: boolean) =>
+              handleStepState(1, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(1, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
+          />
         )}
         {activeStep === 2 && (
           <Education nextStep={nextStep} prevStep={prevStep} />

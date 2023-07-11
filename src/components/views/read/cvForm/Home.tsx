@@ -1,7 +1,8 @@
 import { ChangeEvent, FC, RefObject, useRef } from 'react';
 
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData } from '@graasp/apps-query-client';
 
+// toastcontainer in the app comp, and the css styles
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Box, Button, Stack, Typography } from '@mui/material';
@@ -86,11 +87,11 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
   };
 
   const handlePersonalPost = (newdata: PersonalInfoObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONALINFO });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONAL_INFO });
   };
   const handleNext = (): void => {
     const personalData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONALINFO,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
     );
     if (personalData.size === 0) {
       handlePersonalPost({
