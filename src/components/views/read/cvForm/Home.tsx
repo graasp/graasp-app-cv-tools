@@ -66,14 +66,14 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
             handleCvPost(parsedData);
             reviewStep();
           } else {
-            console.log('Error validating');
-            console.log(validationResult.errors);
             showErrorToast(
-              'Invalid file content. Please upload a valid CV data file.',
+              'Could not parse the data within the file. Please upload a valid CV data file.',
             );
           }
         } catch (err) {
-          console.error('boom');
+          showErrorToast(
+            'Invalid file content. Please upload a valid CV data file.',
+          );
         }
       };
       reader.readAsText(file);

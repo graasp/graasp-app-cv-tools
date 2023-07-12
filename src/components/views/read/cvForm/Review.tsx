@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 import { AppData, Data } from '@graasp/apps-query-client';
 

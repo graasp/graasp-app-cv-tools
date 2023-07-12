@@ -1,8 +1,6 @@
 import { FC, ReactNode } from 'react';
 
-import { Box, Step, StepLabel, Stepper } from '@mui/material';
-
-import { useAppDataContext } from '../../../context/AppDataContext';
+import { Box } from '@mui/material';
 
 interface Props {
   children: ReactNode;

@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { SkillsObj } from './types';
 
@@ -134,7 +135,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
     if (!editing) {
       nextStep();
     } else {
-      console.error('Please save your progress by clicking on Done button');
+      showErrorToast('Please save your progress by clicking on Done button');
     }
   };
   return (

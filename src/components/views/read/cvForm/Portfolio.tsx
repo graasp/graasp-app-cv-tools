@@ -27,6 +27,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj, PortfolioObj } from './types';
 
@@ -225,7 +226,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       }
       nextStep();
     } else if (isValid && !allSaved?.every((saved) => saved)) {
-      console.error(
+      showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
     }

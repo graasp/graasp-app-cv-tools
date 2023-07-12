@@ -8,6 +8,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj } from './types';
 
@@ -56,7 +57,7 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     if (saved) {
       nextStep();
     } else {
-      console.error('Please save your progress by clicking on Save button');
+      showErrorToast('Please save your progress by clicking on Save button');
     }
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];

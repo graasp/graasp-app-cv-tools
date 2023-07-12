@@ -21,7 +21,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
   Button,
-  ButtonGroup,
   IconButton,
   MenuItem,
   Stack,
@@ -33,6 +32,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
@@ -251,7 +251,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     setErrors(updatedErrors);
 
-    console.log(personalInfoState);
     // Save the data if it's valid
     if (isValid) {
       // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
@@ -316,7 +315,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
     if (isValid && personalInfoState?.data.saved) {
       nextStep();
     } else if (!personalInfoState?.data.saved && isValid) {
-      console.error(
+      showErrorToast(
         'Please save your progress by clicking on Save button before proceeding on',
       );
     } else {
