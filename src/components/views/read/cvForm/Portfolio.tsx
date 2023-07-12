@@ -29,6 +29,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { onGoing } from './constants';
 import { MotivationObj, PortfolioObj } from './types';
 
@@ -239,16 +240,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'endDate', label: 'End Date' },
     { key: 'projectLink', label: 'Project Link' },
   ];
+  const title = 'Projects';
+  const description =
+    'For this part you can add as many Projects as you like and done, you can also remove any Project you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Projects</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add as many Projects as you like and done, you
-          can also remove any Project you would like to remove from your
-          application, modify the information by clicking on edit, fill up all
-          the required fields, and when done editing just click on done button.
-        </Typography>
+        <Description title={title} description={description} />
         {portfolioCards?.map((card, index) => (
           <Card
             key={card.id}

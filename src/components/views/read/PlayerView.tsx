@@ -25,8 +25,8 @@ const PlayerView: FC = () => {
   const reviewStep = (): void => setActiveStep(8);
   const steps = [
     'Home',
-    'Personal Info',
-    'Education',
+    'Personal Details',
+    'Education and Training',
     'Work Experience',
     'Skills',
     'Projects',

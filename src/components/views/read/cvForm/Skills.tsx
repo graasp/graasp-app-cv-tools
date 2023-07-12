@@ -23,6 +23,7 @@ import {
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { SkillsObj } from './types';
 
 interface Props {
@@ -138,28 +139,13 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
       showErrorToast('Please save your progress by clicking on Done button');
     }
   };
+  const title = 'Skills';
+  const description =
+    "For this part you have 3 types of skills 'Digital Skills','Language Skills', and 'Other Skills', each of which you can fill as many skills as you have by clicking on edit button, then in the box of text just enter any skill then you can simply hit Spacebar it will be saved, deleting the skill can be done either by clicking on the x button it will appear on the skill itself, or by hitting Backspace from your keyboard. For 'Digital Skills', enter any technological skill from 'Programming', to 'Desgin', to 'Editing', etc. For 'Language Skills', enter any language that you can speak at good level such as 'English', to 'French', to 'Arabic', etc. For 'Other Skills', enter any other skill that you feel it doesn't fall under 'Digital Skills' or 'Language Skills' for example 'Team Leading', to 'Time Management', to 'Multi Tasking', 'Organisational Skills', 'Communication and Interpersonal Skills', 'Management and Leadership Skills', etc.";
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Skills</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you have 3 types of skills &quot;Tech Skills&quot;,
-          &quot;Language Skills&quot;, and &quot;Other Skills&quot;, each of
-          which you can fill as many skills as you have by clicking on edit
-          button, then in the box of text just enter any skill then you can
-          simply hit Spacebar it will be saved, deleting the skill can be done
-          either by clicking on the x button it will appear on the skill itself,
-          or by hitting Backspace from your keyboard. For &quot;Tech
-          Skills&quot;, enter any technological skill from
-          &quot;Programming&quot;, to &quot;Desgin&quot;, to
-          &quot;Editing&quot;, etc. For &quot;Language Skills&quot;, enter any
-          language that you can speak at good level such as &quot;English&quot;,
-          to &quot;French&quot;, to &quot;Arabic&quot;, etc. For &quot;Other
-          Skills&quot;, enter any other skill that you feel it doesn&apos;t fall
-          under &quot;Tech Skills&quot; or &quot;Language Skills&quot; for
-          example &quot;Team Leading&quot;, to &quot;Time Management&quot;, to
-          &quot;Multi Tasking&quot;, etc.
-        </Typography>
+        <Description title={title} description={description} />
         {skillCards?.map((card) => (
           <Card
             key={card.data.title}

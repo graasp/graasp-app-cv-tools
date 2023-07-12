@@ -31,6 +31,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { onGoing } from './constants';
 import { SkillsObj, WorkExperienceObj } from './types';
 
@@ -279,16 +280,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'jobDetails', label: 'Job Details' },
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
+  const title = 'Work Exerpience';
+  const description =
+    'For this part you can add as many Experiences as you like, you can also remove any Experience you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Work Expereince</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add as many Experiences as you like, you can
-          also remove any Experience you would like to remove from your
-          application, modify the information by clicking on edit, fill up all
-          the required fields, and when done editing just click on done button.
-        </Typography>
+        <Description title={title} description={description} />
         {workCards?.map((card, index) => (
           <Card
             key={card.id}
