@@ -29,6 +29,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import { onGoing } from './constants';
 import { MotivationObj, PortfolioObj } from './types';
 
 interface Props {
@@ -238,7 +239,6 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'endDate', label: 'End Date' },
     { key: 'projectLink', label: 'Project Link' },
   ];
-  const onGoing = 'onGoing';
   return (
     <Box>
       <Box>

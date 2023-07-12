@@ -31,6 +31,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import { onGoing } from './constants';
 import { EducationInfoObj } from './types';
 
 interface Props {
@@ -277,7 +278,6 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'gpa', label: 'GPA' },
     { key: 'country', label: 'Country' },
   ];
-  const onGoing = 'OnGoing';
   return (
     <Box>
       <Box>

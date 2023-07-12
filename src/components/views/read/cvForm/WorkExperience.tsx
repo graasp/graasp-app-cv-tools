@@ -31,6 +31,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import { onGoing } from './constants';
 import { SkillsObj, WorkExperienceObj } from './types';
 
 interface Props {
@@ -278,7 +279,6 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'jobDetails', label: 'Job Details' },
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
-  const onGoing = 'OnGoing';
   return (
     <Box>
       <Box>
