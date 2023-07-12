@@ -211,30 +211,30 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     (obj) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
   );
 
-  const educationDataArray = educationInfoObject.map(
-    (card) => card.data,
-  ) as unknown as EducationInfoObj[];
+  const educationDataArray = educationInfoObject
+    .toArray()
+    .map((card) => card.data) as EducationInfoObj[];
 
   const workInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
   );
-  const workDataArray = workInfoObject.map(
-    (card) => card.data,
-  ) as unknown as WorkExperienceObj[];
+  const workDataArray = workInfoObject
+    .toArray()
+    .map((card) => card.data) as WorkExperienceObj[];
 
   const skillsInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
   );
-  const skillsDataArray = skillsInfoObject.map(
-    (card) => card.data,
-  ) as unknown as SkillsObj[];
+  const skillsDataArray = skillsInfoObject
+    .toArray()
+    .map((card) => card.data) as SkillsObj[];
 
   const portfolioInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
   );
-  const portfolioDataArray = portfolioInfoObject.map(
-    (card) => card.data,
-  ) as unknown as PortfolioObj[];
+  const portfolioDataArray = portfolioInfoObject
+    .toArray()
+    .map((card) => card.data) as PortfolioObj[];
 
   const motivationObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
@@ -242,9 +242,10 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const referencesInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
   );
-  const referencesDataArray = referencesInfoObject.map(
-    (card) => card.data,
-  ) as unknown as ReferencesObj[];
+  const referencesDataArray = referencesInfoObject
+    .toArray()
+    .map((card) => card.data) as ReferencesObj[];
+
   const cvObj = {
     personalInfo: personalInfoObject,
     educationInfo: educationDataArray,

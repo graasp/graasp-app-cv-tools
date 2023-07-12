@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver';
 
 import { FC } from 'react';
 
-import { AppData, Data } from '@graasp/apps-query-client';
+import { AppData } from '@graasp/apps-query-client';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -41,38 +41,30 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     (obj) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
   );
 
-  const educationDataArray: Data[] = [];
-  educationInfoObject.map((card) => {
-    educationDataArray.push(card.data);
-    return null;
-  });
+  const educationDataArray = educationInfoObject
+    .toArray()
+    .map((card) => card.data) as EducationInfoObj[];
 
   const workInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
   );
-  const workDataArray: Data[] = [];
-  workInfoObject.map((card) => {
-    workDataArray.push(card.data);
-    return null;
-  });
+  const workDataArray = workInfoObject
+    .toArray()
+    .map((card) => card.data) as WorkExperienceObj[];
 
   const skillsInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
   );
-  const skillsDataArray: Data[] = [];
-  skillsInfoObject.map((card) => {
-    skillsDataArray.push(card.data);
-    return null;
-  });
+  const skillsDataArray = skillsInfoObject
+    .toArray()
+    .map((card) => card.data) as SkillsObj[];
 
   const portfolioInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
   );
-  const portfolioDataArray: Data[] = [];
-  portfolioInfoObject.map((card) => {
-    portfolioDataArray.push(card.data);
-    return null;
-  });
+  const portfolioDataArray = portfolioInfoObject
+    .toArray()
+    .map((card) => card.data) as PortfolioObj[];
 
   const motivationObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
@@ -80,11 +72,9 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   const referencesInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
   );
-  const referencesDataArray: Data[] = [];
-  referencesInfoObject.map((card) => {
-    referencesDataArray.push(card.data);
-    return null;
-  });
+  const referencesDataArray = referencesInfoObject
+    .toArray()
+    .map((card) => card.data) as ReferencesObj[];
   const cvStatusObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
   )?.data as CvStatusObj;
