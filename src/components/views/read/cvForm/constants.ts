@@ -14,3 +14,4 @@ export const TEMPLATES: CVTemplate[] = [
     component: FirstTemplate,
   },
 ];
+export const onGoing = 'onGoing';

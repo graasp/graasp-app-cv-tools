@@ -9845,6 +9845,7 @@ __metadata:
     i18next: 21.8.11
     immutable: 4.1.0
     iso-3166-1: 2.1.1
+    jsonschema: 1.4.1
     lodash.isobject: 3.0.2
     lodash.isstring: 4.0.1
     nyc: 15.1.0
@@ -9855,6 +9856,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-i18next: 11.17.3
+    react-international-phone: 2.2.3
     react-pdf: 7.1.2
     react-phone-input-2: 2.15.1
     react-router-dom: 6.11.1
@@ -11848,6 +11850,13 @@ __metadata:
   version: 5.0.1
   resolution: "jsonpointer@npm:5.0.1"
   checksum: 0b40f712900ad0c846681ea2db23b6684b9d5eedf55807b4708c656f5894b63507d0e28ae10aa1bddbea551241035afe62b6df0800fc94c2e2806a7f3adecd7c
+  languageName: node
+  linkType: hard
+
+"jsonschema@npm:1.4.1":
+  version: 1.4.1
+  resolution: "jsonschema@npm:1.4.1"
+  checksum: 1ef02a6cd9bc32241ec86bbf1300bdbc3b5f2d8df6eb795517cf7d1cd9909e7beba1e54fdf73990fd66be98a182bda9add9607296b0cb00b1348212988e424b2
   languageName: node
   linkType: hard
 
@@ -15246,6 +15255,15 @@ __metadata:
     react-native:
       optional: true
   checksum: 6b4959eb6257c7096f70e6dbc1e436ccc19258c0a8202a28fcc812c098c3574f4a0f4ec8f9dd8c7cbdbee1ac055125ec918f99ea1e1655574248f1c1e06c612c
+  languageName: node
+  linkType: hard
+
+"react-international-phone@npm:2.2.3":
+  version: 2.2.3
+  resolution: "react-international-phone@npm:2.2.3"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: b8c1f4950d823e8b7dcb6d1403fd3422bf1fd6a8cf75c36a77428c68aec96dbeab5dd4eafa0c62dc30d87f32a16cb7e8d4a59e71e7b7d9c71ed755b1fc6ace72
   languageName: node
   linkType: hard
 

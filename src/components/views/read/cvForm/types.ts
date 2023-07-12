@@ -1,7 +1,7 @@
 export type PersonalInfoObj = {
   firstName: string;
   lastName: string;
-  birthDate: string | undefined;
+  birthDate: string | null;
   gender: string;
   emailAddress: string;
   phoneNum: string;
@@ -9,6 +9,7 @@ export type PersonalInfoObj = {
   profileLinks: string;
   personalLink: string;
   personalPic: string;
+  saved: boolean;
 };
 
 export type EducationInfoObj = {
@@ -16,21 +17,23 @@ export type EducationInfoObj = {
   degree: string;
   institutionName: string;
   major: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   gpa: string;
   country: string;
+  saved: boolean;
 };
 
 export type WorkExperienceObj = {
   id: string;
   jobTitle: string;
   institutionName: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   country: string;
   jobDetails: string;
   keyAchievements: string;
+  saved: boolean;
 };
 
 export type SkillsObj = {
@@ -42,9 +45,10 @@ export type PortfolioObj = {
   id: string;
   projectTitle: string;
   projectDescription: string;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null;
+  endDate: string | null;
   projectLink: string;
+  saved: boolean;
 };
 
 export type MotivationObj = {
@@ -58,10 +62,13 @@ export type ReferencesObj = {
   referenceCompany: string;
   referencePhoneNum: string;
   referenceEmail: string;
+  saved: boolean;
 };
 
-export type TemplateObj = {
+export type CvStatusObj = {
   selectedTemplateId: string;
+  customCv: boolean;
+  fileUrl?: string;
 };
 
 export type CVInfoObj = {
@@ -72,5 +79,7 @@ export type CVInfoObj = {
   portfolioInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
-  templateInfo: TemplateObj;
+  cvStatusInfo: CvStatusObj;
 };
+
+export type SubmissionStatus = { message: string };

@@ -1,85 +1,134 @@
 import { FC, useEffect, useState } from 'react';
 
+import { AppData } from '@graasp/apps-query-client';
+
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import { Box, Button, Stack, TextField, Typography } from '@mui/material';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
+import { useAppDataContext } from '../../../context/AppDataContext';
 import { MotivationObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  motivationInfo: MotivationObj;
-  onCvValuesChange: (data: MotivationObj) => void;
 }
-const MotivationLetter: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  motivationInfo,
-  onCvValuesChange,
-}) => {
-  const [motivationInfoState, setMotivationInfoState] =
-    useState(motivationInfo);
+const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
+  const { patchAppData, appDataArray } = useAppDataContext();
+  const motivationObject = appDataArray.find(
+    (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
+  );
+  const handlePatch = (dataObj: AppData, newData: MotivationObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
+  };
+
+  const [motivationInfoState, setMotivationInfoState] = useState<
+    AppData & { data: MotivationObj }
+  >();
 
   useEffect(() => {
-    setMotivationInfoState(motivationInfo);
-  }, [motivationInfo]);
+    const motivationData = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
+    ) as AppData & { data: MotivationObj };
+    setMotivationInfoState(motivationData);
+  }, [appDataArray]);
 
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (): void => {
+    // search in appdata so if we find the object of the same type 'motivationInfo' patch its data by its id
+    if (motivationObject && motivationInfoState) {
+      setSaved(true);
+      handlePatch(motivationObject, motivationInfoState.data);
+    }
+  };
+  const hasChanges =
+    motivationInfoState &&
+    Object.keys(motivationInfoState.data).some(
+      (key) => motivationInfoState.data[key] !== motivationObject?.data[key],
+    );
   const handlePrev = (): void => {
-    onCvValuesChange(motivationInfoState);
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(motivationInfoState);
-    nextPage();
-    nextStep();
+    if (saved) {
+      nextStep();
+    } else {
+      showErrorToast('Please save your progress by clicking on Save button');
+    }
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Self Motivation</Typography>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add a personal motivation, what are your goals
+          wishing to achieve in your career, etc.
+        </Typography>
         {mapping.map((m) => (
           <Box key={m.key}>
-            <Typography>{m.label}</Typography>
             {m.key === 'motivationLetter' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={motivationInfoState.motivationLetter || ''}
+                value={motivationInfoState?.data.motivationLetter || ''}
                 onChange={(e) =>
-                  setMotivationInfoState((prev) => ({
-                    ...prev,
-                    motivationLetter: e.target.value,
-                  }))
+                  setMotivationInfoState((prev) => {
+                    if (!prev) {
+                      return prev;
+                    }
+                    return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        motivationLetter: e.target.value,
+                      },
+                    };
+                  })
                 }
                 multiline
-                required
+                minRows={10}
+                fullWidth
+                margin="normal"
               />
             )}
           </Box>
         ))}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
-      >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+      <Stack justifyContent="space-between" marginBottom="16px" direction="row">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          style={{ alignSelf: 'center' }}
+          disabled={!hasChanges}
+        >
+          Save
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </Stack>
     </Box>
   );
 };

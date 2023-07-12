@@ -1,6 +1,8 @@
 import { RecordOf } from 'immutable';
 
 import React, { FC, ReactElement, useContext, useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Context as HOCContext, LocalContext } from '@graasp/apps-query-client';
 import { Context } from '@graasp/sdk';
@@ -45,7 +47,10 @@ const App: FC = () => {
   return (
     <MembersProvider>
       <AppDataProvider>
-        <AppSettingProvider>{renderContent()}</AppSettingProvider>
+        <AppSettingProvider>
+          {renderContent()}
+          <ToastContainer />
+        </AppSettingProvider>
       </AppDataProvider>
     </MembersProvider>
   );

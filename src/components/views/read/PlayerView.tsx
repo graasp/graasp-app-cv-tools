@@ -1,8 +1,10 @@
 import { FC, useState } from 'react';
 
-import { Box } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Box, Step, StepLabel, Stepper } from '@mui/material';
 
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
+import Template from './cvForm/Cv';
 import Education from './cvForm/Education';
 import FormLayout from './cvForm/FormLayout';
 import Home from './cvForm/Home';
@@ -12,188 +14,115 @@ import Portfolio from './cvForm/Portfolio';
 import References from './cvForm/References';
 import Review from './cvForm/Review';
 import Skills from './cvForm/Skills';
-import Template from './cvForm/Template';
 import WorkExperience from './cvForm/WorkExperience';
-import { CVInfoObj } from './cvForm/types';
 
 const PlayerView: FC = () => {
-  const [page, setPage] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
-  const nextPage = (): void => setPage(page + 1);
-  const prevPage = (): void => setPage(page - 1);
   const nextStep = (): void => setActiveStep(activeStep + 1);
   const prevStep = (): void => setActiveStep(activeStep - 1);
+  const modifyActiveStep = (index: number): void => setActiveStep(index);
   const homeStep = (): void => setActiveStep(0);
-  const templateStep = (): void => setActiveStep(8);
+  const reviewStep = (): void => setActiveStep(8);
   const steps = [
     'Home',
     'Personal Info',
     'Education',
     'Work Experience',
     'Skills',
-    'Portfolio',
+    'Projects',
     'Motivation Letter',
     'References',
-    'Template',
+    'Cv',
     'Review',
   ];
+  const [stepState, setStepState] = useState<
+    ('done' | 'error' | 'inprogress')[]
+  >(steps.map(() => 'inprogress'));
 
-  const [cvValues, setCvValues] = useState<CVInfoObj>({
-    personalInfo: {
-      firstName: '',
-      lastName: '',
-      birthDate: undefined,
-      gender: '',
-      emailAddress: '',
-      phoneNum: '',
-      address: '',
-      profileLinks: '',
-      personalLink: '',
-      personalPic: '',
-    },
-    educationInfo: [],
-    workInfo: [],
-    skillsInfo: [
-      { title: 'Tech Skills', skills: [] },
-      { title: 'Lang Skills', skills: [] },
-      { title: 'Other Skills', skills: [] },
-    ],
-    portfolioInfo: [],
-    motivationInfo: {
-      motivationLetter: '',
-    },
-    referencesInfo: [],
-    templateInfo: { selectedTemplateId: '' },
-  });
-  const handleCvValuesChange = <K extends keyof CVInfoObj>(
-    subkey: K,
-    newSubkeyValues: CVInfoObj[K],
-  ): void => {
-    setCvValues((prevCvValues) => ({
-      ...prevCvValues,
-      [subkey]: newSubkeyValues,
-    }));
+  const handleStepClick = (stepIndex: number): void => {
+    if (
+      stepIndex >= 0 &&
+      stepIndex < steps.length - 2 &&
+      stepState[activeStep] !== 'error'
+    ) {
+      modifyActiveStep(stepIndex);
+    }
   };
-  const handleUploadCvValues = (data: CVInfoObj): void => {
-    setCvValues(data);
-  };
+  const stepper = (
+    <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+      {steps.map((label, index) => (
+        <Step
+          key={index}
+          onClick={() => handleStepClick(index)}
+          style={{
+            cursor:
+              index !== steps.length - 1 && index !== steps.length - 2
+                ? 'pointer'
+                : 'default',
+          }}
+          completed={stepState[index] === 'done'}
+        >
+          <StepLabel
+            StepIconComponent={
+              stepState[index] === 'error' ? ErrorIcon : undefined
+            }
+            error={stepState[index] === 'error'}
+          >
+            {label}
+          </StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+
+  const handleStepState = (
+    index: number,
+    state: 'done' | 'error' | 'inprogress',
+  ): void =>
+    setStepState((prev) => {
+      const newState = [...prev];
+      newState[index] = state;
+      return newState;
+    });
   return (
     <Box data-cy={PLAYER_VIEW_CY}>
-      <FormLayout activeStep={activeStep} steps={steps}>
+      <FormLayout stepper={stepper}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && (
-          <Home
-            nextPage={nextPage}
-            nextStep={nextStep}
-            templateStep={templateStep}
-            onCvValuesUpload={(cvData) => handleUploadCvValues(cvData)}
-          />
+          <Home nextStep={nextStep} reviewStep={reviewStep} />
         )}
         {activeStep === 1 && (
           <PersonalInfo
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            personalInfo={cvValues.personalInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('personalInfo', data)
+            onError={(isError: boolean) =>
+              handleStepState(1, isError ? 'error' : 'inprogress')
             }
+            nextStep={() => {
+              handleStepState(1, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
           />
         )}
         {activeStep === 2 && (
-          <Education
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            educationData={cvValues.educationInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('educationInfo', data)
-            }
-          />
+          <Education nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 3 && (
-          <WorkExperience
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            workData={cvValues.workInfo}
-            onCvValuesChange={(data) => handleCvValuesChange('workInfo', data)}
-          />
+          <WorkExperience nextStep={nextStep} prevStep={prevStep} />
         )}
-        {activeStep === 4 && (
-          <Skills
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            skillsData={cvValues.skillsInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('skillsInfo', data)
-            }
-          />
-        )}
+        {activeStep === 4 && <Skills nextStep={nextStep} prevStep={prevStep} />}
         {activeStep === 5 && (
-          <Portfolio
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            portfolioData={cvValues.portfolioInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('portfolioInfo', data)
-            }
-          />
+          <Portfolio nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 6 && (
-          <MotivationLetter
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            motivationInfo={cvValues.motivationInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('motivationInfo', data)
-            }
-          />
+          <MotivationLetter nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 7 && (
-          <References
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            prevStep={prevStep}
-            referencesData={cvValues.referencesInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('referencesInfo', data)
-            }
-          />
+          <References nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 8 && (
-          <Template
-            nextPage={nextPage}
-            prevPage={prevPage}
-            nextStep={nextStep}
-            homeStep={homeStep}
-            prevStep={prevStep}
-            cvValues={cvValues}
-            templateData={cvValues.templateInfo}
-            onCvValuesChange={(data) =>
-              handleCvValuesChange('templateInfo', data)
-            }
-          />
+          <Template nextStep={nextStep} prevStep={prevStep} />
         )}
-        {activeStep === 9 && (
-          <Review
-            nextPage={nextPage}
-            prevPage={prevPage}
-            homeStep={homeStep}
-            prevStep={prevStep}
-            cvValues={cvValues}
-          />
-        )}
+        {activeStep === 9 && <Review homeStep={homeStep} prevStep={prevStep} />}
       </FormLayout>
     </Box>
   );

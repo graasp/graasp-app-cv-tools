@@ -1,6 +1,8 @@
+import { List } from 'immutable';
+
 import { FC, useEffect, useState } from 'react';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+
+import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -11,6 +13,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardActions,
   CardContent,
@@ -18,45 +21,52 @@ import {
   Typography,
 } from '@mui/material';
 
-import { ReferencesObj } from './types';
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
+import { useAppDataContext } from '../../../context/AppDataContext';
+import { MuiPhone } from './MuiPhone';
+import { CvStatusObj, ReferencesObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  referencesData: ReferencesObj[];
-  onCvValuesChange: (data: ReferencesObj[]) => void;
 }
-const References: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  referencesData,
-  onCvValuesChange,
-}) => {
-  const [referencesCards, setReferencesCards] = useState(referencesData);
+const References: FC<Props> = ({ nextStep, prevStep }) => {
+  const { postAppData, patchAppData, deleteAppData, appDataArray } =
+    useAppDataContext();
+  const handlePost = (newdata: ReferencesObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES_INFO });
+  };
+  const handlePatch = (id: AppData['id'], newData: ReferencesObj): void => {
+    patchAppData({ id, data: newData });
+  };
+  const handleDelete = (id: AppData['id']): void => {
+    deleteAppData({ id });
+  };
+
+  const [referencesCards, setReferencesCards] =
+    useState<List<AppData & { data: ReferencesObj }>>();
 
   useEffect(() => {
+    const referencesData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
+    ) as List<AppData & { data: ReferencesObj }>;
     setReferencesCards(referencesData);
-  }, [referencesData]);
+  }, [appDataArray]);
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
 
   const handleAdd = (): void => {
-    const newCardId = `card${referencesCards.length + 1}`;
-    setReferencesCards((prevCards) => [
-      ...prevCards,
-      {
-        id: newCardId,
-        referenceName: '',
-        referenceRelation: '',
-        referenceCompany: '',
-        referencePhoneNum: '',
-        referenceEmail: '',
-      },
-    ]);
+    const newCardId = `card${(referencesCards?.size ?? 0) + 1}`;
+    handlePost({
+      id: newCardId,
+      referenceName: '',
+      referenceRelation: '',
+      referenceCompany: '',
+      referencePhoneNum: '',
+      referenceEmail: '',
+      saved: false,
+    });
     setShowFields((prevShowFields) => ({
       ...prevShowFields,
       [newCardId]: false,
@@ -71,6 +81,13 @@ const References: FC<Props> = ({
   };
 
   const handleDone = (cardId: string): void => {
+    const referencesInfoCard = referencesCards?.find(
+      (card) => card.id === cardId,
+    );
+    if (referencesInfoCard) {
+      handlePatch(cardId, { ...referencesInfoCard.data, saved: true });
+    }
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       updatedShowFields[cardId] = false;
@@ -79,9 +96,8 @@ const References: FC<Props> = ({
   };
 
   const handleRemove = (cardId: string): void => {
-    setReferencesCards((prevCards) =>
-      prevCards.filter((card) => card.id !== cardId),
-    );
+    handleDelete(cardId);
+
     setShowFields((prevShowFields) => {
       const updatedShowFields = { ...prevShowFields };
       delete updatedShowFields[cardId];
@@ -91,22 +107,38 @@ const References: FC<Props> = ({
 
   const handleChange = (cardId: string, key: string, value: string): void => {
     setReferencesCards((prevCards) => {
-      const updatedCards = prevCards.map((card) =>
+      const updatedCards = prevCards?.map((card) =>
         card.id === cardId ? { ...card, [key]: value } : card,
       );
       return updatedCards;
     });
   };
 
+  const handleCvStatePost = (newdata: CvStatusObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_STATUS_INFO });
+  };
   const handlePrev = (): void => {
-    onCvValuesChange(referencesCards);
-    prevPage();
     prevStep();
   };
   const handleNext = (): void => {
-    onCvValuesChange(referencesCards);
-    nextPage();
-    nextStep();
+    const cvStatusData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
+    );
+    if (cvStatusData.size === 0) {
+      handleCvStatePost({
+        selectedTemplateId: '',
+        customCv: false,
+      });
+    }
+    const allSaved = referencesCards?.every((card) => card.data.saved);
+
+    if (allSaved) {
+      nextStep();
+    } else if (!allSaved) {
+      showErrorToast(
+        'Please save your progress by clicking on the Done button of the card you added',
+      );
+    }
   };
 
   const mapping = [
@@ -119,71 +151,75 @@ const References: FC<Props> = ({
   return (
     <Box>
       <Box>
-        {referencesCards.map((card) => (
+        <Typography variant="h4">References</Typography>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part you can add as many References as you like and done, you
+          can also remove any Reference you would like to remove from your
+          application, modify the information by clicking on edit, fill up all
+          the required fields, and when done editing just click on done button.
+        </Typography>
+        {referencesCards?.map((card, index) => (
           <Card key={card.id}>
             <CardContent>
               <Typography gutterBottom variant="h5">
-                References
+                References {index + 1}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Add A New Reference
+                Click Edit to fill information you would like to provide and
+                Done to save your progress.
               </Typography>
-              {showFields[card.id] && (
+              {showFields[card.id] ? (
                 <>
                   {mapping.map((m) => (
                     <Box key={m.key}>
-                      <Typography>{m.label}</Typography>
                       {m.key === 'referenceName' && (
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceName || ''}
+                          value={card.data.referenceName || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceName',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referenceRelation' && (
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceRelation || ''}
+                          value={card.data.referenceRelation || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceRelation',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referenceCompany' && (
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceCompany || ''}
+                          value={card.data.referenceCompany || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceCompany',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                       {m.key === 'referencePhoneNum' && (
-                        <PhoneInput
-                          country="us"
-                          value={card.referencePhoneNum || ''}
+                        <MuiPhone
+                          required
+                          fullWidth
+                          margin="normal"
+                          label={m.label}
+                          value={card.data.referencePhoneNum || ''}
                           onChange={(phone: string) =>
-                            handleChange(card.id, 'referencePhoneNum', phone)
+                            handleChange(card.id, m.key, phone)
                           }
                         />
                       )}
@@ -191,20 +227,36 @@ const References: FC<Props> = ({
                         <TextField
                           id={m.key}
                           label={m.label}
-                          value={card.referenceEmail || ''}
+                          value={card.data.referenceEmail || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceEmail',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
+                          fullWidth
+                          margin="normal"
                         />
                       )}
                     </Box>
                   ))}
                 </>
+              ) : (
+                Object.entries(card.data as ReferencesObj).map(
+                  ([key, value]) => {
+                    if (
+                      value !== '' &&
+                      mapping.some((item) => item.key === key)
+                    ) {
+                      return (
+                        <Box key={key}>
+                          <Typography variant="subtitle2">
+                            {key}: {value}
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return null;
+                  },
+                )
               )}
               <CardActions>
                 {showFields[card.id] ? (
@@ -241,22 +293,32 @@ const References: FC<Props> = ({
           Add
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
+      <ButtonGroup
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+        }}
       >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

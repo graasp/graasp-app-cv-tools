@@ -1,30 +1,22 @@
 import { FC, ReactNode } from 'react';
 
-import { Box, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 
 interface Props {
   children: ReactNode;
-  activeStep: number;
-  steps: string[];
+
+  stepper: ReactNode;
 }
-const FormLayout: FC<Props> = ({ children, activeStep, steps }: Props) => (
-  <div>
-    <Typography variant="h5">My Items/ CV App - Candidate Interface</Typography>
+const FormLayout: FC<Props> = ({ children, stepper }: Props) => (
+  // check if there is any errors from any section in that appData array of the certain type, based on that, we need to show the errors and the alert message.
+  <Box>
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
-      <Box>
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {steps.map((label, index) => (
-            <Step key={index}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
+      <Box>{stepper}</Box>
     </Box>
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       {children}
     </Box>
-  </div>
+  </Box>
 );
 
 export default FormLayout;

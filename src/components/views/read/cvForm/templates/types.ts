@@ -1,6 +1,6 @@
 import { CVInfoObj } from '../types';
 
 export type TemplateComponentProps = {
-  cvValues: CVInfoObj;
+  cvValues: Partial<CVInfoObj>;
 };
 export type TemplateComponent = (arg: TemplateComponentProps) => JSX.Element;

@@ -9,12 +9,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+
+import { AppData } from '@graasp/apps-query-client';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
@@ -22,6 +23,7 @@ import {
   Button,
   IconButton,
   MenuItem,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -29,31 +31,29 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
+import { showErrorToast } from '../../../../utils/toast';
+import { useAppDataContext } from '../../../context/AppDataContext';
+import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
 
 interface Props {
-  nextPage: () => void;
-  prevPage: () => void;
   nextStep: () => void;
   prevStep: () => void;
-  personalInfo: PersonalInfoObj;
-  onCvValuesChange: (data: PersonalInfoObj) => void;
+  onError: (isError: boolean) => void;
 }
 
-const PersonalInfo: FC<Props> = ({
-  nextPage,
-  prevPage,
-  nextStep,
-  prevStep,
-  personalInfo,
-  onCvValuesChange,
-}) => {
+const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
   // Below is an example of translating the comps.
   // const { t } = useTranslation();
   // inside each rendered input field, set the label to be like this: label={t('Birth Date')}
-  const handlePrev = (): void => {
-    prevPage();
-    prevStep();
+  const { patchAppData, appDataArray } = useAppDataContext();
+  const personalInfoObject = appDataArray.find(
+    (obj) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
+  );
+
+  const handlePatch = (dataObj: AppData, newData: PersonalInfoObj): void => {
+    patchAppData({ id: dataObj.id, data: newData });
   };
   const genders = [
     { value: 'female', label: 'Female' },
@@ -69,15 +69,20 @@ const PersonalInfo: FC<Props> = ({
     { key: 'phoneNum', label: 'Phone Number' },
     { key: 'address', label: 'Address' },
     { key: 'profileLinks', label: 'Profile Links' },
-    { key: 'personalLinks', label: 'Personal Links' },
+    { key: 'personalLink', label: 'Personal Links' },
     { key: 'personalPic', label: 'Personal Picture' },
   ];
-  const [birthDate, setBirthDate] = useState<string | undefined>();
-  const [personalInfoState, setPersonalInfoState] = useState(personalInfo);
+  const [personalInfoState, setPersonalInfoState] = useState<
+    AppData & { data: PersonalInfoObj }
+  >();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    setPersonalInfoState(personalInfo);
-  }, [personalInfo]);
+    const personalData = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
+    ) as AppData & { data: PersonalInfoObj };
+    setPersonalInfoState(personalData);
+  }, [appDataArray]);
 
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
   const [url, setUrl] = useState('');
@@ -90,39 +95,94 @@ const PersonalInfo: FC<Props> = ({
       inputRef.current.click();
     }
   };
+
+  const handleChange = (key: string, value: string): void => {
+    setPersonalInfoState((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          [key]: value,
+        },
+      };
+    });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [key]: '', // Clear the error message for the field being edited
+    }));
+    onError(false);
+  };
+  const handleInputBlur = (key: string, label: string): void => {
+    const value = personalInfoState?.data[key] as string | undefined;
+
+    if (!value?.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [key]: `${label} is required`,
+      }));
+      onError(true);
+    }
+  };
+
   const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { files } = e.target;
     const file = files?.[0];
-
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         const dataUrl = reader.result;
         setUrl(dataUrl as string);
         setUploadedFile(file);
-        setPersonalInfoState((prev) => ({
-          ...prev,
-          personalPic: dataUrl as string,
-        }));
+        setPersonalInfoState((prev) => {
+          if (!prev) {
+            return prev; // Return the current state if it is undefined
+          }
+          return {
+            ...prev,
+            data: {
+              ...prev.data,
+              personalPic: dataUrl as string,
+            },
+          };
+        });
       };
       reader.readAsDataURL(file);
     } else {
       setUrl('');
       setUploadedFile(null);
-      setPersonalInfoState((prev) => ({
-        ...prev,
-        personalPic: '',
-      }));
+      setPersonalInfoState((prev) => {
+        if (!prev) {
+          return prev;
+        }
+        return {
+          ...prev,
+          data: {
+            ...prev.data,
+            personalPic: '',
+          },
+        };
+      });
     }
   };
 
   const handleFileRemove = (): void => {
     setUrl('');
     setUploadedFile(null);
-    setPersonalInfoState((prev) => ({
-      ...prev,
-      personalPic: '',
-    }));
+    setPersonalInfoState((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          personalPic: '',
+        },
+      };
+    });
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -131,79 +191,202 @@ const PersonalInfo: FC<Props> = ({
     setVisibility(!visibility);
   };
 
+  const handleSave = (): void => {
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Perform validation for each required field
+    if (!personalInfoState?.data.firstName.trim()) {
+      updatedErrors.firstName = 'First Name is required';
+      isValid = false;
+    } else {
+      updatedErrors.firstName = '';
+    }
+
+    if (!personalInfoState?.data.lastName.trim()) {
+      updatedErrors.lastName = 'Last Name is required';
+      isValid = false;
+    } else {
+      updatedErrors.lastName = '';
+    }
+
+    if (!personalInfoState?.data.birthDate?.trim()) {
+      updatedErrors.birthDate = 'Birth Date is required';
+      isValid = false;
+    } else {
+      updatedErrors.birthDate = '';
+    }
+
+    if (!personalInfoState?.data.emailAddress.trim()) {
+      updatedErrors.emailAddress = 'Email Address is required';
+      isValid = false;
+    } else {
+      updatedErrors.emailAddress = '';
+    }
+
+    if (!personalInfoState?.data.phoneNum.trim()) {
+      updatedErrors.phoneNum = 'Phone Number is required';
+      isValid = false;
+    } else {
+      updatedErrors.phoneNum = '';
+    }
+
+    if (!personalInfoState?.data.profileLinks.trim()) {
+      updatedErrors.profileLinks = 'Profile Links is required';
+      isValid = false;
+    } else {
+      updatedErrors.profileLinks = '';
+    }
+
+    setErrors(updatedErrors);
+
+    // Save the data if it's valid
+    if (isValid) {
+      // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
+      const personalInfoObj = appDataArray.find(
+        (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
+      ) as AppData & { data: PersonalInfoObj };
+
+      if (personalInfoObj && personalInfoState) {
+        handlePatch(personalInfoObj, {
+          ...personalInfoState.data,
+          saved: true,
+        });
+      }
+    }
+  };
+  const hasChanges =
+    personalInfoState &&
+    Object.keys(personalInfoState.data).some(
+      (key) => personalInfoState.data[key] !== personalInfoObject?.data[key],
+    );
+  const handlePrev = (): void => {
+    prevStep();
+  };
   const handleNext = (): void => {
-    onCvValuesChange(personalInfoState);
-    nextPage();
-    nextStep();
+    let isValid = true;
+    const updatedErrors = { ...errors };
+
+    // Perform validation for each required field
+    if (!personalInfoState?.data.firstName.trim()) {
+      updatedErrors.firstName = 'First Name is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.lastName.trim()) {
+      updatedErrors.lastName = 'Last Name is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.birthDate?.trim()) {
+      updatedErrors.birthDate = 'Birth Date is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.emailAddress.trim()) {
+      updatedErrors.emailAddress = 'Email Address is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.phoneNum.trim()) {
+      updatedErrors.phoneNum = 'Phone Number is required';
+      isValid = false;
+    }
+
+    if (!personalInfoState?.data.profileLinks.trim()) {
+      updatedErrors.profileLinks = 'Profile Links is required';
+      isValid = false;
+    }
+
+    setErrors(updatedErrors);
+
+    // Proceed to the next step if all required fields are filled
+    if (isValid && personalInfoState?.data.saved && !hasChanges) {
+      nextStep();
+    } else if (!personalInfoState?.data.saved && isValid) {
+      showErrorToast(
+        'Please save your progress by clicking on Save button before proceeding on',
+      );
+    } else {
+      onError(true);
+    }
   };
   // Flex-wrap: wrap;
   return (
     <Box>
       <Box>
+        <Typography variant="h4">Personal Details</Typography>
+        <Typography sx={{ m: '0.5rem' }}>
+          For this part, you are supposed to fill all the required fields with
+          your information, you can also upload a personal picture to have on
+          your Cv.
+        </Typography>
         {mapping.map((m) => (
           <Fragment key={m.key}>
-            <Typography>{m.label}</Typography>
             {m.key === 'firstName' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.firstName || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    firstName: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.firstName || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
+                margin="normal"
+                fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'lastName' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.lastName || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    lastName: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.lastName || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
+                margin="normal"
+                fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'birthDate' && (
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label={m.label}
-                  value={birthDate ? dayjs(birthDate) : undefined}
-                  maxDate={dayjs()}
-                  onChange={(date) => {
-                    const formattedDate = date
-                      ? dayjs(date).format('YYYY-MM-DD')
-                      : '';
-                    setBirthDate(formattedDate || undefined);
-                    setPersonalInfoState((prev) => ({
-                      ...prev,
-                      birthDate: formattedDate,
-                    }));
-                  }}
-                />
-              </LocalizationProvider>
+              <Box marginTop="16px" marginBottom="16px">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label={m.label}
+                    value={
+                      personalInfoState?.data.birthDate
+                        ? dayjs(personalInfoState?.data.birthDate)
+                        : null
+                    }
+                    maxDate={dayjs()}
+                    onChange={(date) => {
+                      const formattedDate = date
+                        ? dayjs(date).format('YYYY-MM-DD')
+                        : '';
+                      handleChange(m.key, formattedDate);
+                    }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!errors[m.key],
+                        helperText: errors[m.key],
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </Box>
             )}
             {m.key === 'gender' && (
               <TextField
                 id="select-gender"
                 select
-                label="Gender"
-                value={personalInfoState.gender}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    gender: e.target.value,
-                  }))
-                }
-                required
-                helperText="Please select your gender"
+                label={m.label}
+                value={personalInfoState?.data?.gender || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                fullWidth
                 margin="normal"
               >
                 {genders.map((option) => (
@@ -215,79 +398,73 @@ const PersonalInfo: FC<Props> = ({
             )}
             {m.key === 'emailAddress' && (
               <TextField
-                label="Email Address"
+                label={m.label}
                 type="email"
-                value={personalInfoState.emailAddress}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    emailAddress: e.target.value,
-                  }))
-                }
+                value={personalInfoState?.data.emailAddress || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
+                margin="normal"
+                fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'phoneNum' && (
-              <PhoneInput
-                country="us"
-                value={personalInfoState.phoneNum}
-                onChange={(phone: string) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    phoneNum: phone,
-                  }))
-                }
+              <MuiPhone
+                required
+                fullWidth
+                margin="normal"
+                label={m.label}
+                value={personalInfoState?.data.phoneNum || ''}
+                onChange={(phone: string) => handleChange(m.key, phone)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
             {m.key === 'address' && (
               <TextField
                 label={m.label}
                 id={m.key}
-                value={personalInfoState.address || ''}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    address: e.target.value,
-                  }))
-                }
-                required
+                value={personalInfoState?.data.address || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'profileLinks' && (
               <TextField
                 type="url"
-                label="LinkedIn Link"
-                value={personalInfoState.profileLinks}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    profileLinks: e.target.value,
-                  }))
-                }
+                label={m.label}
+                value={personalInfoState?.data.profileLinks || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                onBlur={() => handleInputBlur(m.key, m.label)}
                 required
+                margin="normal"
+                fullWidth
+                error={!!errors[m.key]}
+                helperText={errors[m.key]}
               />
             )}
-            {m.key === 'personalLinks' && (
+            {m.key === 'personalLink' && (
               <TextField
                 type="url"
-                label="Personal Web Link"
-                value={personalInfoState.personalLink}
-                onChange={(e) =>
-                  setPersonalInfoState((prev) => ({
-                    ...prev,
-                    personalLink: e.target.value,
-                  }))
-                }
-                required
+                label={m.label}
+                value={personalInfoState?.data.personalLink || ''}
+                onChange={(e) => handleChange(m.key, e.target.value)}
+                margin="normal"
+                fullWidth
               />
             )}
             {m.key === 'personalPic' && (
-              <>
+              <Box display="flex" alignItems="center">
                 <Button
                   variant="contained"
                   color="primary"
                   startIcon={<UploadFileIcon />}
                   onClick={handleClick}
+                  style={{ marginTop: '16px', marginBottom: '16px' }}
                 >
                   Upload Image
                 </Button>
@@ -299,7 +476,7 @@ const PersonalInfo: FC<Props> = ({
                   onChange={onChange}
                 />
                 {uploadedFile && (
-                  <Box display="flex" alignItems="center">
+                  <Box display="flex" alignItems="center" marginLeft="8px">
                     <Typography>{uploadedFile.name}</Typography>
                     <IconButton onClick={handleFileRemove} color="primary">
                       <ClearIcon />
@@ -310,27 +487,42 @@ const PersonalInfo: FC<Props> = ({
                   </Box>
                 )}
                 {visibility && url && <img src={url} alt="Preview" />}
-              </>
+              </Box>
             )}
           </Fragment>
         ))}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateBeforeIcon />}
-        onClick={handlePrev}
-      >
-        Home
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<NavigateNextIcon />}
-        onClick={handleNext}
-      >
-        Next
-      </Button>
+      <Stack justifyContent="space-between" marginBottom="16px" direction="row">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateBeforeIcon />}
+          onClick={handlePrev}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Home
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          style={{ alignSelf: 'center' }}
+          disabled={!hasChanges}
+        >
+          Save
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<NavigateNextIcon />}
+          onClick={handleNext}
+          style={{ alignSelf: 'flex-end' }}
+          disabled={hasChanges}
+        >
+          Next
+        </Button>
+      </Stack>
     </Box>
   );
 };
