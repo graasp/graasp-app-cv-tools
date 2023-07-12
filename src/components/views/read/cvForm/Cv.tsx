@@ -44,7 +44,7 @@ interface Props {
 const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const { patchAppData, appDataArray } = useAppDataContext();
   const cvStatusObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
+    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
   );
   const cvValues = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
@@ -73,7 +73,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
 
   useEffect(() => {
     const cvStatusData = appDataArray.find(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
     ) as AppData & { data: CvStatusObj };
     setCvInfoState(cvStatusData);
   }, [appDataArray]);

@@ -86,7 +86,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     return null;
   });
   const cvStatusObject = appDataArray.find(
-    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
+    (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
   )?.data as CvStatusObj;
   const cvObj = {
     personalInfo: personalInfoObject,

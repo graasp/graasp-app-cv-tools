@@ -11,11 +11,11 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {
   Box,
   Button,
-  ButtonGroup,
   Card,
   CardActions,
   CardContent,
   Chip,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -240,13 +240,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
           </Card>
         ))}
       </Box>
-      <ButtonGroup
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '16px',
-        }}
-      >
+      <Stack justifyContent="space-between" marginBottom="16px" direction="row">
         <Button
           variant="contained"
           color="primary"
@@ -265,7 +259,7 @@ const Skills: FC<Props> = ({ nextStep, prevStep }) => {
         >
           Next
         </Button>
-      </ButtonGroup>
+      </Stack>
     </Box>
   );
 };

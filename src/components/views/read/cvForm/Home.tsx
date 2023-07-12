@@ -2,7 +2,6 @@ import { ChangeEvent, FC, RefObject, useRef } from 'react';
 
 import { AppData } from '@graasp/apps-query-client';
 
-// toastcontainer in the app comp, and the css styles
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Box, Button, Stack, Typography } from '@mui/material';

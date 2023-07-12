@@ -115,14 +115,14 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
   };
 
   const handleCvStatePost = (newdata: CvStatusObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_STATUS_DATA });
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_STATUS_INFO });
   };
   const handlePrev = (): void => {
     prevStep();
   };
   const handleNext = (): void => {
     const cvStatusData = appDataArray.filter(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_DATA,
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
     );
     if (cvStatusData.size === 0) {
       handleCvStatePost({

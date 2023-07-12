@@ -5,7 +5,7 @@ import { AppData } from '@graasp/apps-query-client';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Button, ButtonGroup, TextField, Typography } from '@mui/material';
+import { Box, Button, Stack, TextField, Typography } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
@@ -99,13 +99,7 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
           </Box>
         ))}
       </Box>
-      <ButtonGroup
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '16px',
-        }}
-      >
+      <Stack justifyContent="space-between" marginBottom="16px" direction="row">
         <Button
           variant="contained"
           color="primary"
@@ -134,7 +128,7 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
         >
           Next
         </Button>
-      </ButtonGroup>
+      </Stack>
     </Box>
   );
 };
