@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, RefObject, useEffect, useRef, useState } from 'react';
 
-import { AppData, Data } from '@graasp/apps-query-client';
+import { AppData } from '@graasp/apps-query-client';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -211,38 +211,30 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     (obj) => obj.type === APP_DATA_TYPES.EDUCATION_INFO,
   );
 
-  const educationDataArray: Data[] = [];
-  educationInfoObject.map((card) => {
-    educationDataArray.push(card.data);
-    return null;
-  });
+  const educationDataArray = educationInfoObject.map(
+    (card) => card.data,
+  ) as unknown as EducationInfoObj[];
 
   const workInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.WORK_EXPERIENCE_INFO,
   );
-  const workDataArray: Data[] = [];
-  workInfoObject.map((card) => {
-    workDataArray.push(card.data);
-    return null;
-  });
+  const workDataArray = workInfoObject.map(
+    (card) => card.data,
+  ) as unknown as WorkExperienceObj[];
 
   const skillsInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
   );
-  const skillsDataArray: Data[] = [];
-  skillsInfoObject.map((card) => {
-    skillsDataArray.push(card.data);
-    return null;
-  });
+  const skillsDataArray = skillsInfoObject.map(
+    (card) => card.data,
+  ) as unknown as SkillsObj[];
 
   const portfolioInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.PROJECTS_INFO,
   );
-  const portfolioDataArray: Data[] = [];
-  portfolioInfoObject.map((card) => {
-    portfolioDataArray.push(card.data);
-    return null;
-  });
+  const portfolioDataArray = portfolioInfoObject.map(
+    (card) => card.data,
+  ) as unknown as PortfolioObj[];
 
   const motivationObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
@@ -250,19 +242,17 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const referencesInfoObject = appDataArray.filter(
     (obj: AppData) => obj.type === APP_DATA_TYPES.REFERENCES_INFO,
   );
-  const referencesDataArray: Data[] = [];
-  referencesInfoObject.map((card) => {
-    referencesDataArray.push(card.data);
-    return null;
-  });
+  const referencesDataArray = referencesInfoObject.map(
+    (card) => card.data,
+  ) as unknown as ReferencesObj[];
   const cvObj = {
     personalInfo: personalInfoObject,
-    educationInfo: educationDataArray as EducationInfoObj[],
-    workInfo: workDataArray as WorkExperienceObj[],
-    skillsInfo: skillsDataArray as SkillsObj[],
-    portfolioInfo: portfolioDataArray as PortfolioObj[],
+    educationInfo: educationDataArray,
+    workInfo: workDataArray,
+    skillsInfo: skillsDataArray,
+    portfolioInfo: portfolioDataArray,
     motivationInfo: motivationObject,
-    referencesInfo: referencesDataArray as ReferencesObj[],
+    referencesInfo: referencesDataArray,
   };
 
   const handlePrev = (): void => {

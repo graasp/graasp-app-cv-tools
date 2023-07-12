@@ -96,7 +96,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     portfolioInfo: portfolioDataArray as PortfolioObj[],
     motivationInfo: motivationObject,
     referencesInfo: referencesDataArray as ReferencesObj[],
-    cvStateInfo: cvStatusObject,
+    cvStatusInfo: cvStatusObject,
   };
   const cvValues = appDataArray.find(
     (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
@@ -106,36 +106,26 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   let renderedTemplate: JSX.Element | undefined;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   let handleDownload = async (): Promise<void> => {};
-
-  if (cvValues) {
-    if (cvValues.cvStatusInfo.selectedTemplateId) {
-      const { component: CvTemplate } = TEMPLATES.find(
-        (t) => t.id === cvValues.cvStatusInfo.selectedTemplateId,
-      ) || { component: FirstTemplate };
-      renderedTemplate = <CvTemplate cvValues={cvValues} />;
-      handleDownload = async (): Promise<void> => {
-        const pdfBlob = await pdf(renderedTemplate).toBlob();
-        if (!cvValues.cvStatusInfo.customCv) {
-          saveAs(pdfBlob, 'generated-cv.pdf');
-        }
-      };
+  let cvInfo: CVInfoObj;
+  if (
+    cvValues?.cvStatusInfo.selectedTemplateId ||
+    cvObj.cvStatusInfo.selectedTemplateId
+  ) {
+    if (cvValues) {
+      cvInfo = cvValues;
+    } else {
+      cvInfo = cvObj;
     }
-  } else if (cvObj) {
-    if (cvObj.cvStateInfo.selectedTemplateId) {
-      const { component: CvTemplate } = TEMPLATES.find(
-        (t) => t.id === cvObj.cvStateInfo.selectedTemplateId,
-      ) || { component: FirstTemplate };
-      renderedTemplate = <CvTemplate cvValues={cvObj} />;
-      handleDownload = async (): Promise<void> => {
-        const pdfBlob = await pdf(renderedTemplate).toBlob();
-        if (!cvObj.cvStateInfo.customCv) {
-          saveAs(pdfBlob, 'generated-cv.pdf');
-        }
-        const json = JSON.stringify(cvObj, null, 2); // Convert to JSON string with indentation
-        const jsonBlob = new Blob([json], { type: 'application/json' });
-        saveAs(jsonBlob, 'cv-data.json');
-      };
-    }
+    const { component: CvTemplate } = TEMPLATES.find(
+      (t) => t.id === cvInfo.cvStatusInfo.selectedTemplateId,
+    ) || { component: FirstTemplate };
+    renderedTemplate = <CvTemplate cvValues={cvInfo} />;
+    handleDownload = async (): Promise<void> => {
+      const pdfBlob = await pdf(renderedTemplate).toBlob();
+      if (!cvInfo.cvStatusInfo.customCv) {
+        saveAs(pdfBlob, 'generated-cv.pdf');
+      }
+    };
   }
 
   const handleStatusPost = (newdata: SubmissionStatus): void => {
@@ -164,11 +154,11 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
         your CV.
       </Typography>
       <Box justifyContent="center" display="flex">
-        {cvValues?.cvStatusInfo.customCv || cvObj.cvStateInfo.customCv ? (
+        {cvValues?.cvStatusInfo.customCv || cvObj.cvStatusInfo.customCv ? (
           <Box justifyContent="center" display="flex">
             <embed
               src={`${
-                cvValues?.cvStatusInfo.fileUrl || cvObj.cvStateInfo.fileUrl
+                cvValues?.cvStatusInfo.fileUrl || cvObj.cvStatusInfo.fileUrl
               }#toolbar=0`}
               type="application/pdf"
               style={{ minHeight: '350px', width: '100%' }}

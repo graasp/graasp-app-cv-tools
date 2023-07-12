@@ -254,16 +254,16 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    const allSaved = workCards?.map((card) => card.data.saved);
+    const allSaved = workCards?.every((card) => card.data.saved);
 
-    if (isValid && allSaved?.every((saved) => saved)) {
+    if (isValid && allSaved) {
       if (skillsData.size === 0) {
         handleSkillsPost({ title: 'Tech Skills', skills: [] });
         handleSkillsPost({ title: 'Lang Skills', skills: [] });
         handleSkillsPost({ title: 'Other Skills', skills: [] });
       }
       nextStep();
-    } else if (isValid && !allSaved?.every((saved) => saved)) {
+    } else if (isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
@@ -278,7 +278,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'jobDetails', label: 'Job Details' },
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
-
+  const onGoing = 'OnGoing';
   return (
     <Box>
       <Box>
@@ -312,13 +312,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.jobTitle || ''}
                           onChange={(e) =>
-                            handleChange(card.id, 'jobTitle', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-jobTitle`]}
-                          helperText={errors[`${card.id}-jobTitle`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'institutionName' && (
@@ -327,17 +327,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.institutionName || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'institutionName',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-institutionName`]}
-                          helperText={errors[`${card.id}-isntitutionName`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -355,17 +351,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                                 const formattedDate = date
                                   ? dayjs(date).format('YYYY-MM-DD')
                                   : '';
-                                handleChange(
-                                  card.id,
-                                  'startDate',
-                                  formattedDate,
-                                );
+                                handleChange(card.id, m.key, formattedDate);
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-startDate`],
-                                  helperText: errors[`${card.id}-startDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
@@ -382,7 +374,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.data.endDate === 'OnGoing'}
+                              disabled={card.data.endDate === onGoing}
                               minDate={dayjs(card.data.startDate)}
                               value={
                                 card.data.endDate
@@ -393,29 +385,27 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                               onChange={(date) => {
                                 handleChange(
                                   card.id,
-                                  'endDate',
+                                  m.key,
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-endDate`],
-                                  helperText: errors[`${card.id}-endDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.data.endDate === 'OnGoing'}
+                            checked={card.data.endDate === onGoing}
                             onChange={() => {
                               handleChange(
                                 card.id,
-                                'endDate',
-                                card.data.endDate === 'OnGoing'
-                                  ? ''
-                                  : 'OnGoing',
+                                m.key,
+                                card.data.endDate === onGoing ? '' : onGoing,
                               );
                             }}
                           />
@@ -423,18 +413,17 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                       )}
                       {m.key === 'country' && (
                         <TextField
-                          id="select-country"
                           select
                           label={m.label}
                           value={card.data.country}
                           onChange={(e) =>
-                            handleChange(card.id, 'country', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-country`]}
-                          helperText={errors[`${card.id}-country`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         >
                           {countriesArr.map((country) => (
                             <MenuItem key={country.value} value={country.value}>
@@ -449,13 +438,13 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.jobDetails || ''}
                           onChange={(e) =>
-                            handleChange(card.id, 'jobDetails', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-jobDetails`]}
-                          helperText={errors[`${card.id}-jobDetails`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'keyAchievements' && (
@@ -464,11 +453,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.keyAchievements || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'keyAchievements',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           fullWidth
                           margin="normal"

@@ -116,25 +116,14 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
     onError(false);
   };
   const handleInputBlur = (key: string, label: string): void => {
-    if (
-      !personalInfoState ||
-      !(personalInfoState as AppData & { data: PersonalInfoObj }).data[key]
-    ) {
+    const value = personalInfoState?.data[key] as string | undefined;
+
+    if (!value?.trim()) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [key]: `${label} is required`, // Set the error message for the empty required field
+        [key]: `${label} is required`,
       }));
       onError(true);
-    } else {
-      const value = (personalInfoState as AppData & { data: PersonalInfoObj })
-        .data[key] as string;
-      if (!value.trim()) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [key]: `${label} is required`,
-        }));
-        onError(true);
-      }
     }
   };
 
@@ -312,7 +301,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
     setErrors(updatedErrors);
 
     // Proceed to the next step if all required fields are filled
-    if (isValid && personalInfoState?.data.saved) {
+    if (isValid && personalInfoState?.data.saved && !hasChanges) {
       nextStep();
     } else if (!personalInfoState?.data.saved && isValid) {
       showErrorToast(
@@ -529,6 +518,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
           startIcon={<NavigateNextIcon />}
           onClick={handleNext}
           style={{ alignSelf: 'flex-end' }}
+          disabled={hasChanges}
         >
           Next
         </Button>

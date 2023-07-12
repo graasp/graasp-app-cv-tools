@@ -41,8 +41,8 @@ const PlayerView: FC = () => {
 
   const handleStepClick = (stepIndex: number): void => {
     if (
-      stepIndex !== steps.length - 1 &&
-      stepIndex !== steps.length - 2 &&
+      stepIndex >= 0 &&
+      stepIndex < steps.length - 2 &&
       stepState[activeStep] !== 'error'
     ) {
       modifyActiveStep(stepIndex);

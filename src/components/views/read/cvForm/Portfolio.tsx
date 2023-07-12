@@ -216,16 +216,16 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    const allSaved = portfolioCards?.map((card) => card.data.saved);
+    const allSaved = portfolioCards?.every((card) => card.data.saved);
 
-    if (isValid && allSaved?.every((saved) => saved)) {
+    if (isValid && allSaved) {
       if (motivationData.size === 0) {
         handleMotivationPost({
           motivationLetter: '',
         });
       }
       nextStep();
-    } else if (isValid && !allSaved?.every((saved) => saved)) {
+    } else if (isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
@@ -238,6 +238,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'endDate', label: 'End Date' },
     { key: 'projectLink', label: 'Project Link' },
   ];
+  const onGoing = 'onGoing';
   return (
     <Box>
       <Box>
@@ -271,17 +272,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.projectTitle || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'projectTitle',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-projectTitle`]}
-                          helperText={errors[`${card.id}-projectTitle`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'projectDescription' && (
@@ -290,17 +287,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.projectDescription || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'projectDescription',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-projectDescription`]}
-                          helperText={errors[`${card.id}-projectDescription`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -318,17 +311,13 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                                 const formattedDate = date
                                   ? dayjs(date).format('YYYY-MM-DD')
                                   : '';
-                                handleChange(
-                                  card.id,
-                                  'startDate',
-                                  formattedDate,
-                                );
+                                handleChange(card.id, m.key, formattedDate);
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-startDate`],
-                                  helperText: errors[`${card.id}-startDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
@@ -345,7 +334,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.data.endDate === 'OnGoing'}
+                              disabled={card.data.endDate === onGoing}
                               minDate={dayjs(card.data.startDate)}
                               value={
                                 card.data.endDate
@@ -356,29 +345,29 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                               onChange={(date) => {
                                 handleChange(
                                   card.id,
-                                  'endDate',
+                                  m.key,
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-endDate`],
-                                  helperText: errors[`${card.id}-endDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.data.endDate === 'OnGoing'}
+                            checked={card.data.endDate === onGoing}
                             onChange={() => {
                               handleChange(
                                 card.id,
                                 'present',
                                 !card.data.present,
                               );
-                              handleChange(card.id, 'endDate', 'OnGoing');
+                              handleChange(card.id, m.key, onGoing);
                             }}
                           />
                         </Box>
@@ -389,7 +378,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.projectLink || ''}
                           onChange={(e) =>
-                            handleChange(card.id, 'projectLink', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           fullWidth
                           margin="normal"

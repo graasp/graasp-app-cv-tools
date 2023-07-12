@@ -257,11 +257,11 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
 
     setErrors(updatedErrors);
 
-    const allSaved = educationCards?.map((card) => card.data.saved);
+    const allSaved = educationCards?.every((card) => card.data.saved);
 
-    if (isValid && allSaved?.every((saved) => saved)) {
+    if (isValid && allSaved) {
       nextStep();
-    } else if (isValid && !allSaved?.every((saved) => saved)) {
+    } else if (isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
@@ -277,6 +277,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'gpa', label: 'GPA' },
     { key: 'country', label: 'Country' },
   ];
+  const onGoing = 'OnGoing';
   return (
     <Box>
       <Box>
@@ -311,13 +312,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.degree}
                           onChange={(e) =>
-                            handleChange(card.id, 'degree', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-degree`]}
-                          helperText={errors[`${card.id}-degree`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         >
                           {degrees.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -332,17 +333,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.institutionName || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'institutionName',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-institutionName`]}
-                          helperText={errors[`${card.id}-institutionName`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'major' && (
@@ -351,13 +348,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.major || ''}
                           onChange={(e) =>
-                            handleChange(card.id, 'major', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-major`]}
-                          helperText={errors[`${card.id}-major`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         />
                       )}
                       {m.key === 'startDate' && (
@@ -375,17 +372,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                                 const formattedDate = date
                                   ? dayjs(date).format('YYYY-MM-DD')
                                   : '';
-                                handleChange(
-                                  card.id,
-                                  'startDate',
-                                  formattedDate,
-                                );
+                                handleChange(card.id, m.key, formattedDate);
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-startDate`],
-                                  helperText: errors[`${card.id}-startDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
@@ -402,11 +395,11 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                               label="Till"
-                              disabled={card.data.endDate === 'OnGoing'}
+                              disabled={card.data.endDate === onGoing}
                               minDate={dayjs(card.data.startDate)}
                               value={
                                 card.data.endDate &&
-                                card.data.endDate !== 'OnGoing'
+                                card.data.endDate !== onGoing
                                   ? dayjs(card.data.endDate)
                                   : null
                               }
@@ -414,29 +407,27 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                               onChange={(date) => {
                                 handleChange(
                                   card.id,
-                                  'endDate',
+                                  m.key,
                                   date ? dayjs(date).format('YYYY-MM-DD') : '',
                                 );
                               }}
                               slotProps={{
                                 textField: {
                                   fullWidth: true,
-                                  error: !!errors[`${card.id}-endDate`],
-                                  helperText: errors[`${card.id}-endDate`],
+                                  error: !!errors[`${card.id}-${m.key}`],
+                                  helperText: errors[`${card.id}-${m.key}`],
                                 },
                               }}
                             />
                           </LocalizationProvider>
                           <Typography marginLeft={1}>Present</Typography>
                           <Checkbox
-                            checked={card.data.endDate === 'OnGoing'}
+                            checked={card.data.endDate === onGoing}
                             onChange={() => {
                               handleChange(
                                 card.id,
-                                'endDate',
-                                card.data.endDate === 'OnGoing'
-                                  ? ''
-                                  : 'OnGoing',
+                                m.key,
+                                card.data.endDate === onGoing ? '' : onGoing,
                               );
                             }}
                           />
@@ -448,7 +439,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.gpa || ''}
                           onChange={(e) =>
-                            handleChange(card.id, 'gpa', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           fullWidth
                           margin="normal"
@@ -456,18 +447,17 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
                       )}
                       {m.key === 'country' && (
                         <TextField
-                          id="select-country"
                           select
                           required
                           label={m.label}
                           value={card.data.country}
                           onChange={(e) =>
-                            handleChange(card.id, 'country', e.target.value)
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           fullWidth
                           margin="normal"
-                          error={!!errors[`${card.id}-country`]}
-                          helperText={errors[`${card.id}-country`]}
+                          error={!!errors[`${card.id}-${m.key}`]}
+                          helperText={errors[`${card.id}-${m.key}`]}
                         >
                           {countriesArr.map((country) => (
                             <MenuItem key={country.value} value={country.value}>

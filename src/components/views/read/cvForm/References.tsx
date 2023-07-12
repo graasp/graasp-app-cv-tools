@@ -130,11 +130,11 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
         customCv: false,
       });
     }
-    const allSaved = referencesCards?.map((card) => card.data.saved);
+    const allSaved = referencesCards?.every((card) => card.data.saved);
 
-    if (allSaved?.every((saved) => saved)) {
+    if (allSaved) {
       nextStep();
-    } else if (!allSaved?.every((saved) => saved)) {
+    } else if (!allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
@@ -178,11 +178,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.referenceName || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceName',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
@@ -195,11 +191,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.referenceRelation || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceRelation',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
@@ -212,11 +204,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.referenceCompany || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceCompany',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
@@ -231,7 +219,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.referencePhoneNum || ''}
                           onChange={(phone: string) =>
-                            handleChange(card.id, 'referencePhoneNum', phone)
+                            handleChange(card.id, m.key, phone)
                           }
                         />
                       )}
@@ -241,11 +229,7 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
                           label={m.label}
                           value={card.data.referenceEmail || ''}
                           onChange={(e) =>
-                            handleChange(
-                              card.id,
-                              'referenceEmail',
-                              e.target.value,
-                            )
+                            handleChange(card.id, m.key, e.target.value)
                           }
                           required
                           fullWidth
