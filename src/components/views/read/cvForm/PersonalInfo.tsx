@@ -34,6 +34,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
 
@@ -311,16 +312,14 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
       onError(true);
     }
   };
+  const title = 'Personal Details';
+  const description =
+    'For this part, you are supposed to fill all the required fields with your information, you can also upload a personal picture to have on your Cv.';
   // Flex-wrap: wrap;
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Personal Details</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part, you are supposed to fill all the required fields with
-          your information, you can also upload a personal picture to have on
-          your Cv.
-        </Typography>
+        <Description title={title} description={description} />
         {mapping.map((m) => (
           <Fragment key={m.key}>
             {m.key === 'firstName' && (

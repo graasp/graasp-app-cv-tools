@@ -4,11 +4,12 @@ import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { CVInfoObj, PersonalInfoObj } from './types';
 
 interface Props {
@@ -109,14 +110,13 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
     }
     nextStep(); // Update the activeStep state
   };
+  const title = 'Get Started';
+  const description =
+    'You can start creating your own CV by clicking on Create and do whatever you are asked to fill and provide, and you can upload a file of your data which match the structure of the valid file you can upload';
   return (
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       <Stack spacing={2}>
-        <Typography>Get Started</Typography>
-        <Typography>
-          Upload your CV/Resume if you have one, or you can create a new one and
-          upload it directly!
-        </Typography>
+        <Description title={title} description={description} />
         <Stack direction="row" justifyContent="space-evenly">
           <Button
             variant="contained"

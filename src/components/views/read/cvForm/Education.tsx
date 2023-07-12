@@ -31,6 +31,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { onGoing } from './constants';
 import { EducationInfoObj } from './types';
 
@@ -278,16 +279,13 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'gpa', label: 'GPA' },
     { key: 'country', label: 'Country' },
   ];
+  const title = 'Education and Training';
+  const description =
+    'For this part you can add as many educations you would like to add, you can also remove any education you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Education</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add as many educations you would like to add,
-          you can also remove any education you would like to remove from your
-          application, modify the information by clicking on edit, fill up all
-          the required fields, and when done editing just click on done button.
-        </Typography>
+        <Description title={title} description={description} />
         {educationCards?.map((card, index) => (
           <Card
             key={card.id}

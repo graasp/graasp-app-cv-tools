@@ -24,6 +24,7 @@ import {
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { MuiPhone } from './MuiPhone';
 import { CvStatusObj, ReferencesObj } from './types';
 
@@ -148,16 +149,13 @@ const References: FC<Props> = ({ nextStep, prevStep }) => {
     { key: 'referencePhoneNum', label: 'Reference Phone Number' },
     { key: 'referenceEmail', label: 'Reference Email' },
   ];
+  const title = 'References';
+  const description =
+    'For this part you can add as many References as you like and done, you can also remove any Reference you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>
-        <Typography variant="h4">References</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add as many References as you like and done, you
-          can also remove any Reference you would like to remove from your
-          application, modify the information by clicking on edit, fill up all
-          the required fields, and when done editing just click on done button.
-        </Typography>
+        <Description title={title} description={description} />
         {referencesCards?.map((card, index) => (
           <Card key={card.id}>
             <CardContent>

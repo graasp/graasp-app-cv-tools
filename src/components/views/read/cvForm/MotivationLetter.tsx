@@ -5,11 +5,12 @@ import { AppData } from '@graasp/apps-query-client';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Stack, TextField } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { MotivationObj } from './types';
 
 interface Props {
@@ -61,14 +62,13 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     }
   };
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
+  const title = 'Self Motivation';
+  const description =
+    'For this part you can add a personal motivation, what are your goals wishing to achieve in your career, etc.';
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Self Motivation</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part you can add a personal motivation, what are your goals
-          wishing to achieve in your career, etc.
-        </Typography>
+        <Description title={title} description={description} />
         {mapping.map((m) => (
           <Box key={m.key}>
             {m.key === 'motivationLetter' && (
