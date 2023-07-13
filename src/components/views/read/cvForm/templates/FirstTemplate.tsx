@@ -234,7 +234,9 @@ const FirstTemplate: TemplateComponent = ({
           ))}
           <Text>Self-Motivation</Text>
           <Divider />
-          <Text>{motivationInfo?.motivationLetter}</Text>
+          <Text style={{ fontSize: '12px' }}>
+            {motivationInfo?.motivationLetter}
+          </Text>
           <Text>References</Text>
           <Divider />
           {referencesInfo?.map((item: ReferencesObj, index) => (

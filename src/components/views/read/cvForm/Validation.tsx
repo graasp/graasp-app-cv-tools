@@ -110,9 +110,9 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
       });
 
       test('cvStatusInfo', 'Invalid cv status info structure', () => {
-        enforce('selectedTemplateId').isKeyOf(dataObj.referencesInfo);
-        enforce('customCv').isKeyOf(dataObj.referencesInfo);
-        enforce('fileUrl').isKeyOf(dataObj.referencesInfo);
+        enforce('selectedTemplateId').isKeyOf(dataObj.cvStatusInfo);
+        enforce('customCv').isKeyOf(dataObj.cvStatusInfo);
+        enforce('fileUrl').isKeyOf(dataObj.cvStatusInfo);
       });
     });
     const result = suite(data);
