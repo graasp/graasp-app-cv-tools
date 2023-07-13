@@ -72,7 +72,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
             data: parsedData,
           });
 
-          if (validationResult?.isValid) {
+          if (validationResult?.isValid()) {
             handlePersonalPost(parsedData.personalInfo);
             parsedData.educationInfo.forEach((educationItem) => {
               handleEducationPost(educationItem);
