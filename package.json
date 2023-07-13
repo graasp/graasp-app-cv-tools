@@ -42,7 +42,8 @@
     "react-to-pdf": "0.0.14",
     "react-toastify": "9.0.5",
     "typescript": "4.7.4",
-    "uuid": "9.0.0"
+    "uuid": "9.0.0",
+    "vest": "4.6.11"
   },
   "scripts": {
     "start": "env-cmd -f ./.env.local react-scripts -r @cypress/instrument-cra start",
