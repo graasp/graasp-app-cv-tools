@@ -37,13 +37,13 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     setMotivationInfoState(motivationData);
   }, [appDataArray]);
 
-  const [saved, setSaved] = useState(false);
-
   const handleSave = (): void => {
     // search in appdata so if we find the object of the same type 'motivationInfo' patch its data by its id
     if (motivationObject && motivationInfoState) {
-      setSaved(true);
-      handlePatch(motivationObject, motivationInfoState.data);
+      handlePatch(motivationObject, {
+        ...motivationInfoState.data,
+        saved: true,
+      });
     }
   };
   const hasChanges =
@@ -55,9 +55,12 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    if (saved) {
+    if (
+      (motivationInfoState?.data.saved && !hasChanges) ||
+      (!motivationInfoState?.data.saved && !hasChanges)
+    ) {
       nextStep();
-    } else {
+    } else if (!motivationInfoState?.data.saved && hasChanges) {
       showErrorToast('Please save your progress by clicking on Save button');
     }
   };

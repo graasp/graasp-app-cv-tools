@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { List } from 'immutable';
 import countries from 'iso-3166-1/dist/iso-3166';
+import { create, enforce, test } from 'vest';
 
 import { FC, useEffect, useState } from 'react';
 
@@ -38,8 +39,9 @@ import { SkillsObj, WorkExperienceObj } from './types';
 interface Props {
   nextStep: () => void;
   prevStep: () => void;
+  onError: (isError: boolean) => void;
 }
-const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
+const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -64,6 +66,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isValid, setIsValid] = useState(true);
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -96,59 +99,75 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
     }));
   };
 
+  const suite = create((data) => {
+    // Validation rules for each field
+    test('jobTitle', 'Job Title is required', () => {
+      enforce(data.jobTitle).isNotEmpty();
+    });
+    test('jobTitle', 'Job Title must be at most 50 characters long', () => {
+      enforce(data.jobTitle).shorterThan(50);
+    });
+
+    test('institutionName', 'Institution Name is required', () => {
+      enforce(data.institutionName).isNotEmpty();
+    });
+
+    test(
+      'institutionName',
+      'Institution Name must be at most 30 characters long',
+      () => {
+        enforce(data.institutionName).shorterThan(30);
+      },
+    );
+
+    test('jobDetails', 'Job Details is required', () => {
+      enforce(data.jobDetails).isNotEmpty();
+    });
+
+    test(
+      'jobDetails',
+      'Job Details must be at most 200 characters long',
+      () => {
+        enforce(data.jobDetails).shorterThan(200);
+      },
+    );
+
+    test('startDate', 'Start Date is required', () => {
+      enforce(data.startDate).isNotEmpty();
+    });
+
+    test('endDate', 'End Date is required', () => {
+      enforce(data.endDate).isNotEmpty();
+    });
+
+    test('country', 'Country is required', () => {
+      enforce(data.country).isNotEmpty();
+    });
+  });
+
   const handleDone = (cardId: string): void => {
     const workInfoCard = workCards?.find((card) => card.id === cardId);
     if (workInfoCard) {
-      let isValid = true;
-      const updatedErrors = { ...errors };
-
-      if (!workInfoCard.data.jobTitle.trim()) {
-        updatedErrors[`${cardId}-jobTitle`] = 'Job Title is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-jobTitle`] = '';
-      }
-
-      if (!workInfoCard.data.institutionName.trim()) {
-        updatedErrors[`${cardId}-institutionName`] =
-          'Institution Name is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-institutionName`] = '';
-      }
-
-      if (!workInfoCard.data.startDate?.trim()) {
-        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-startDate`] = '';
-      }
-
-      if (!workInfoCard.data.endDate?.trim()) {
-        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-endDate`] = '';
-      }
-
-      if (!workInfoCard.data.country.trim()) {
-        updatedErrors[`${cardId}-country`] = 'Country is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-country`] = '';
-      }
-
-      if (!workInfoCard.data.jobDetails.trim()) {
-        updatedErrors[`${cardId}-jobDetails`] = 'Job Details is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-jobDetails`] = '';
-      }
-
-      setErrors(updatedErrors);
-
-      if (isValid) {
-        handlePatch(cardId, { ...workInfoCard.data, saved: true });
+      // Run the validation suite
+      const result = suite(workInfoCard.data);
+      if (result.hasErrors()) {
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${cardId}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        onError(true);
+        setIsValid(false);
+        setErrors(updatedErrors);
+      } else if (result.isValid()) {
+        setIsValid(true);
+        handlePatch(cardId, {
+          ...workInfoCard.data,
+          saved: true,
+        });
         setShowFields((prevShowFields) => {
           const updatedShowFields = { ...prevShowFields };
           updatedShowFields[cardId] = false;
@@ -185,6 +204,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       ...prevErrors,
       [`${cardId}-${key}`]: '',
     }));
+    onError(false);
   };
   const handleSkillsPost = (newdata: SkillsObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS_INFO });
@@ -198,63 +218,26 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
       (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
     );
 
-    let isValid = true;
-    const updatedErrors = { ...errors };
-
     // Check each card for unfilled required fields
     workCards?.forEach((card) => {
-      if (!card.data.jobTitle.trim()) {
-        updatedErrors[`${card.id}-jobTitle`] = 'Job Title is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-jobTitle`] = '';
-      }
-
-      if (!card.data.institutionName.trim()) {
-        updatedErrors[`${card.id}-institutionName`] =
-          'Institution Name is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-institutionName`] = '';
-      }
-
-      if (!card.data.startDate?.trim()) {
-        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-startDate`] = '';
-      }
-      if (!card.data.endDate?.trim()) {
-        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-endDate`] = '';
-      }
-
-      if (!card.data.country.trim()) {
-        updatedErrors[`${card.id}-country`] = 'Country is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-country`] = '';
-      }
-
-      if (!card.data.jobDetails.trim()) {
-        updatedErrors[`${card.id}-jobDetails`] = 'Job Details is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-jobDetails`] = '';
-      }
-
-      // Check if the card has any unfilled required fields
-      if (!isValid) {
+      const result = suite(card.data);
+      if (result.hasErrors()) {
+        setIsValid(false);
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${card.id}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        setErrors(updatedErrors);
         setShowFields((prevShowFields) => ({
           ...prevShowFields,
           [card.id]: true,
         }));
       }
     });
-
-    setErrors(updatedErrors);
 
     const allSaved = workCards?.every((card) => card.data.saved);
 
@@ -265,10 +248,12 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep }) => {
         handleSkillsPost({ title: 'Other Skills', skills: [] });
       }
       nextStep();
-    } else if (isValid && !allSaved) {
+    } else if (!isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
+    } else {
+      onError(true);
     }
   };
   const mapping = [

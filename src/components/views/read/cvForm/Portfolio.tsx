@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { List } from 'immutable';
+import { create, enforce, test } from 'vest';
 
 import { FC, useEffect, useState } from 'react';
 
@@ -36,8 +37,9 @@ import { MotivationObj, PortfolioObj } from './types';
 interface Props {
   nextStep: () => void;
   prevStep: () => void;
+  onError: (isError: boolean) => void;
 }
-const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
+const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -62,6 +64,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isValid, setIsValid] = useState(true);
 
   const handleAdd = (): void => {
     const newCardId = `card${(portfolioCards?.size ?? 0) + 1}`;
@@ -86,45 +89,60 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
     }));
   };
 
+  const suite = create((data) => {
+    // Validation rules for each field
+    test('projectTitle', 'Project Title is required', () => {
+      enforce(data.projectTitle).isNotEmpty();
+    });
+
+    test('projectTitle', 'Project Title be at most 50 characters long', () => {
+      enforce(data.projectTitle).shorterThan(50);
+    });
+
+    test('projectDescription', 'Project Description is required', () => {
+      enforce(data.projectDescription).isNotEmpty();
+    });
+
+    test(
+      'projectDescription',
+      'Project Description must be at most 200 characters long',
+      () => {
+        enforce(data.projectDescription).shorterThan(200);
+      },
+    );
+
+    test('startDate', 'Start Date is required', () => {
+      enforce(data.startDate).isNotEmpty();
+    });
+
+    test('endDate', 'End Date is required', () => {
+      enforce(data.endDate).isNotEmpty();
+    });
+  });
+
   const handleDone = (cardId: string): void => {
     const portfolioCard = portfolioCards?.find((card) => card.id === cardId);
     if (portfolioCard) {
-      let isValid = true;
-      const updatedErrors = { ...errors };
-
-      if (!portfolioCard.data.projectTitle.trim()) {
-        updatedErrors[`${cardId}-projectTitle`] = 'Project Title is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-projectTitle`] = '';
-      }
-
-      if (!portfolioCard.data.projectDescription.trim()) {
-        updatedErrors[`${cardId}-projectDescription`] =
-          'Project Description is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-projectDescription`] = '';
-      }
-
-      if (!portfolioCard.data.startDate?.trim()) {
-        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-startDate`] = '';
-      }
-
-      if (!portfolioCard.data.endDate?.trim()) {
-        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-endDate`] = '';
-      }
-
-      setErrors(updatedErrors);
-
-      if (isValid) {
-        handlePatch(cardId, { ...portfolioCard.data, saved: true });
+      // Run the validation suite
+      const result = suite(portfolioCard.data);
+      if (result.hasErrors()) {
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${cardId}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        onError(true);
+        setIsValid(false);
+        setErrors(updatedErrors);
+      } else if (result.isValid()) {
+        setIsValid(true);
+        handlePatch(cardId, {
+          ...portfolioCard.data,
+          saved: true,
+        });
         setShowFields((prevShowFields) => {
           const updatedShowFields = { ...prevShowFields };
           updatedShowFields[cardId] = false;
@@ -161,6 +179,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       ...prevErrors,
       [`${cardId}-${key}`]: '',
     }));
+    onError(false);
   };
 
   const handleMotivationPost = (newdata: MotivationObj): void => {
@@ -174,41 +193,20 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
     );
 
-    let isValid = true;
-    const updatedErrors = { ...errors };
-
     // Check each card for unfilled required fields
     portfolioCards?.forEach((card) => {
-      if (!card.data.projectTitle.trim()) {
-        updatedErrors[`${card.id}-projectTitle`] = 'Project Title is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-projectTitle`] = '';
-      }
-
-      if (!card.data.projectDescription.trim()) {
-        updatedErrors[`${card.id}-projectDescription`] =
-          'Project Description is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-projectDescription`] = '';
-      }
-
-      if (!card.data.startDate?.trim()) {
-        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-startDate`] = '';
-      }
-      if (!card.data.endDate?.trim()) {
-        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-endDate`] = '';
-      }
-
-      // Check if the card has any unfilled required fields
-      if (!isValid) {
+      const result = suite(card.data);
+      if (result.hasErrors()) {
+        setIsValid(false);
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${card.id}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        setErrors(updatedErrors);
         setShowFields((prevShowFields) => ({
           ...prevShowFields,
           [card.id]: true,
@@ -216,21 +214,22 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep }) => {
       }
     });
 
-    setErrors(updatedErrors);
-
     const allSaved = portfolioCards?.every((card) => card.data.saved);
 
     if (isValid && allSaved) {
       if (motivationData.size === 0) {
         handleMotivationPost({
           motivationLetter: '',
+          saved: false,
         });
       }
       nextStep();
-    } else if (isValid && !allSaved) {
+    } else if (!isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
+    } else {
+      onError(true);
     }
   };
   const mapping = [

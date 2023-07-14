@@ -104,14 +104,41 @@ const PlayerView: FC = () => {
           />
         )}
         {activeStep === 2 && (
-          <Education nextStep={nextStep} prevStep={prevStep} />
+          <Education
+            onError={(isError: boolean) =>
+              handleStepState(2, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(2, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
+          />
         )}
         {activeStep === 3 && (
-          <WorkExperience nextStep={nextStep} prevStep={prevStep} />
+          <WorkExperience
+            onError={(isError: boolean) =>
+              handleStepState(3, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(3, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
+          />
         )}
         {activeStep === 4 && <Skills nextStep={nextStep} prevStep={prevStep} />}
         {activeStep === 5 && (
-          <Portfolio nextStep={nextStep} prevStep={prevStep} />
+          <Portfolio
+            onError={(isError: boolean) =>
+              handleStepState(5, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(5, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
+          />
         )}
         {activeStep === 6 && (
           <MotivationLetter nextStep={nextStep} prevStep={prevStep} />

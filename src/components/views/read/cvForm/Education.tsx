@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { List } from 'immutable';
 import countries from 'iso-3166-1/dist/iso-3166';
+import { create, enforce, test } from 'vest';
 
 import { FC, useEffect, useState } from 'react';
 
@@ -38,8 +39,9 @@ import { EducationInfoObj } from './types';
 interface Props {
   nextStep: () => void;
   prevStep: () => void;
+  onError: (isError: boolean) => void;
 }
-const Education: FC<Props> = ({ nextStep, prevStep }) => {
+const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
   const { postAppData, patchAppData, deleteAppData, appDataArray } =
     useAppDataContext();
 
@@ -64,7 +66,7 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
+  const [isValid, setIsValid] = useState(true);
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
@@ -101,61 +103,65 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       [cardId]: true,
     }));
   };
+  const suite = create((data) => {
+    // Validation rules for each field
+    test('degree', 'Degree is required', () => {
+      enforce(data.degree).isNotEmpty();
+    });
 
+    test('institutionName', 'Institution Name is required', () => {
+      enforce(data.institutionName).isNotEmpty();
+    });
+
+    test(
+      'institutionName',
+      'Institution Name must be at most 30 characters long',
+      () => {
+        enforce(data.institutionName).shorterThan(30);
+      },
+    );
+
+    test('major', 'Major is required', () => {
+      enforce(data.major).isNotEmpty();
+    });
+
+    test('major', 'Major must be at most 20 characters long', () => {
+      enforce(data.major).shorterThan(20);
+    });
+
+    test('startDate', 'Start Date is required', () => {
+      enforce(data.startDate).isNotEmpty();
+    });
+
+    test('endDate', 'End Date is required', () => {
+      enforce(data.endDate).isNotEmpty();
+    });
+
+    test('country', 'Country is required', () => {
+      enforce(data.country).isNotEmpty();
+    });
+  });
   const handleDone = (cardId: string): void => {
     const educationInfoCard = educationCards?.find(
       (card) => card.id === cardId,
     );
     if (educationInfoCard) {
-      let isValid = true;
-      const updatedErrors = { ...errors };
-
-      if (!educationInfoCard.data.degree.trim()) {
-        updatedErrors[`${cardId}-degree`] = 'Degree is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-degree`] = '';
-      }
-
-      if (!educationInfoCard.data.institutionName.trim()) {
-        updatedErrors[`${cardId}-institutionName`] =
-          'Institution Name is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-institutionName`] = '';
-      }
-
-      if (!educationInfoCard.data.major.trim()) {
-        updatedErrors[`${cardId}-major`] = 'Major is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-major`] = '';
-      }
-
-      if (!educationInfoCard.data.startDate?.trim()) {
-        updatedErrors[`${cardId}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-startDate`] = '';
-      }
-
-      if (!educationInfoCard.data.endDate?.trim()) {
-        updatedErrors[`${cardId}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-endDate`] = '';
-      }
-
-      if (!educationInfoCard.data.country.trim()) {
-        updatedErrors[`${cardId}-country`] = 'Country is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${cardId}-country`] = '';
-      }
-
-      setErrors(updatedErrors);
-
-      if (isValid) {
+      // Run the validation suite
+      const result = suite(educationInfoCard.data);
+      if (result.hasErrors()) {
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${cardId}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        onError(true);
+        setIsValid(false);
+        setErrors(updatedErrors);
+      } else if (result.isValid()) {
+        setIsValid(true);
         handlePatch(cardId, {
           ...educationInfoCard.data,
           saved: true,
@@ -196,60 +202,27 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       ...prevErrors,
       [`${cardId}-${key}`]: '',
     }));
+    onError(false);
   };
+
   const handlePrev = (): void => {
     prevStep();
   };
   const handleNext = (): void => {
-    let isValid = true;
-    const updatedErrors = { ...errors };
-
     // Check each card for unfilled required fields
     educationCards?.forEach((card) => {
-      if (!card.data.degree.trim()) {
-        updatedErrors[`${card.id}-degree`] = 'Degree is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-degree`] = '';
-      }
-
-      if (!card.data.institutionName.trim()) {
-        updatedErrors[`${card.id}-institutionName`] =
-          'Institution Name is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-institutionName`] = '';
-      }
-
-      if (!card.data.major.trim()) {
-        updatedErrors[`${card.id}-major`] = 'Major is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-major`] = '';
-      }
-
-      if (!card.data.startDate?.trim()) {
-        updatedErrors[`${card.id}-startDate`] = 'Start Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-startDate`] = '';
-      }
-      if (!card.data.endDate?.trim()) {
-        updatedErrors[`${card.id}-endDate`] = 'End Date is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-endDate`] = '';
-      }
-
-      if (!card.data.country.trim()) {
-        updatedErrors[`${card.id}-country`] = 'Country is required';
-        isValid = false;
-      } else {
-        updatedErrors[`${card.id}-country`] = '';
-      }
-
-      // Check if the card has any unfilled required fields
-      if (!isValid) {
+      const result = suite(card.data);
+      if (result.hasErrors()) {
+        setIsValid(false);
+        // Handle validation errors
+        const updatedErrors = { ...errors };
+        Object.keys(result.tests).forEach((fieldName) => {
+          const fieldErrors = result.tests[fieldName].errors || [];
+          if (fieldErrors.length > 0) {
+            updatedErrors[`${card.id}-${fieldName}`] = fieldErrors[0] || '';
+          }
+        });
+        setErrors(updatedErrors);
         setShowFields((prevShowFields) => ({
           ...prevShowFields,
           [card.id]: true,
@@ -257,16 +230,16 @@ const Education: FC<Props> = ({ nextStep, prevStep }) => {
       }
     });
 
-    setErrors(updatedErrors);
-
     const allSaved = educationCards?.every((card) => card.data.saved);
 
     if (isValid && allSaved) {
       nextStep();
-    } else if (isValid && !allSaved) {
+    } else if (!isValid && !allSaved) {
       showErrorToast(
         'Please save your progress by clicking on the Done button of the card you added',
       );
+    } else {
+      onError(true);
     }
   };
 
