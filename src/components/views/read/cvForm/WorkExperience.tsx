@@ -265,7 +265,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
     { key: 'jobDetails', label: 'Job Details' },
     { key: 'keyAchievements', label: 'Key Achievements' },
   ];
-  const title = 'Work Exerpience';
+  const title = 'Work Experience';
   const description =
     'For this part you can add as many Experiences as you like, you can also remove any Experience you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
