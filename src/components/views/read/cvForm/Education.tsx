@@ -350,6 +350,7 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
                                   fullWidth: true,
                                   error: !!errors[`${card.id}-${m.key}`],
                                   helperText: errors[`${card.id}-${m.key}`],
+                                  required: true,
                                 },
                               }}
                             />
@@ -387,6 +388,7 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
                                   fullWidth: true,
                                   error: !!errors[`${card.id}-${m.key}`],
                                   helperText: errors[`${card.id}-${m.key}`],
+                                  required: true,
                                 },
                               }}
                             />

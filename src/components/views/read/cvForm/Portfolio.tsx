@@ -315,6 +315,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
                                   fullWidth: true,
                                   error: !!errors[`${card.id}-${m.key}`],
                                   helperText: errors[`${card.id}-${m.key}`],
+                                  required: true,
                                 },
                               }}
                             />
@@ -351,6 +352,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
                                   fullWidth: true,
                                   error: !!errors[`${card.id}-${m.key}`],
                                   helperText: errors[`${card.id}-${m.key}`],
+                                  required: true,
                                 },
                               }}
                             />
