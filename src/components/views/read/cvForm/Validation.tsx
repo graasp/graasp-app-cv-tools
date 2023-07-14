@@ -20,7 +20,7 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         enforce('birthDate').isKeyOf(dataObj.personalInfo);
         enforce('gender').isKeyOf(dataObj.personalInfo);
         enforce('emailAddress').isKeyOf(dataObj.personalInfo);
-        enforce('phonenNum').isKeyOf(dataObj.personalInfo);
+        enforce('phoneNum').isKeyOf(dataObj.personalInfo);
         enforce('address').isKeyOf(dataObj.personalInfo);
         enforce('profileLinks').isKeyOf(dataObj.personalInfo);
         enforce('personalLink').isKeyOf(dataObj.personalInfo);
@@ -32,56 +32,64 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         enforce('educationInfo').isKeyOf(dataObj);
       });
 
-      test('educationInfo', 'Invalid education info structure', () => {
-        enforce('id').isKeyOf(dataObj.educationInfo);
-        enforce('degree').isKeyOf(dataObj.educationInfo);
-        enforce('institutionName').isKeyOf(dataObj.educationInfo);
-        enforce('major').isKeyOf(dataObj.educationInfo);
-        enforce('startDate').isKeyOf(dataObj.educationInfo);
-        enforce('endDate').isKeyOf(dataObj.educationInfo);
-        enforce('gpa').isKeyOf(dataObj.educationInfo);
-        enforce('country').isKeyOf(dataObj.educationInfo);
-        enforce('saved').isKeyOf(dataObj.educationInfo);
-      });
+      if (dataObj.educationInfo.length > 0) {
+        test('educationInfo', 'Invalid education info structure', () => {
+          enforce('id').isKeyOf(dataObj.educationInfo[0]);
+          enforce('degree').isKeyOf(dataObj.educationInfo[0]);
+          enforce('institutionName').isKeyOf(dataObj.educationInfo[0]);
+          enforce('major').isKeyOf(dataObj.educationInfo[0]);
+          enforce('startDate').isKeyOf(dataObj.educationInfo[0]);
+          enforce('endDate').isKeyOf(dataObj.educationInfo[0]);
+          enforce('gpa').isKeyOf(dataObj.educationInfo[0]);
+          enforce('country').isKeyOf(dataObj.educationInfo[0]);
+          enforce('saved').isKeyOf(dataObj.educationInfo[0]);
+        });
+      }
 
       test('workInfo', 'Work info is required', () => {
         enforce('workInfo').isKeyOf(dataObj);
       });
 
-      test('workInfo', 'Invalid work info structure', () => {
-        enforce('id').isKeyOf(dataObj.workInfo);
-        enforce('jobTitle').isKeyOf(dataObj.workInfo);
-        enforce('institutionName').isKeyOf(dataObj.workInfo);
-        enforce('startDate').isKeyOf(dataObj.workInfo);
-        enforce('endDate').isKeyOf(dataObj.workInfo);
-        enforce('country').isKeyOf(dataObj.workInfo);
-        enforce('jobDetails').isKeyOf(dataObj.workInfo);
-        enforce('keyAchievements').isKeyOf(dataObj.workInfo);
-        enforce('saved').isKeyOf(dataObj.workInfo);
-      });
+      if (dataObj.workInfo.length > 0) {
+        test('workInfo', 'Invalid work info structure', () => {
+          enforce('id').isKeyOf(dataObj.workInfo[0]);
+          enforce('jobTitle').isKeyOf(dataObj.workInfo[0]);
+          enforce('institutionName').isKeyOf(dataObj.workInfo[0]);
+          enforce('startDate').isKeyOf(dataObj.workInfo[0]);
+          enforce('endDate').isKeyOf(dataObj.workInfo[0]);
+          enforce('country').isKeyOf(dataObj.workInfo[0]);
+          enforce('jobDetails').isKeyOf(dataObj.workInfo[0]);
+          enforce('keyAchievements').isKeyOf(dataObj.workInfo[0]);
+          enforce('saved').isKeyOf(dataObj.workInfo[0]);
+        });
+      }
 
       test('skillsInfo', 'Skills info is required', () => {
         enforce('skillsInfo').isKeyOf(dataObj);
       });
 
-      test('skillsInfo', 'Invalid skills info structure', () => {
-        enforce('skills').isKeyOf(dataObj.skillsInfo);
-        enforce('title').isKeyOf(dataObj.skillsInfo);
-      });
+      if (dataObj.skillsInfo.length > 0) {
+        test('skillsInfo', 'Invalid skills info structure', () => {
+          enforce('skills').isKeyOf(dataObj.skillsInfo[0]);
+          enforce('title').isKeyOf(dataObj.skillsInfo[0]);
+        });
+      }
 
       test('portfolioInfo', 'Portfolio info is required', () => {
         enforce('portfolioInfo').isKeyOf(dataObj);
       });
 
-      test('portfolioInfo', 'Invalid portoflio info structure', () => {
-        enforce('id').isKeyOf(dataObj.portfolioInfo);
-        enforce('projectTitle').isKeyOf(dataObj.portfolioInfo);
-        enforce('projectDescription').isKeyOf(dataObj.portfolioInfo);
-        enforce('startDate').isKeyOf(dataObj.portfolioInfo);
-        enforce('endDate').isKeyOf(dataObj.portfolioInfo);
-        enforce('projectLink').isKeyOf(dataObj.portfolioInfo);
-        enforce('saved').isKeyOf(dataObj.portfolioInfo);
-      });
+      if (dataObj.portfolioInfo.length > 0) {
+        test('portfolioInfo', 'Invalid portoflio info structure', () => {
+          enforce('id').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('projectTitle').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('projectDescription').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('startDate').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('endDate').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('projectLink').isKeyOf(dataObj.portfolioInfo[0]);
+          enforce('saved').isKeyOf(dataObj.portfolioInfo[0]);
+        });
+      }
 
       test('motivationInfo', 'Motivation info is required', () => {
         enforce('motivationInfo').isKeyOf(dataObj);
@@ -95,15 +103,17 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         enforce('referencesInfo').isKeyOf(dataObj);
       });
 
-      test('referencesInfo', 'Invalid references info structure', () => {
-        enforce('id').isKeyOf(dataObj.referencesInfo);
-        enforce('referenceName').isKeyOf(dataObj.referencesInfo);
-        enforce('referenceRelation').isKeyOf(dataObj.referencesInfo);
-        enforce('referenceCompany').isKeyOf(dataObj.referencesInfo);
-        enforce('referencePhoneNum').isKeyOf(dataObj.referencesInfo);
-        enforce('referenceEmail').isKeyOf(dataObj.referencesInfo);
-        enforce('saved').isKeyOf(dataObj.referencesInfo);
-      });
+      if (dataObj.referencesInfo.length > 0) {
+        test('referencesInfo', 'Invalid references info structure', () => {
+          enforce('id').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('referenceName').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('referenceRelation').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('referenceCompany').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('referencePhoneNum').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('referenceEmail').isKeyOf(dataObj.referencesInfo[0]);
+          enforce('saved').isKeyOf(dataObj.referencesInfo[0]);
+        });
+      }
 
       test('cvStatusInfo', 'CV status info is required', () => {
         enforce('cvStatusInfo').isKeyOf(dataObj);
@@ -112,7 +122,7 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
       test('cvStatusInfo', 'Invalid cv status info structure', () => {
         enforce('selectedTemplateId').isKeyOf(dataObj.cvStatusInfo);
         enforce('customCv').isKeyOf(dataObj.cvStatusInfo);
-        enforce('fileUrl').isKeyOf(dataObj.cvStatusInfo);
+        enforce.optional('fileUrl').isKeyOf(dataObj.cvStatusInfo);
       });
     });
     const result = suite(data);
