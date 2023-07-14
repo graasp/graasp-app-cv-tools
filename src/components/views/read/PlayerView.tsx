@@ -144,7 +144,16 @@ const PlayerView: FC = () => {
           <MotivationLetter nextStep={nextStep} prevStep={prevStep} />
         )}
         {activeStep === 7 && (
-          <References nextStep={nextStep} prevStep={prevStep} />
+          <References
+            onError={(isError: boolean) =>
+              handleStepState(7, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(7, 'done');
+              nextStep();
+            }}
+            prevStep={prevStep}
+          />
         )}
         {activeStep === 8 && (
           <Template nextStep={nextStep} prevStep={prevStep} />
