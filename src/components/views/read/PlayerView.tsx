@@ -89,7 +89,13 @@ const PlayerView: FC = () => {
       <FormLayout stepper={stepper}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && (
-          <Home nextStep={nextStep} reviewStep={reviewStep} />
+          <Home
+            nextStep={() => {
+              handleStepState(0, 'done');
+              nextStep();
+            }}
+            reviewStep={reviewStep}
+          />
         )}
         {activeStep === 1 && (
           <PersonalInfo
@@ -100,7 +106,10 @@ const PlayerView: FC = () => {
               handleStepState(1, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(0, 'inprogress');
+              prevStep();
+            }}
           />
         )}
         {activeStep === 2 && (
@@ -112,7 +121,10 @@ const PlayerView: FC = () => {
               handleStepState(2, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(1, 'inprogress');
+              prevStep();
+            }}
           />
         )}
         {activeStep === 3 && (
@@ -124,10 +136,24 @@ const PlayerView: FC = () => {
               handleStepState(3, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(2, 'inprogress');
+              prevStep();
+            }}
           />
         )}
-        {activeStep === 4 && <Skills nextStep={nextStep} prevStep={prevStep} />}
+        {activeStep === 4 && (
+          <Skills
+            nextStep={() => {
+              handleStepState(4, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(3, 'inprogress');
+              prevStep();
+            }}
+          />
+        )}
         {activeStep === 5 && (
           <Portfolio
             onError={(isError: boolean) =>
@@ -137,11 +163,23 @@ const PlayerView: FC = () => {
               handleStepState(5, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(4, 'inprogress');
+              prevStep();
+            }}
           />
         )}
         {activeStep === 6 && (
-          <MotivationLetter nextStep={nextStep} prevStep={prevStep} />
+          <MotivationLetter
+            nextStep={() => {
+              handleStepState(6, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(5, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 7 && (
           <References
@@ -152,11 +190,23 @@ const PlayerView: FC = () => {
               handleStepState(7, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(6, 'inprogress');
+              prevStep();
+            }}
           />
         )}
         {activeStep === 8 && (
-          <Template nextStep={nextStep} prevStep={prevStep} />
+          <Template
+            nextStep={() => {
+              handleStepState(8, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(7, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 9 && <Review homeStep={homeStep} prevStep={prevStep} />}
       </FormLayout>
