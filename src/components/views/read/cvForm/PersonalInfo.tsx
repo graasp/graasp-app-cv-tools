@@ -241,7 +241,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
           updatedErrors[fieldName] = fieldErrors[0] || '';
         }
       });
-
+      onError(true);
       setErrors(updatedErrors);
 
       return;
@@ -280,7 +280,6 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
           updatedErrors[fieldName] = fieldErrors[0] || '';
         }
       });
-
       setErrors(updatedErrors);
 
       return;

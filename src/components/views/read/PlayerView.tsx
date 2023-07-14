@@ -61,6 +61,17 @@ const PlayerView: FC = () => {
                 : 'default',
           }}
           completed={stepState[index] === 'done'}
+          sx={{
+            '& .MuiStepLabel-root .Mui-completed': {
+              color: 'green',
+            },
+            '& .MuiStepLabel-root .Mui-active': {
+              color: 'orange',
+            },
+            '& .MuiStepLabel-root .Mui-error': {
+              color: 'red',
+            },
+          }}
         >
           <StepLabel
             StepIconComponent={
