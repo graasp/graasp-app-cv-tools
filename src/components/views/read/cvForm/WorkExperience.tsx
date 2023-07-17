@@ -66,7 +66,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isValid, setIsValid] = useState(true);
+  let isValid: boolean;
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -160,10 +160,10 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
           }
         });
         onError(true);
-        setIsValid(false);
+        isValid = false;
         setErrors(updatedErrors);
       } else if (result.isValid()) {
-        setIsValid(true);
+        isValid = true;
         handlePatch(cardId, {
           ...workInfoCard.data,
           saved: true,
@@ -222,7 +222,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
     workCards?.forEach((card) => {
       const result = suite(card.data);
       if (result.hasErrors()) {
-        setIsValid(false);
+        isValid = false;
         // Handle validation errors
         const updatedErrors = { ...errors };
         Object.keys(result.tests).forEach((fieldName) => {
