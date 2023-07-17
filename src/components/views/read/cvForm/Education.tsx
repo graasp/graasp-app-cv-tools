@@ -66,7 +66,7 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  let isValid: boolean;
+
   const degrees = [
     { value: 'bachelor', label: 'Bachelor' },
     { value: 'master', label: 'Master' },
@@ -158,10 +158,8 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
           }
         });
         onError(true);
-        isValid = false;
         setErrors(updatedErrors);
       } else if (result.isValid()) {
-        isValid = true;
         handlePatch(cardId, {
           ...educationInfoCard.data,
           saved: true,
@@ -209,6 +207,7 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
     prevStep();
   };
   const handleNext = (): void => {
+    let isValid = true;
     // Check each card for unfilled required fields
     educationCards?.forEach((card) => {
       const result = suite(card.data);

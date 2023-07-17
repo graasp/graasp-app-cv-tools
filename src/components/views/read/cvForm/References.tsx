@@ -59,7 +59,6 @@ const References: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  let isValid: boolean;
 
   const handleAdd = (): void => {
     const newCardId = `card${(referencesCards?.size ?? 0) + 1}`;
@@ -153,10 +152,9 @@ const References: FC<Props> = ({ nextStep, prevStep, onError }) => {
           }
         });
         onError(true);
-        isValid = false;
+
         setErrors(updatedErrors);
       } else if (result.isValid()) {
-        isValid = true;
         handlePatch(cardId, {
           ...referencesInfoCard.data,
           saved: true,
@@ -212,6 +210,7 @@ const References: FC<Props> = ({ nextStep, prevStep, onError }) => {
       (obj: AppData) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
     );
 
+    let isValid = true;
     // Check each card for unfilled required fields
     referencesCards?.forEach((card) => {
       const result = suite(card.data);

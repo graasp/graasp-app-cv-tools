@@ -66,7 +66,6 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  let isValid: boolean;
 
   const countriesArr = countries.map((country) => ({
     value: country.alpha2,
@@ -160,10 +159,9 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
           }
         });
         onError(true);
-        isValid = false;
+
         setErrors(updatedErrors);
       } else if (result.isValid()) {
-        isValid = true;
         handlePatch(cardId, {
           ...workInfoCard.data,
           saved: true,
@@ -218,6 +216,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
       (obj: AppData) => obj.type === APP_DATA_TYPES.SKILLS_INFO,
     );
 
+    let isValid = true;
     // Check each card for unfilled required fields
     workCards?.forEach((card) => {
       const result = suite(card.data);

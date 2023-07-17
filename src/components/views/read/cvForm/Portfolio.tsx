@@ -64,7 +64,6 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
   const [showFields, setShowFields] = useState<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  let isValid: boolean;
 
   const handleAdd = (): void => {
     const newCardId = `card${(portfolioCards?.size ?? 0) + 1}`;
@@ -135,10 +134,9 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
           }
         });
         onError(true);
-        isValid = false;
+
         setErrors(updatedErrors);
       } else if (result.isValid()) {
-        isValid = true;
         handlePatch(cardId, {
           ...portfolioCard.data,
           saved: true,
@@ -193,6 +191,7 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
       (obj: AppData) => obj.type === APP_DATA_TYPES.MOTIVATION_INFO,
     );
 
+    let isValid = true;
     // Check each card for unfilled required fields
     portfolioCards?.forEach((card) => {
       const result = suite(card.data);
