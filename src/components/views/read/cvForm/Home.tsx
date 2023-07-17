@@ -4,12 +4,24 @@ import { AppData } from '@graasp/apps-query-client';
 
 import { Add } from '@mui/icons-material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
-import { CVInfoObj, PersonalInfoObj } from './types';
+import Description from './Description';
+import Validation from './Validation';
+import {
+  CVInfoObj,
+  CvStatusObj,
+  EducationInfoObj,
+  MotivationObj,
+  PersonalInfoObj,
+  PortfolioObj,
+  ReferencesObj,
+  SkillsObj,
+  WorkExperienceObj,
+} from './types';
 
 interface Props {
   nextStep: () => void;
@@ -19,8 +31,29 @@ interface Props {
 const Home: FC<Props> = ({ nextStep, reviewStep }) => {
   const { postAppData, appDataArray } = useAppDataContext();
 
-  const handleCvPost = (newdata: CVInfoObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_VALUES });
+  const handlePersonalPost = (newdata: PersonalInfoObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONAL_INFO });
+  };
+  const handleEducationPost = (newdata: EducationInfoObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.EDUCATION_INFO });
+  };
+  const handleWorkPost = (newdata: WorkExperienceObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.WORK_EXPERIENCE_INFO });
+  };
+  const handleSkillsPost = (newdata: SkillsObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.SKILLS_INFO });
+  };
+  const handleProjectsPost = (newdata: PortfolioObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.PROJECTS_INFO });
+  };
+  const handleMotivationPost = (newdata: MotivationObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.MOTIVATION_INFO });
+  };
+  const handleReferencesPost = (newdata: ReferencesObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.REFERENCES_INFO });
+  };
+  const hanldeCvStatusPost = (newdata: CvStatusObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CV_STATUS_INFO });
   };
   const inputRef: RefObject<HTMLInputElement> = useRef(null);
 
@@ -32,37 +65,32 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
       const reader = new FileReader();
       reader.onload = () => {
         const fileContent = reader.result as string;
-        const { Validator } = require('jsonschema');
-        const schema = {
-          type: 'object',
-          properties: {
-            personalInfo: { type: 'object' },
-            educationInfo: { type: 'array', items: { type: 'object' } },
-            workInfo: { type: 'array', items: { type: 'object' } },
-            skillsInfo: { type: 'array', items: { type: 'object' } },
-            portfolioInfo: { type: 'array', items: { type: 'object' } },
-            motivationInfo: { type: 'object' },
-            referencesInfo: { type: 'array', items: { type: 'object' } },
-            cvStateInfo: { type: 'object' },
-          },
-          required: [
-            'personalInfo',
-            'educationInfo',
-            'workInfo',
-            'skillsInfo',
-            'portfolioInfo',
-            'motivationInfo',
-            'referencesInfo',
-            'cvStateInfo',
-          ],
-        };
-        const validator = new Validator();
         try {
           const parsedData = JSON.parse(fileContent) as CVInfoObj;
-          const validationResult = validator.validate(parsedData, schema);
+          const validationResult = Validation({
+            type: 'uploadData',
+            data: parsedData,
+          });
 
-          if (validationResult.valid) {
-            handleCvPost(parsedData);
+          if (validationResult?.isValid()) {
+            handlePersonalPost(parsedData.personalInfo);
+            parsedData.educationInfo.forEach((educationItem) => {
+              handleEducationPost(educationItem);
+            });
+            parsedData.workInfo.forEach((workItem) => {
+              handleWorkPost(workItem);
+            });
+            parsedData.skillsInfo.forEach((skillItem) => {
+              handleSkillsPost(skillItem);
+            });
+            parsedData.portfolioInfo.forEach((projectItem) => {
+              handleProjectsPost(projectItem);
+            });
+            parsedData.referencesInfo.forEach((referenceItem) => {
+              handleReferencesPost(referenceItem);
+            });
+            handleMotivationPost(parsedData.motivationInfo);
+            hanldeCvStatusPost(parsedData.cvStatusInfo);
             reviewStep();
           } else {
             showErrorToast(
@@ -85,9 +113,6 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
     }
   };
 
-  const handlePersonalPost = (newdata: PersonalInfoObj): void => {
-    postAppData({ data: newdata, type: APP_DATA_TYPES.PERSONAL_INFO });
-  };
   const handleNext = (): void => {
     const personalData = appDataArray.filter(
       (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
@@ -109,14 +134,13 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
     }
     nextStep(); // Update the activeStep state
   };
+  const title = 'Get Started';
+  const description =
+    'You can start creating your own CV by clicking on Create and do whatever you are asked to fill and provide, and you can upload a file of your data which match the structure of the valid file you can upload';
   return (
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       <Stack spacing={2}>
-        <Typography>Get Started</Typography>
-        <Typography>
-          Upload your CV/Resume if you have one, or you can create a new one and
-          upload it directly!
-        </Typography>
+        <Description title={title} description={description} />
         <Stack direction="row" justifyContent="space-evenly">
           <Button
             variant="contained"

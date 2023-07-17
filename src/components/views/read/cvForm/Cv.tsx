@@ -26,7 +26,6 @@ import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
 import FirstTemplate from './templates/FirstTemplate';
 import {
-  CVInfoObj,
   CvStatusObj,
   EducationInfoObj,
   MotivationObj,
@@ -46,26 +45,9 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const cvStatusObject = appDataArray.find(
     (obj) => obj.type === APP_DATA_TYPES.CV_STATUS_INFO,
   );
-  const cvValues = appDataArray.find(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
-  );
   const handlePatch = (dataObj: AppData, newData: CvStatusObj): void => {
     patchAppData({ id: dataObj.id, data: newData });
   };
-  const handleCvValuesPatch = (dataObj: AppData, newData: CVInfoObj): void => {
-    patchAppData({ id: dataObj.id, data: newData });
-  };
-
-  const [cvValuesState, setCvValuesState] = useState<
-    AppData & { data: CVInfoObj }
-  >();
-
-  useEffect(() => {
-    const cvData = appDataArray.find(
-      (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
-    ) as AppData & { data: CVInfoObj };
-    setCvValuesState(cvData);
-  }, [appDataArray]);
 
   const [cvInfoState, setCvInfoState] = useState<
     AppData & { data: CvStatusObj }
@@ -82,7 +64,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const [url, setUrl] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [radioValue, setRadioValue] = useState(
-    cvValuesState?.data.cvStatusInfo.customCv || cvInfoState?.data.customCv
+    cvInfoState?.data.customCv || cvStatusObject?.data.customCv
       ? 'customCv'
       : 'generatedCv',
   );
@@ -123,24 +105,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
 
   const handleRadioGroup = (): void => {
     if (radioValue === 'generatedCv') {
-      if (cvValuesState) {
-        setCvValuesState((prev) => {
-          if (!prev) {
-            return prev;
-          }
-          return {
-            ...prev,
-            data: {
-              ...prev.data,
-              cvStateInfo: {
-                selectedTemplateId: 'formalTemplate',
-                customCv: false,
-              },
-            },
-          };
-        });
-      }
-
       setCvInfoState((prev) => {
         if (!prev) {
           return prev;
@@ -155,26 +119,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
         };
       });
     } else if (radioValue === 'customCv' && uploadedFile) {
-      if (cvValuesState) {
-        setCvValuesState((prev) => {
-          if (!prev) {
-            return prev;
-          }
-          return {
-            ...prev,
-            data: {
-              ...prev.data,
-              cvStateInfo: {
-                selectedTemplateId: '',
-                customCv: true,
-                fileUrl: url,
-                fileUploaded: uploadedFile,
-              },
-            },
-          };
-        });
-      }
-
       setCvInfoState((prev) => {
         if (!prev) {
           return prev;
@@ -262,8 +206,6 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
   const handleNext = (): void => {
     if (cvStatusObject && cvInfoState) {
       handlePatch(cvStatusObject, cvInfoState.data);
-    } else if (cvValues && cvValuesState) {
-      handleCvValuesPatch(cvValues, cvValuesState.data);
     }
     nextStep();
   };
@@ -326,11 +268,7 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
               showToolbar={false}
               style={{ width: '100%', minHeight: '350px' }}
             >
-              {cvValues ? (
-                <FirstTemplate cvValues={cvValues.data} />
-              ) : (
-                <FirstTemplate cvValues={cvObj} />
-              )}
+              <FirstTemplate cvValues={cvObj} />
             </PDFViewer>
           )}
           {uploadedFile && radioValue === 'customCv' && (

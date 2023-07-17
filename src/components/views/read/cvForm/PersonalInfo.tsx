@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { create, enforce, test } from 'vest';
 
 import {
   ChangeEvent,
@@ -34,6 +35,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { showErrorToast } from '../../../../utils/toast';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { MuiPhone } from './MuiPhone';
 import { PersonalInfoObj } from './types';
 
@@ -191,68 +193,70 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
     setVisibility(!visibility);
   };
 
+  const suite = create((data) => {
+    // Validation rules for each field
+    test('firstName', 'First Name is required', () => {
+      enforce(data.firstName).isNotEmpty();
+    });
+
+    test('firstName', 'First Name must be at most 30 characters long', () => {
+      enforce(data.firstName).shorterThan(30);
+    });
+
+    test('lastName', 'Last Name is required', () => {
+      enforce(data.lastName).isNotEmpty();
+    });
+
+    test('lastName', 'Last Name must be at most 30 characters long', () => {
+      enforce(data.lastName).shorterThan(30);
+    });
+
+    test('birthDate', 'Birth Date is required', () => {
+      enforce(data.birthDate).isNotEmpty();
+    });
+
+    test('emailAddress', 'Email Address is required', () => {
+      enforce(data.emailAddress).isNotEmpty();
+    });
+
+    test('phoneNum', 'Phone Number is required', () => {
+      enforce(data.phoneNum).isNotEmpty();
+    });
+
+    test('profileLinks', 'Profile Links is required', () => {
+      enforce(data.profileLinks).isNotEmpty();
+    });
+  });
   const handleSave = (): void => {
-    let isValid = true;
-    const updatedErrors = { ...errors };
+    // Run the validation suite
+    const result = suite(personalInfoState?.data);
 
-    // Perform validation for each required field
-    if (!personalInfoState?.data.firstName.trim()) {
-      updatedErrors.firstName = 'First Name is required';
-      isValid = false;
-    } else {
-      updatedErrors.firstName = '';
+    // Check if any validation errors occurred
+    if (result.hasErrors()) {
+      // Handle validation errors
+      const updatedErrors = { ...errors };
+      Object.keys(result.tests).forEach((fieldName) => {
+        const fieldErrors = result.tests[fieldName].errors || [];
+        if (fieldErrors.length > 0) {
+          updatedErrors[fieldName] = fieldErrors[0] || '';
+        }
+      });
+      onError(true);
+      setErrors(updatedErrors);
+
+      return;
     }
 
-    if (!personalInfoState?.data.lastName.trim()) {
-      updatedErrors.lastName = 'Last Name is required';
-      isValid = false;
-    } else {
-      updatedErrors.lastName = '';
-    }
+    // Validation passed, save the data
+    const personalInfoObj = appDataArray.find(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
+    ) as AppData & { data: PersonalInfoObj };
 
-    if (!personalInfoState?.data.birthDate?.trim()) {
-      updatedErrors.birthDate = 'Birth Date is required';
-      isValid = false;
-    } else {
-      updatedErrors.birthDate = '';
-    }
-
-    if (!personalInfoState?.data.emailAddress.trim()) {
-      updatedErrors.emailAddress = 'Email Address is required';
-      isValid = false;
-    } else {
-      updatedErrors.emailAddress = '';
-    }
-
-    if (!personalInfoState?.data.phoneNum.trim()) {
-      updatedErrors.phoneNum = 'Phone Number is required';
-      isValid = false;
-    } else {
-      updatedErrors.phoneNum = '';
-    }
-
-    if (!personalInfoState?.data.profileLinks.trim()) {
-      updatedErrors.profileLinks = 'Profile Links is required';
-      isValid = false;
-    } else {
-      updatedErrors.profileLinks = '';
-    }
-
-    setErrors(updatedErrors);
-
-    // Save the data if it's valid
-    if (isValid) {
-      // Search in appDataArray to find the object of the same type 'personalInfo' and patch its data by its id
-      const personalInfoObj = appDataArray.find(
-        (obj: AppData) => obj.type === APP_DATA_TYPES.PERSONAL_INFO,
-      ) as AppData & { data: PersonalInfoObj };
-
-      if (personalInfoObj && personalInfoState) {
-        handlePatch(personalInfoObj, {
-          ...personalInfoState.data,
-          saved: true,
-        });
-      }
+    if (personalInfoObj && personalInfoState) {
+      handlePatch(personalInfoObj, {
+        ...personalInfoState.data,
+        saved: true,
+      });
     }
   };
   const hasChanges =
@@ -264,46 +268,27 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
     prevStep();
   };
   const handleNext = (): void => {
-    let isValid = true;
-    const updatedErrors = { ...errors };
+    const result = suite(personalInfoState?.data);
 
-    // Perform validation for each required field
-    if (!personalInfoState?.data.firstName.trim()) {
-      updatedErrors.firstName = 'First Name is required';
-      isValid = false;
+    // Check if any validation errors occurred
+    if (result.hasErrors()) {
+      // Handle validation errors
+      const updatedErrors = { ...errors };
+      Object.keys(result.tests).forEach((fieldName) => {
+        const fieldErrors = result.tests[fieldName].errors || [];
+        if (fieldErrors.length > 0) {
+          updatedErrors[fieldName] = fieldErrors[0] || '';
+        }
+      });
+      setErrors(updatedErrors);
+
+      return;
     }
-
-    if (!personalInfoState?.data.lastName.trim()) {
-      updatedErrors.lastName = 'Last Name is required';
-      isValid = false;
-    }
-
-    if (!personalInfoState?.data.birthDate?.trim()) {
-      updatedErrors.birthDate = 'Birth Date is required';
-      isValid = false;
-    }
-
-    if (!personalInfoState?.data.emailAddress.trim()) {
-      updatedErrors.emailAddress = 'Email Address is required';
-      isValid = false;
-    }
-
-    if (!personalInfoState?.data.phoneNum.trim()) {
-      updatedErrors.phoneNum = 'Phone Number is required';
-      isValid = false;
-    }
-
-    if (!personalInfoState?.data.profileLinks.trim()) {
-      updatedErrors.profileLinks = 'Profile Links is required';
-      isValid = false;
-    }
-
-    setErrors(updatedErrors);
 
     // Proceed to the next step if all required fields are filled
-    if (isValid && personalInfoState?.data.saved && !hasChanges) {
+    if (result.isValid() && personalInfoState?.data.saved && !hasChanges) {
       nextStep();
-    } else if (!personalInfoState?.data.saved && isValid) {
+    } else if (!personalInfoState?.data.saved && result.isValid()) {
       showErrorToast(
         'Please save your progress by clicking on Save button before proceeding on',
       );
@@ -311,16 +296,14 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
       onError(true);
     }
   };
+  const title = 'Personal Details';
+  const description =
+    'For this part, you are supposed to fill all the required fields with your information, you can also upload a personal picture to have on your Cv.';
   // Flex-wrap: wrap;
   return (
     <Box>
       <Box>
-        <Typography variant="h4">Personal Details</Typography>
-        <Typography sx={{ m: '0.5rem' }}>
-          For this part, you are supposed to fill all the required fields with
-          your information, you can also upload a personal picture to have on
-          your Cv.
-        </Typography>
+        <Description title={title} description={description} />
         {mapping.map((m) => (
           <Fragment key={m.key}>
             {m.key === 'firstName' && (
@@ -373,6 +356,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
                         fullWidth: true,
                         error: !!errors[m.key],
                         helperText: errors[m.key],
+                        required: true,
                       },
                     }}
                   />
@@ -518,7 +502,7 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
           startIcon={<NavigateNextIcon />}
           onClick={handleNext}
           style={{ alignSelf: 'flex-end' }}
-          disabled={hasChanges}
+          disabled={!personalInfoState?.data.saved}
         >
           Next
         </Button>

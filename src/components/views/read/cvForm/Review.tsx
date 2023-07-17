@@ -7,16 +7,16 @@ import { AppData } from '@graasp/apps-query-client';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import { Box, Button, ButtonGroup, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup } from '@mui/material';
 
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 
 import { APP_DATA_TYPES } from '../../../../config/appDataTypes';
 import { useAppDataContext } from '../../../context/AppDataContext';
+import Description from './Description';
 import { TEMPLATES } from './constants';
 import FirstTemplate from './templates/FirstTemplate';
 import {
-  CVInfoObj,
   CvStatusObj,
   EducationInfoObj,
   MotivationObj,
@@ -88,35 +88,20 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     referencesInfo: referencesDataArray as ReferencesObj[],
     cvStatusInfo: cvStatusObject,
   };
-  const cvValues = appDataArray.find(
-    (obj: AppData) => obj.type === APP_DATA_TYPES.CV_VALUES,
-  )?.data as CVInfoObj | undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let renderedTemplate: JSX.Element | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  let handleDownload = async (): Promise<void> => {};
-  let cvInfo: CVInfoObj;
-  if (
-    cvValues?.cvStatusInfo.selectedTemplateId ||
-    cvObj.cvStatusInfo.selectedTemplateId
-  ) {
-    if (cvValues) {
-      cvInfo = cvValues;
-    } else {
-      cvInfo = cvObj;
+  const { component: CvTemplate } = TEMPLATES.find(
+    (t) => t.id === cvObj.cvStatusInfo.selectedTemplateId,
+  ) || { component: FirstTemplate };
+  const renderedTemplate = <CvTemplate cvValues={cvObj} />;
+  const handleDownload = async (): Promise<void> => {
+    const pdfBlob = await pdf(renderedTemplate).toBlob();
+    if (!cvObj.cvStatusInfo.customCv) {
+      saveAs(pdfBlob, 'generated-cv.pdf');
     }
-    const { component: CvTemplate } = TEMPLATES.find(
-      (t) => t.id === cvInfo.cvStatusInfo.selectedTemplateId,
-    ) || { component: FirstTemplate };
-    renderedTemplate = <CvTemplate cvValues={cvInfo} />;
-    handleDownload = async (): Promise<void> => {
-      const pdfBlob = await pdf(renderedTemplate).toBlob();
-      if (!cvInfo.cvStatusInfo.customCv) {
-        saveAs(pdfBlob, 'generated-cv.pdf');
-      }
-    };
-  }
+    const json = JSON.stringify(cvObj, null, 2); // Convert to JSON string with indentation
+    const jsonBlob = new Blob([json], { type: 'application/json' });
+    saveAs(jsonBlob, 'cv-data.json');
+  };
 
   const handleStatusPost = (newdata: SubmissionStatus): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.SUBMISSION_STATUS });
@@ -129,39 +114,19 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   const handlePrev = (): void => {
     prevStep();
   };
+  const title = 'Review';
+  const description =
+    'For this part, and the final part of the your progress, as a final step, and after filling all the required fields from previous sections, select the template or uploaded your custom CV, all you can do here is that you can review the filled information, and confirm that they are as you are expecting, thn you can download the pdf file from the Download button, as well as a json file which contains all of your input data, to use next time, so no need to fill up the fields again, if there is no changes, finally you can click on Submit to state that you are done. your CV.';
   return (
     <Box>
-      <Typography variant="h4">Review</Typography>
-      <Typography sx={{ m: '0.5rem' }}>
-        For this part, and the final part of the your progress, as a final step,
-        and after filling all the required fields from previous sections, select
-        the template or uploaded your custom CV, all you can do here is that you
-        can review the filled information, and confirm that they are as you are
-        expecting, thn you can download the pdf file from the Download button,
-        as well as a json file which contains all of your input data, to use
-        next time, so no need to fill up the fields again, if there is no
-        changes, finally you can click on Submit to state that you are done.
-        your CV.
-      </Typography>
+      <Description title={title} description={description} />
       <Box justifyContent="center" display="flex">
-        {cvValues?.cvStatusInfo.customCv || cvObj.cvStatusInfo.customCv ? (
-          <Box justifyContent="center" display="flex">
-            <embed
-              src={`${
-                cvValues?.cvStatusInfo.fileUrl || cvObj.cvStatusInfo.fileUrl
-              }#toolbar=0`}
-              type="application/pdf"
-              style={{ minHeight: '350px', width: '100%' }}
-            />
-          </Box>
-        ) : (
-          <PDFViewer
-            showToolbar={false}
-            style={{ minHeight: '75vh', minWidth: '50%' }}
-          >
-            {renderedTemplate}
-          </PDFViewer>
-        )}
+        <PDFViewer
+          showToolbar={false}
+          style={{ minHeight: '75vh', minWidth: '50%' }}
+        >
+          {renderedTemplate}
+        </PDFViewer>
       </Box>
       <ButtonGroup
         style={{

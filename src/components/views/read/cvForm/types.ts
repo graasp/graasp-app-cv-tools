@@ -53,6 +53,7 @@ export type PortfolioObj = {
 
 export type MotivationObj = {
   motivationLetter: string;
+  saved: boolean;
 };
 
 export type ReferencesObj = {

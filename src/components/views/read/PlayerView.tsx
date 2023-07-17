@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Box, Step, StepLabel, Stepper } from '@mui/material';
+import { Box, Step, StepLabel, Stepper, useMediaQuery } from '@mui/material';
 
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import Template from './cvForm/Cv';
@@ -25,8 +25,8 @@ const PlayerView: FC = () => {
   const reviewStep = (): void => setActiveStep(8);
   const steps = [
     'Home',
-    'Personal Info',
-    'Education',
+    'Personal Details',
+    'Education and Training',
     'Work Experience',
     'Skills',
     'Projects',
@@ -48,9 +48,13 @@ const PlayerView: FC = () => {
       modifyActiveStep(stepIndex);
     }
   };
+  const isSmallScreen = useMediaQuery('(max-width:700px)');
   const stepper = (
     <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-      {steps.map((label, index) => (
+      {(isSmallScreen
+        ? [0, activeStep, steps.length - 1]
+        : steps.map((_, index) => index)
+      ).map((index) => (
         <Step
           key={index}
           onClick={() => handleStepClick(index)}
@@ -61,6 +65,17 @@ const PlayerView: FC = () => {
                 : 'default',
           }}
           completed={stepState[index] === 'done'}
+          sx={{
+            '& .MuiStepLabel-root .Mui-completed': {
+              color: 'green',
+            },
+            '& .MuiStepLabel-root .Mui-active': {
+              color: 'orange',
+            },
+            '& .MuiStepLabel-root .Mui-error': {
+              color: 'red',
+            },
+          }}
         >
           <StepLabel
             StepIconComponent={
@@ -68,7 +83,7 @@ const PlayerView: FC = () => {
             }
             error={stepState[index] === 'error'}
           >
-            {label}
+            {steps[index]}
           </StepLabel>
         </Step>
       ))}
@@ -89,7 +104,13 @@ const PlayerView: FC = () => {
       <FormLayout stepper={stepper}>
         {/* We can also instead use Switch-Cases for the rendering process */}
         {activeStep === 0 && (
-          <Home nextStep={nextStep} reviewStep={reviewStep} />
+          <Home
+            nextStep={() => {
+              handleStepState(0, 'done');
+              nextStep();
+            }}
+            reviewStep={reviewStep}
+          />
         )}
         {activeStep === 1 && (
           <PersonalInfo
@@ -100,27 +121,107 @@ const PlayerView: FC = () => {
               handleStepState(1, 'done');
               nextStep();
             }}
-            prevStep={prevStep}
+            prevStep={() => {
+              handleStepState(0, 'inprogress');
+              prevStep();
+            }}
           />
         )}
         {activeStep === 2 && (
-          <Education nextStep={nextStep} prevStep={prevStep} />
+          <Education
+            onError={(isError: boolean) =>
+              handleStepState(2, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(2, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(1, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 3 && (
-          <WorkExperience nextStep={nextStep} prevStep={prevStep} />
+          <WorkExperience
+            onError={(isError: boolean) =>
+              handleStepState(3, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(3, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(2, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
-        {activeStep === 4 && <Skills nextStep={nextStep} prevStep={prevStep} />}
+        {activeStep === 4 && (
+          <Skills
+            nextStep={() => {
+              handleStepState(4, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(3, 'inprogress');
+              prevStep();
+            }}
+          />
+        )}
         {activeStep === 5 && (
-          <Portfolio nextStep={nextStep} prevStep={prevStep} />
+          <Portfolio
+            onError={(isError: boolean) =>
+              handleStepState(5, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(5, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(4, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 6 && (
-          <MotivationLetter nextStep={nextStep} prevStep={prevStep} />
+          <MotivationLetter
+            nextStep={() => {
+              handleStepState(6, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(5, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 7 && (
-          <References nextStep={nextStep} prevStep={prevStep} />
+          <References
+            onError={(isError: boolean) =>
+              handleStepState(7, isError ? 'error' : 'inprogress')
+            }
+            nextStep={() => {
+              handleStepState(7, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(6, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 8 && (
-          <Template nextStep={nextStep} prevStep={prevStep} />
+          <Template
+            nextStep={() => {
+              handleStepState(8, 'done');
+              nextStep();
+            }}
+            prevStep={() => {
+              handleStepState(7, 'inprogress');
+              prevStep();
+            }}
+          />
         )}
         {activeStep === 9 && <Review homeStep={homeStep} prevStep={prevStep} />}
       </FormLayout>
