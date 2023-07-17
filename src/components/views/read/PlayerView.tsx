@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 
 import ErrorIcon from '@mui/icons-material/Error';
-import { Box, Step, StepLabel, Stepper } from '@mui/material';
+import { Box, Step, StepLabel, Stepper, useMediaQuery } from '@mui/material';
 
 import { PLAYER_VIEW_CY } from '../../../config/selectors';
 import Template from './cvForm/Cv';
@@ -48,9 +48,13 @@ const PlayerView: FC = () => {
       modifyActiveStep(stepIndex);
     }
   };
+  const isSmallScreen = useMediaQuery('(max-width:700px)');
   const stepper = (
     <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-      {steps.map((label, index) => (
+      {(isSmallScreen
+        ? [0, activeStep, steps.length - 1]
+        : steps.map((_, index) => index)
+      ).map((index) => (
         <Step
           key={index}
           onClick={() => handleStepClick(index)}
@@ -79,7 +83,7 @@ const PlayerView: FC = () => {
             }
             error={stepState[index] === 'error'}
           >
-            {label}
+            {steps[index]}
           </StepLabel>
         </Step>
       ))}
