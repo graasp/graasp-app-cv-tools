@@ -114,9 +114,9 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     test(
       'institutionName',
-      'Institution Name must be at most 30 characters long',
+      'Institution Name must be at most 80 characters long',
       () => {
-        enforce(data.institutionName).shorterThan(30);
+        enforce(data.institutionName).shorterThan(80);
       },
     );
 
@@ -126,9 +126,9 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     test(
       'jobDetails',
-      'Job Details must be at most 200 characters long',
+      'Job Details must be at most 500 characters long',
       () => {
-        enforce(data.jobDetails).shorterThan(200);
+        enforce(data.jobDetails).shorterThan(500);
       },
     );
 

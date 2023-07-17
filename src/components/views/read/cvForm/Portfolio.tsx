@@ -95,8 +95,8 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
       enforce(data.projectTitle).isNotEmpty();
     });
 
-    test('projectTitle', 'Project Title be at most 50 characters long', () => {
-      enforce(data.projectTitle).shorterThan(50);
+    test('projectTitle', 'Project Title be at most 100 characters long', () => {
+      enforce(data.projectTitle).shorterThan(100);
     });
 
     test('projectDescription', 'Project Description is required', () => {
@@ -105,9 +105,9 @@ const Portfolio: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     test(
       'projectDescription',
-      'Project Description must be at most 200 characters long',
+      'Project Description must be at most 500 characters long',
       () => {
-        enforce(data.projectDescription).shorterThan(200);
+        enforce(data.projectDescription).shorterThan(500);
       },
     );
 

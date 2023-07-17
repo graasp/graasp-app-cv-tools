@@ -199,16 +199,16 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
       enforce(data.firstName).isNotEmpty();
     });
 
-    test('firstName', 'First Name must be at most 20 characters long', () => {
-      enforce(data.firstName).shorterThan(20);
+    test('firstName', 'First Name must be at most 30 characters long', () => {
+      enforce(data.firstName).shorterThan(30);
     });
 
     test('lastName', 'Last Name is required', () => {
       enforce(data.lastName).isNotEmpty();
     });
 
-    test('lastName', 'Last Name must be at most 20 characters long', () => {
-      enforce(data.lastName).shorterThan(20);
+    test('lastName', 'Last Name must be at most 30 characters long', () => {
+      enforce(data.lastName).shorterThan(30);
     });
 
     test('birthDate', 'Birth Date is required', () => {

@@ -28,6 +28,24 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         enforce('saved').isKeyOf(dataObj.personalInfo);
       });
 
+      test('personalInfo', 'Invalid personal info field rules', () => {
+        enforce(dataObj.personalInfo.firstName).isNotEmpty();
+
+        enforce(dataObj.personalInfo.firstName).shorterThan(30);
+
+        enforce(dataObj.personalInfo.lastName).isNotEmpty();
+
+        enforce(dataObj.personalInfo.lastName).shorterThan(30);
+
+        enforce(dataObj.personalInfo.birthDate).isNotEmpty();
+
+        enforce(dataObj.personalInfo.emailAddress).isNotEmpty();
+
+        enforce(dataObj.personalInfo.phoneNum).isNotEmpty();
+
+        enforce(dataObj.personalInfo.profileLinks).isNotEmpty();
+      });
+
       test('educationInfo', 'Education info is required', () => {
         enforce('educationInfo').isKeyOf(dataObj);
       });
@@ -43,6 +61,25 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('gpa').isKeyOf(dataObj.educationInfo[0]);
           enforce('country').isKeyOf(dataObj.educationInfo[0]);
           enforce('saved').isKeyOf(dataObj.educationInfo[0]);
+        });
+      }
+      if (dataObj.educationInfo.length > 0) {
+        test('educationInfo', 'Invalid education info field rules', () => {
+          enforce(dataObj.educationInfo[0].degree).isNotEmpty();
+
+          enforce(dataObj.educationInfo[0].institutionName).isNotEmpty();
+
+          enforce(dataObj.educationInfo[0].institutionName).shorterThan(80);
+
+          enforce(dataObj.educationInfo[0].major).isNotEmpty();
+
+          enforce(dataObj.educationInfo[0].major).shorterThan(50);
+
+          enforce(dataObj.educationInfo[0].startDate).isNotEmpty();
+
+          enforce(dataObj.educationInfo[0].endDate).isNotEmpty();
+
+          enforce(dataObj.educationInfo[0].country).isNotEmpty();
         });
       }
 
@@ -61,6 +98,20 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('jobDetails').isKeyOf(dataObj.workInfo[0]);
           enforce('keyAchievements').isKeyOf(dataObj.workInfo[0]);
           enforce('saved').isKeyOf(dataObj.workInfo[0]);
+        });
+      }
+
+      if (dataObj.workInfo.length > 0) {
+        test('workInfo', 'Invalid work info field rules', () => {
+          enforce(dataObj.workInfo[0].jobTitle).isNotEmpty();
+          enforce(dataObj.workInfo[0].jobTitle).shorterThan(50);
+          enforce(dataObj.workInfo[0].institutionName).isNotEmpty();
+          enforce(dataObj.workInfo[0].institutionName).shorterThan(80);
+          enforce(dataObj.workInfo[0].jobDetails).isNotEmpty();
+          enforce(dataObj.workInfo[0].jobDetails).shorterThan(500);
+          enforce(dataObj.workInfo[0].startDate).isNotEmpty();
+          enforce(dataObj.workInfo[0].endDate).isNotEmpty();
+          enforce(dataObj.workInfo[0].country).isNotEmpty();
         });
       }
 
@@ -91,6 +142,17 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         });
       }
 
+      if (dataObj.portfolioInfo.length > 0) {
+        test('portfolioInfo', 'Invalid portoflio info field rules', () => {
+          enforce(dataObj.portfolioInfo[0].projectTitle).isNotEmpty();
+          enforce(dataObj.portfolioInfo[0].projectTitle).shorterThan(100);
+          enforce(dataObj.portfolioInfo[0].projectDescription).isNotEmpty();
+          enforce(dataObj.portfolioInfo[0].projectDescription).shorterThan(500);
+          enforce(dataObj.portfolioInfo[0].startDate).isNotEmpty();
+          enforce(dataObj.portfolioInfo[0].endDate).isNotEmpty();
+        });
+      }
+
       test('motivationInfo', 'Motivation info is required', () => {
         enforce('motivationInfo').isKeyOf(dataObj);
       });
@@ -112,6 +174,19 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('referencePhoneNum').isKeyOf(dataObj.referencesInfo[0]);
           enforce('referenceEmail').isKeyOf(dataObj.referencesInfo[0]);
           enforce('saved').isKeyOf(dataObj.referencesInfo[0]);
+        });
+      }
+
+      if (dataObj.referencesInfo.length > 0) {
+        test('referencesInfo', 'Invalid references info field rules', () => {
+          enforce(dataObj.referencesInfo[0].referenceName).isNotEmpty();
+          enforce(dataObj.referencesInfo[0].referenceName).shorterThan(50);
+          enforce(dataObj.referencesInfo[0].referenceRelation).isNotEmpty();
+          enforce(dataObj.referencesInfo[0].referenceRelation).shorterThan(30);
+          enforce(dataObj.referencesInfo[0].referenceCompany).isNotEmpty();
+          enforce(dataObj.referencesInfo[0].referenceCompany).shorterThan(30);
+          enforce(dataObj.referencesInfo[0].referenceEmail).isNotEmpty();
+          enforce(dataObj.referencesInfo[0].referenceEmail).shorterThan(50);
         });
       }
 

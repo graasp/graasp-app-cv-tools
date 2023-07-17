@@ -115,9 +115,9 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     test(
       'institutionName',
-      'Institution Name must be at most 30 characters long',
+      'Institution Name must be at most 80 characters long',
       () => {
-        enforce(data.institutionName).shorterThan(30);
+        enforce(data.institutionName).shorterThan(80);
       },
     );
 
@@ -125,8 +125,8 @@ const Education: FC<Props> = ({ nextStep, prevStep, onError }) => {
       enforce(data.major).isNotEmpty();
     });
 
-    test('major', 'Major must be at most 20 characters long', () => {
-      enforce(data.major).shorterThan(20);
+    test('major', 'Major must be at most 50 characters long', () => {
+      enforce(data.major).shorterThan(50);
     });
 
     test('startDate', 'Start Date is required', () => {
