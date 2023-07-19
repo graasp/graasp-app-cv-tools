@@ -1,8 +1,11 @@
-import React, { FC, useEffect, useState } from 'react';
+import { List } from 'immutable';
+
+import { FC, useState } from 'react';
 
 import {
   Box,
   MenuItem,
+  Rating,
   Select,
   Table,
   TableBody,
@@ -15,33 +18,25 @@ import { useAppDataContext } from '../../context/AppDataContext';
 
 const BuilderView: FC = () => {
   const { appDataArray } = useAppDataContext();
-  const [groupedObjects, setGroupedObjects] = useState<
-    { memberId: string; objects: any[] }[]
-  >([]);
-  const [selectedType, setSelectedType] = useState('');
-  const groupObjectsByMemberId = (): void => {
-    const groupedData: { [key: string]: any[] } = {};
-    appDataArray.forEach((data) => {
-      const { memberId } = data;
-      if (memberId in groupedData) {
-        groupedData[memberId].push(data);
-      } else {
-        groupedData[memberId] = [data];
-      }
-    });
+  const groupObjectsByMemberId = (): List<{
+    memberId: string;
+    objects: any[];
+  }> => {
+    const groupedData = appDataArray.groupBy((data) => data.memberId);
 
-    const groupedObjectsArray = Object.entries(groupedData).map(
-      ([memberId, objects]) => ({
+    const groupedObjectsArray = groupedData
+      .entrySeq()
+      .map(([memberId, objects]) => ({
         memberId,
-        objects,
-      }),
-    );
+        objects: objects.toArray(),
+      }));
 
-    setGroupedObjects(groupedObjectsArray);
+    return List(groupedObjectsArray);
   };
-  useEffect(() => {
-    groupObjectsByMemberId();
-  }, []);
+
+  const groupedObjects = groupObjectsByMemberId();
+
+  const [selectedType, setSelectedType] = useState('');
 
   const handleTypeChange = (value: string): void => {
     setSelectedType(value);
@@ -50,7 +45,16 @@ const BuilderView: FC = () => {
   const filteredObjects = groupedObjects.filter((group) =>
     group.objects.some((obj) => obj.type === selectedType),
   );
-
+  const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
+  const dimensions = [
+    { value: 'mock_type', label: 'Mock Info' },
+    { value: 'personalInfo', label: 'Personal Info' },
+    { value: 'educationInfo', label: 'Education Info' },
+    { value: 'workInfo', label: 'Work Info' },
+    { value: 'skillsInfo', label: 'Skills Info' },
+    { value: 'portfolioInfo', label: 'Portfolio Info' },
+    { value: 'motivationInfo', label: 'Self-Motivation' },
+  ];
   return (
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
@@ -63,17 +67,19 @@ const BuilderView: FC = () => {
           <MenuItem value="" disabled>
             Select Type
           </MenuItem>
-          <MenuItem value="mock_type">Mock Type</MenuItem>
-          <MenuItem value="personalInfo">Personal Info</MenuItem>
-          <MenuItem value="educationInfo">Education Info</MenuItem>
-          <MenuItem value="workInfo">Work Info</MenuItem>
+          {dimensions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
         </Select>
-        {filteredObjects.length > 0 && (
+        {filteredObjects.size > 0 && (
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Member ID</TableCell>
                 <TableCell>Data</TableCell>
+                <TableCell>Rate</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -81,6 +87,18 @@ const BuilderView: FC = () => {
                 <TableRow key={group.memberId}>
                   <TableCell>{group.memberId}</TableCell>
                   <TableCell>{group.objects[0].data.content}</TableCell>
+                  <TableCell>
+                    <Rating
+                      value={ratings[group.memberId] || null}
+                      onChange={(event, newValue) => {
+                        setRatings((prevRatings) => ({
+                          ...prevRatings,
+                          [group.memberId]: newValue,
+                        }));
+                      }}
+                      size="medium"
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
