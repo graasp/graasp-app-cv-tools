@@ -1,14 +1,19 @@
 import React, { FC, useState } from 'react';
 
+import DownloadIcon from '@mui/icons-material/Download';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Box,
-  MenuItem, // Rating,
+  IconButton,
+  MenuItem,
+  Rating,
   Select,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 
 import { useAppDataContext } from '../../context/AppDataContext';
@@ -24,7 +29,6 @@ const BuilderView: FC = () => {
   const dataArray: any[] = Object.keys(groupedData)
     .filter((key) => key === selectedType)
     .map((key) => groupedData[key]);
-
   const dimensions = [
     { value: 'mock_type', label: 'Mock Info' },
     { value: 'personalInfo', label: 'Personal Info' },
@@ -40,8 +44,12 @@ const BuilderView: FC = () => {
 
   dimensions.forEach((dimension) => {
     const type = dimension.value;
+    const dataObj = Object.keys(groupedData)
+      .filter((key) => key === type)
+      .map((key) => groupedData[key]);
+
     const typeDataByMemberId = DataFilter({
-      dataObject: dataArray,
+      dataObject: dataObj,
       targetType: type,
     });
 
@@ -59,10 +67,40 @@ const BuilderView: FC = () => {
   });
 
   const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
-
+  const handleDownload = (): void => {
+    const x = 'Downloaded';
+    // eslint-disable-next-line no-console
+    console.log(x);
+  };
+  const handleView = (): void => {
+    const x = 'Viewed';
+    // eslint-disable-next-line no-console
+    console.log(x);
+  };
   return (
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
+        <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
+          {Object.keys(cv).map((memberId) => (
+            <Box key={memberId} display="flex" alignItems="center">
+              <Typography>{memberId}</Typography>
+              <IconButton onClick={handleDownload}>
+                <DownloadIcon />
+              </IconButton>
+              <IconButton onClick={handleView}>
+                <VisibilityIcon />
+              </IconButton>
+              {/* <Rating
+              name={`rating-${memberId}`}
+              value={ratings[memberId]}
+              onChange={(event, newValue) => {
+                setRatings(newValue[1]);
+              }}
+              size="medium"
+            /> */}
+            </Box>
+          ))}
+        </Box>
         <Select
           value={selectedType}
           onChange={(e) => handleTypeChange(e.target.value)}
