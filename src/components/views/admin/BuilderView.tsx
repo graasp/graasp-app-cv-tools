@@ -1,6 +1,4 @@
-import { List } from 'immutable';
-
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import {
   Box,
@@ -17,34 +15,17 @@ import {
 import { useAppDataContext } from '../../context/AppDataContext';
 
 const BuilderView: FC = () => {
-  const { appDataArray } = useAppDataContext();
-  const groupObjectsByMemberId = (): List<{
-    memberId: string;
-    objects: any[];
-  }> => {
-    const groupedData = appDataArray.groupBy((data) => data.memberId);
-
-    const groupedObjectsArray = groupedData
-      .entrySeq()
-      .map(([memberId, objects]) => ({
-        memberId,
-        objects: objects.toArray(),
-      }));
-
-    return List(groupedObjectsArray);
-  };
-
-  const groupedObjects = groupObjectsByMemberId();
-
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const groupedData = appDataArray.groupBy((data) => data.type).toJS();
   const [selectedType, setSelectedType] = useState('');
-
   const handleTypeChange = (value: string): void => {
     setSelectedType(value);
   };
+  const dataArray: any[] = Object.keys(groupedData)
+    .filter((key) => key === selectedType)
+    .map((key) => groupedData[key]);
+  console.log(dataArray);
 
-  const filteredObjects = groupedObjects.filter((group) =>
-    group.objects.some((obj) => obj.type === selectedType),
-  );
   const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
   const dimensions = [
     { value: 'mock_type', label: 'Mock Info' },
@@ -73,33 +54,24 @@ const BuilderView: FC = () => {
             </MenuItem>
           ))}
         </Select>
-        {filteredObjects.size > 0 && (
+        {dataArray.length > 0 && (
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Member ID</TableCell>
                 <TableCell>Data</TableCell>
-                <TableCell>Rate</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredObjects.map((group) => (
-                <TableRow key={group.memberId}>
-                  <TableCell>{group.memberId}</TableCell>
-                  <TableCell>{group.objects[0].data.content}</TableCell>
-                  <TableCell>
-                    <Rating
-                      value={ratings[group.memberId] || null}
-                      onChange={(event, newValue) => {
-                        setRatings((prevRatings) => ({
-                          ...prevRatings,
-                          [group.memberId]: newValue,
-                        }));
-                      }}
-                      size="medium"
-                    />
-                  </TableCell>
-                </TableRow>
+              {dataArray.map((dataObject, index) => (
+                <React.Fragment key={index}>
+                  {dataObject.map((item: any) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.memberId}</TableCell>
+                      <TableCell>{item.data.content}</TableCell>
+                    </TableRow>
+                  ))}
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
