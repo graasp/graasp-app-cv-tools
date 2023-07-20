@@ -2,8 +2,7 @@ import React, { FC, useState } from 'react';
 
 import {
   Box,
-  MenuItem,
-  Rating,
+  MenuItem, // Rating,
   Select,
   Table,
   TableBody,
@@ -13,9 +12,10 @@ import {
 } from '@mui/material';
 
 import { useAppDataContext } from '../../context/AppDataContext';
+import DataFilter from './DataFilter';
 
 const BuilderView: FC = () => {
-  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const { appDataArray } = useAppDataContext();
   const groupedData = appDataArray.groupBy((data) => data.type).toJS();
   const [selectedType, setSelectedType] = useState('');
   const handleTypeChange = (value: string): void => {
@@ -24,9 +24,7 @@ const BuilderView: FC = () => {
   const dataArray: any[] = Object.keys(groupedData)
     .filter((key) => key === selectedType)
     .map((key) => groupedData[key]);
-  console.log(dataArray);
 
-  const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
   const dimensions = [
     { value: 'mock_type', label: 'Mock Info' },
     { value: 'personalInfo', label: 'Personal Info' },
@@ -36,6 +34,32 @@ const BuilderView: FC = () => {
     { value: 'portfolioInfo', label: 'Portfolio Info' },
     { value: 'motivationInfo', label: 'Self-Motivation' },
   ];
+
+  // Construct the 'cv' object with filtered and grouped data
+  const cv: { [key: string]: { [key: string]: any } } = {};
+
+  dimensions.forEach((dimension) => {
+    const type = dimension.value;
+    const typeDataByMemberId = DataFilter({
+      dataObject: dataArray,
+      targetType: type,
+    });
+
+    Object.keys(typeDataByMemberId).forEach((memberId) => {
+      if (memberId in cv) {
+        cv[memberId][type] = typeDataByMemberId[memberId].map(
+          (item) => item.data,
+        );
+      } else {
+        cv[memberId] = {
+          [type]: typeDataByMemberId[memberId].map((item) => item.data),
+        };
+      }
+    });
+  });
+
+  const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
+
   return (
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
