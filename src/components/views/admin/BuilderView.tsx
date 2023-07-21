@@ -2,6 +2,7 @@ import saveAs from 'file-saver';
 import JSZip from 'jszip';
 
 import React, { FC, useState } from 'react';
+import { render } from 'react-dom';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
 
@@ -21,7 +22,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { pdf } from '@react-pdf/renderer';
+import { PDFViewer, pdf } from '@react-pdf/renderer';
 
 import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { useAppDataContext } from '../../context/AppDataContext';
@@ -123,10 +124,24 @@ const BuilderView: FC = () => {
       saveAs(pdfBlob, 'generated-cv.pdf');
     }
   };
-  const handleView = (memberId: string): void => {
-    const x = 'Viewed';
-    // eslint-disable-next-line no-console
-    console.log(x);
+  const [visibility, setVisibility] = useState<string | null>(null);
+  const [renderedFile, setRenderedFile] = useState<string | null>(null);
+  const handleView = async (memberId: string): Promise<void> => {
+    if (visibility === memberId) {
+      setVisibility(null);
+      setRenderedFile(null);
+    } else {
+      const candidateCvData = candidatesCv[memberId];
+      const { component: CvTemplate } = TEMPLATES.find(
+        (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+      ) || { component: FirstTemplate };
+      const fileToRender = <CvTemplate cvValues={candidateCvData} />;
+      const pdfBlob = await pdf(fileToRender).toBlob();
+      const dataUrl = URL.createObjectURL(pdfBlob);
+      setVisibility(memberId);
+      setRenderedFile(dataUrl);
+      window.open(dataUrl, '_blank');
+    }
   };
   const handleDownloadAll = async (): Promise<void> => {
     const zip = new JSZip();
