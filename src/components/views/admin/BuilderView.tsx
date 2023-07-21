@@ -1,4 +1,5 @@
 import saveAs from 'file-saver';
+import JSZip from 'jszip';
 
 import React, { FC, useState } from 'react';
 
@@ -127,13 +128,45 @@ const BuilderView: FC = () => {
     // eslint-disable-next-line no-console
     console.log(x);
   };
+  const handleDownloadAll = async (): Promise<void> => {
+    const zip = new JSZip();
+    const candidateIds = Object.keys(candidatesCv);
+
+    // Use Promise.all with map to wait for all async operations to complete
+    await Promise.all(
+      candidateIds.map(async (memberId) => {
+        const candidateCvData = candidatesCv[memberId];
+        const { component: CvTemplate } = TEMPLATES.find(
+          (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+        ) || { component: FirstTemplate };
+        const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
+        const pdfBlob = await pdf(renderedTemplate).toBlob();
+        if (!candidateCvData.cvStatusInfo.customCv) {
+          zip.file(`${memberId}-generated-cv.pdf`, pdfBlob);
+        } else {
+          console.log('failed');
+        }
+      }),
+    );
+
+    // Generate the RAR archive and trigger the download
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      saveAs(content, 'candidates-cv.rar');
+    });
+  };
   return (
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
         <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
+          <Box display="flex" alignItems="center">
+            <Typography>Download All Candidates CVs</Typography>
+            <IconButton onClick={() => handleDownloadAll()}>
+              <DownloadIcon />
+            </IconButton>
+          </Box>
           {Object.keys(candidatesCv).map((memberId) => (
             <Box key={memberId} display="flex" alignItems="center">
-              <Typography>{memberId}</Typography>
+              <Typography flex={1}>{memberId}</Typography>
               <IconButton onClick={() => handleDownload(memberId)}>
                 <DownloadIcon />
               </IconButton>
