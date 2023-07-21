@@ -1,5 +1,7 @@
 import React, { FC, useState } from 'react';
 
+import { AppData } from '@graasp/apps-query-client/dist/types';
+
 import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
@@ -16,11 +18,22 @@ import {
   Typography,
 } from '@mui/material';
 
+import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { useAppDataContext } from '../../context/AppDataContext';
 import DataFilter from './DataFilter';
+import { CandidateRateObj } from './types';
 
 const BuilderView: FC = () => {
-  const { appDataArray } = useAppDataContext();
+  const { postAppData, patchAppData, appDataArray } = useAppDataContext();
+  const handlePatch = (
+    dataObj: AppData['id'],
+    newData: CandidateRateObj,
+  ): void => {
+    patchAppData({ id: dataObj, data: newData });
+  };
+  const handlePost = (newdata: CandidateRateObj): void => {
+    postAppData({ data: newdata, type: APP_DATA_TYPES.CANDIDATE_RATE_INFO });
+  };
   const groupedData = appDataArray.groupBy((data) => data.type).toJS();
   const [selectedType, setSelectedType] = useState('');
   const handleTypeChange = (value: string): void => {
@@ -67,6 +80,28 @@ const BuilderView: FC = () => {
   });
 
   const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
+  const handleRatingChange = (
+    memberId: string,
+    newRating: number | null,
+  ): void => {
+    const rateData = appDataArray.find(
+      (data) =>
+        data.data.memberId === memberId && data.type === 'candidateRateInfo',
+    );
+    if (rateData) {
+      handlePatch(rateData.id, {
+        ...rateData.data,
+        rating: newRating,
+        memberId,
+      });
+    } else {
+      handlePost({ memberId, rating: newRating });
+    }
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [memberId]: newRating,
+    }));
+  };
   const handleDownload = (): void => {
     const x = 'Downloaded';
     // eslint-disable-next-line no-console
@@ -90,14 +125,14 @@ const BuilderView: FC = () => {
               <IconButton onClick={handleView}>
                 <VisibilityIcon />
               </IconButton>
-              {/* <Rating
-              name={`rating-${memberId}`}
-              value={ratings[memberId]}
-              onChange={(event, newValue) => {
-                setRatings(newValue[1]);
-              }}
-              size="medium"
-            /> */}
+              <Rating
+                name={`rating-${memberId}`}
+                value={ratings[memberId] || 0}
+                onChange={(event, newValue) =>
+                  handleRatingChange(memberId, newValue)
+                }
+                size="medium"
+              />
             </Box>
           ))}
         </Box>
