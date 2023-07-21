@@ -83,7 +83,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
     educationInfo: educationDataArray as EducationInfoObj[],
     workInfo: workDataArray as WorkExperienceObj[],
     skillsInfo: skillsDataArray as SkillsObj[],
-    portfolioInfo: portfolioDataArray as PortfolioObj[],
+    projectsInfo: portfolioDataArray as PortfolioObj[],
     motivationInfo: motivationObject,
     referencesInfo: referencesDataArray as ReferencesObj[],
     cvStatusInfo: cvStatusObject,

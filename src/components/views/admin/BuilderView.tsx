@@ -1,3 +1,5 @@
+import saveAs from 'file-saver';
+
 import React, { FC, useState } from 'react';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
@@ -18,8 +20,12 @@ import {
   Typography,
 } from '@mui/material';
 
+import { pdf } from '@react-pdf/renderer';
+
 import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { useAppDataContext } from '../../context/AppDataContext';
+import { TEMPLATES } from '../read/cvForm/constants';
+import FirstTemplate from '../read/cvForm/templates/FirstTemplate';
 import DataFilter from './DataFilter';
 import { CandidateRateObj } from './types';
 
@@ -48,12 +54,14 @@ const BuilderView: FC = () => {
     { value: 'educationInfo', label: 'Education Info' },
     { value: 'workInfo', label: 'Work Info' },
     { value: 'skillsInfo', label: 'Skills Info' },
-    { value: 'portfolioInfo', label: 'Portfolio Info' },
+    { value: 'projectsInfo', label: 'Projects Info' },
     { value: 'motivationInfo', label: 'Self-Motivation' },
+    { value: 'referencesInfo', label: 'References Info' },
+    { value: 'cvStatusInfo', label: '' },
   ];
 
   // Construct the 'cv' object with filtered and grouped data
-  const cv: { [key: string]: { [key: string]: any } } = {};
+  const candidatesCv: { [key: string]: { [key: string]: any } } = {};
 
   dimensions.forEach((dimension) => {
     const type = dimension.value;
@@ -67,12 +75,12 @@ const BuilderView: FC = () => {
     });
 
     Object.keys(typeDataByMemberId).forEach((memberId) => {
-      if (memberId in cv) {
-        cv[memberId][type] = typeDataByMemberId[memberId].map(
+      if (memberId in candidatesCv) {
+        candidatesCv[memberId][type] = typeDataByMemberId[memberId].map(
           (item) => item.data,
         );
       } else {
-        cv[memberId] = {
+        candidatesCv[memberId] = {
           [type]: typeDataByMemberId[memberId].map((item) => item.data),
         };
       }
@@ -102,12 +110,19 @@ const BuilderView: FC = () => {
       [memberId]: newRating,
     }));
   };
-  const handleDownload = (): void => {
-    const x = 'Downloaded';
-    // eslint-disable-next-line no-console
-    console.log(x);
+
+  const handleDownload = async (memberId: string): Promise<void> => {
+    const candidateCvData = candidatesCv[memberId];
+    const { component: CvTemplate } = TEMPLATES.find(
+      (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+    ) || { component: FirstTemplate };
+    const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
+    const pdfBlob = await pdf(renderedTemplate).toBlob();
+    if (!candidateCvData.cvStatusInfo.customCv) {
+      saveAs(pdfBlob, 'generated-cv.pdf');
+    }
   };
-  const handleView = (): void => {
+  const handleView = (memberId: string): void => {
     const x = 'Viewed';
     // eslint-disable-next-line no-console
     console.log(x);
@@ -116,13 +131,13 @@ const BuilderView: FC = () => {
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
         <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
-          {Object.keys(cv).map((memberId) => (
+          {Object.keys(candidatesCv).map((memberId) => (
             <Box key={memberId} display="flex" alignItems="center">
               <Typography>{memberId}</Typography>
-              <IconButton onClick={handleDownload}>
+              <IconButton onClick={() => handleDownload(memberId)}>
                 <DownloadIcon />
               </IconButton>
-              <IconButton onClick={handleView}>
+              <IconButton onClick={() => handleView(memberId)}>
                 <VisibilityIcon />
               </IconButton>
               <Rating
@@ -145,11 +160,13 @@ const BuilderView: FC = () => {
           <MenuItem value="" disabled>
             Select Type
           </MenuItem>
-          {dimensions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
+          {dimensions.map((option) =>
+            option.value === 'cvStatusInfo' ? null : (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ),
+          )}
         </Select>
         {dataArray.length > 0 && (
           <Table>

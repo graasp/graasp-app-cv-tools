@@ -18,7 +18,7 @@ const FirstTemplate: TemplateComponent = ({
     educationInfo,
     workInfo,
     skillsInfo,
-    portfolioInfo,
+    projectsInfo,
     motivationInfo,
     referencesInfo,
   } = cvValues;
@@ -219,7 +219,7 @@ const FirstTemplate: TemplateComponent = ({
 
           <Text>Portfolio & Projects</Text>
           <Divider />
-          {portfolioInfo?.map((item: PortfolioObj, index) => (
+          {projectsInfo?.map((item: PortfolioObj, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               {Object.entries(item)
                 .filter(([key]) => key !== 'id') // Exclude the key "id"
