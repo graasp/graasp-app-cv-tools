@@ -143,8 +143,6 @@ const BuilderView: FC = () => {
         const pdfBlob = await pdf(renderedTemplate).toBlob();
         if (!candidateCvData.cvStatusInfo.customCv) {
           zip.file(`${memberId}-generated-cv.pdf`, pdfBlob);
-        } else {
-          console.log('failed');
         }
       }),
     );
