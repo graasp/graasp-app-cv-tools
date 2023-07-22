@@ -2,7 +2,6 @@ import saveAs from 'file-saver';
 import JSZip from 'jszip';
 
 import React, { FC, useState } from 'react';
-import { render } from 'react-dom';
 
 import { AppData } from '@graasp/apps-query-client/dist/types';
 
@@ -22,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { PDFViewer, pdf } from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';
 
 import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { useAppDataContext } from '../../context/AppDataContext';
@@ -33,23 +32,20 @@ import { CandidateRateObj } from './types';
 
 const BuilderView: FC = () => {
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
-  const handlePatch = (
-    dataObj: AppData['id'],
-    newData: CandidateRateObj,
-  ): void => {
-    patchAppData({ id: dataObj, data: newData });
+  const handlePatch = (id: AppData['id'], newData: CandidateRateObj): void => {
+    patchAppData({ id, data: newData });
   };
   const handlePost = (newdata: CandidateRateObj): void => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.CANDIDATE_RATE_INFO });
   };
-  const groupedData = appDataArray.groupBy((data) => data.type).toJS();
+  const groupedData = appDataArray.groupBy((data) => data.type).toJS() as {
+    [key: string]: AppData[];
+  };
   const [selectedType, setSelectedType] = useState('');
   const handleTypeChange = (value: string): void => {
     setSelectedType(value);
   };
-  const dataArray: any[] = Object.keys(groupedData)
-    .filter((key) => key === selectedType)
-    .map((key) => groupedData[key]);
+  const dataArray: AppData[] | undefined = groupedData[selectedType];
   const dimensions = [
     { value: 'mock_type', label: 'Mock Info' },
     { value: 'personalInfo', label: 'Personal Info' },
@@ -115,13 +111,18 @@ const BuilderView: FC = () => {
 
   const handleDownload = async (memberId: string): Promise<void> => {
     const candidateCvData = candidatesCv[memberId];
-    const { component: CvTemplate } = TEMPLATES.find(
-      (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
-    ) || { component: FirstTemplate };
-    const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
-    const pdfBlob = await pdf(renderedTemplate).toBlob();
     if (!candidateCvData.cvStatusInfo.customCv) {
+      const { component: CvTemplate } = TEMPLATES.find(
+        (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+      ) || { component: FirstTemplate };
+      const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
+      const pdfBlob = await pdf(renderedTemplate).toBlob();
       saveAs(pdfBlob, 'generated-cv.pdf');
+    } else if (candidateCvData.cvStatusInfo.customCv) {
+      const uploadedFile = candidateCvData.cvStatusInfo.fileUrl;
+      const response = await fetch(uploadedFile);
+      const uploadedFileBlob = await response.blob();
+      saveAs(uploadedFileBlob, 'custom-cv.pdf');
     }
   };
   const [visibility, setVisibility] = useState<string | null>(null);
@@ -132,15 +133,24 @@ const BuilderView: FC = () => {
       setRenderedFile(null);
     } else {
       const candidateCvData = candidatesCv[memberId];
-      const { component: CvTemplate } = TEMPLATES.find(
-        (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
-      ) || { component: FirstTemplate };
-      const fileToRender = <CvTemplate cvValues={candidateCvData} />;
-      const pdfBlob = await pdf(fileToRender).toBlob();
-      const dataUrl = URL.createObjectURL(pdfBlob);
+      if (!candidateCvData.cvStatusInfo.customCv) {
+        const { component: CvTemplate } = TEMPLATES.find(
+          (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+        ) || { component: FirstTemplate };
+        const fileToRender = <CvTemplate cvValues={candidateCvData} />;
+        const pdfBlob = await pdf(fileToRender).toBlob();
+        const dataUrl = URL.createObjectURL(pdfBlob);
+        setRenderedFile(dataUrl);
+        window.open(dataUrl, '_blank');
+      } else if (candidateCvData.cvStatusInfo.customCv) {
+        const uploadedCv = candidateCvData.cvStatusInfo.fileUrl;
+        const response = await fetch(uploadedCv);
+        const uploadedFileBlob = await response.blob();
+        const dataUrl = URL.createObjectURL(uploadedFileBlob);
+        setRenderedFile(dataUrl);
+        window.open(dataUrl, '_blank');
+      }
       setVisibility(memberId);
-      setRenderedFile(dataUrl);
-      window.open(dataUrl, '_blank');
     }
   };
   const handleDownloadAll = async (): Promise<void> => {
@@ -151,20 +161,25 @@ const BuilderView: FC = () => {
     await Promise.all(
       candidateIds.map(async (memberId) => {
         const candidateCvData = candidatesCv[memberId];
-        const { component: CvTemplate } = TEMPLATES.find(
-          (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
-        ) || { component: FirstTemplate };
-        const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
-        const pdfBlob = await pdf(renderedTemplate).toBlob();
         if (!candidateCvData.cvStatusInfo.customCv) {
+          const { component: CvTemplate } = TEMPLATES.find(
+            (t) => t.id === candidateCvData.cvStatusInfo.selectedTemplateId,
+          ) || { component: FirstTemplate };
+          const renderedTemplate = <CvTemplate cvValues={candidateCvData} />;
+          const pdfBlob = await pdf(renderedTemplate).toBlob();
           zip.file(`${memberId}-generated-cv.pdf`, pdfBlob);
+        } else if (candidateCvData.cvStatusInfo.customCv) {
+          const uploadedFile = candidateCvData.cvStatusInfo.fileUrl;
+          const response = await fetch(uploadedFile);
+          const uploadedFileBlob = await response.blob();
+          zip.file(`${memberId}-custom-cv.pdf`, uploadedFileBlob);
         }
       }),
     );
 
-    // Generate the RAR archive and trigger the download
+    // Generate the Zip archive and trigger the download
     zip.generateAsync({ type: 'blob' }).then((content) => {
-      saveAs(content, 'candidates-cv.rar');
+      saveAs(content, 'candidates-cv.zip');
     });
   };
   return (
@@ -223,14 +238,15 @@ const BuilderView: FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {dataArray.map((dataObject, index) => (
+              {dataArray?.map((dataObject, index) => (
                 <React.Fragment key={index}>
-                  {dataObject.map((item: any) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.memberId}</TableCell>
-                      <TableCell>{item.data.content}</TableCell>
-                    </TableRow>
-                  ))}
+                  {Array.isArray(dataObject) &&
+                    dataObject.map((item: any) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.memberId}</TableCell>
+                        <TableCell>{item.data}</TableCell>
+                      </TableRow>
+                    ))}
                 </React.Fragment>
               ))}
             </TableBody>
