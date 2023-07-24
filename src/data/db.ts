@@ -6,6 +6,7 @@
 import { v4 } from 'uuid';
 
 import type { Database, LocalContext, Member } from '@graasp/apps-query-client';
+import { AppDataVisibility } from '@graasp/apps-query-client';
 
 import { APP_DATA_TYPES } from '../config/appDataTypes';
 import { MOCK_SETTING_KEY } from '../config/appSettingTypes';
@@ -51,6 +52,7 @@ const buildDatabase = (
       creator: mockMembers[1].id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      visibility: AppDataVisibility.MEMBER,
     },
     {
       id: v4(),
@@ -63,6 +65,7 @@ const buildDatabase = (
       creator: mockMembers[1].id,
       createdAt: new Date(Date.now() - 1500).toISOString(),
       updatedAt: new Date(Date.now() - 1500).toISOString(),
+      visibility: AppDataVisibility.MEMBER,
     },
   ],
   appActions: [],

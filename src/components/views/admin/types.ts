@@ -1,1 +1,1 @@
-export type CandidateRateObj = { memberId: string; rating: number | null };
+export type CandidateRateObj = { memberId: string; rating: number };

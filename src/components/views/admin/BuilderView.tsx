@@ -1,8 +1,10 @@
 import saveAs from 'file-saver';
+import { List } from 'immutable';
 import JSZip from 'jszip';
 
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
+import { useLocalContext } from '@graasp/apps-query-client';
 import { AppData } from '@graasp/apps-query-client/dist/types';
 
 import DownloadIcon from '@mui/icons-material/Download';
@@ -31,6 +33,7 @@ import DataFilter from './DataFilter';
 import { CandidateRateObj } from './types';
 
 const BuilderView: FC = () => {
+  const context = useLocalContext();
   const { postAppData, patchAppData, appDataArray } = useAppDataContext();
   const handlePatch = (id: AppData['id'], newData: CandidateRateObj): void => {
     patchAppData({ id, data: newData });
@@ -39,15 +42,18 @@ const BuilderView: FC = () => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.CANDIDATE_RATE_INFO });
   };
   const groupedData = appDataArray.groupBy((data) => data.type).toJS() as {
-    [key: string]: AppData[];
+    [key in `${APP_DATA_TYPES}`]: AppData[];
   };
-  const [selectedType, setSelectedType] = useState('');
-  const handleTypeChange = (value: string): void => {
-    setSelectedType(value);
-  };
-  const dataArray: AppData[] | undefined = groupedData[selectedType];
-  const dimensions = [
-    { value: 'mock_type', label: 'Mock Info' },
+  type SelectedTypeKeys =
+    | 'personalInfo'
+    | 'educationInfo'
+    | 'workInfo'
+    | 'skillsInfo'
+    | 'projectsInfo'
+    | 'motivationInfo'
+    | 'referencesInfo'
+    | 'cvStatusInfo';
+  const dimensions: { value: SelectedTypeKeys; label: string }[] = [
     { value: 'personalInfo', label: 'Personal Info' },
     { value: 'educationInfo', label: 'Education Info' },
     { value: 'workInfo', label: 'Work Info' },
@@ -58,14 +64,19 @@ const BuilderView: FC = () => {
     { value: 'cvStatusInfo', label: '' },
   ];
 
+  const [selectedType, setSelectedType] =
+    useState<SelectedTypeKeys>('personalInfo');
+  const handleTypeChange = (value: SelectedTypeKeys): void => {
+    setSelectedType(value);
+  };
+
+  const dataArray: AppData[] = groupedData[selectedType];
   // Construct the 'cv' object with filtered and grouped data
   const candidatesCv: { [key: string]: { [key: string]: any } } = {};
 
   dimensions.forEach((dimension) => {
     const type = dimension.value;
-    const dataObj = Object.keys(groupedData)
-      .filter((key) => key === type)
-      .map((key) => groupedData[key]);
+    const dataObj = groupedData[type];
 
     const typeDataByMemberId = DataFilter({
       dataObject: dataObj,
@@ -85,28 +96,34 @@ const BuilderView: FC = () => {
     });
   });
 
-  const [ratings, setRatings] = useState<{ [key: string]: number | null }>({});
+  const [candidateRatings, setCandidateRatings] =
+    useState<List<AppData & { data: CandidateRateObj }>>();
+
+  useEffect(() => {
+    const candidateRatingsData = appDataArray.filter(
+      (obj: AppData) => obj.type === APP_DATA_TYPES.CANDIDATE_RATE_INFO,
+    ) as List<AppData & { data: CandidateRateObj }>;
+    setCandidateRatings(candidateRatingsData);
+  }, [appDataArray]);
+
   const handleRatingChange = (
     memberId: string,
     newRating: number | null,
   ): void => {
     const rateData = appDataArray.find(
-      (data) =>
-        data.data.memberId === memberId && data.type === 'candidateRateInfo',
-    );
-    if (rateData) {
-      handlePatch(rateData.id, {
-        ...rateData.data,
-        rating: newRating,
-        memberId,
-      });
-    } else {
-      handlePost({ memberId, rating: newRating });
+      (obj) =>
+        obj.data.memberId === memberId && obj.type === 'candidateRateInfo',
+    ) as (AppData & { data: CandidateRateObj }) | undefined;
+    if (newRating) {
+      if (rateData) {
+        handlePatch(rateData.id, {
+          ...rateData.data,
+          rating: newRating,
+        });
+      } else {
+        handlePost({ memberId, rating: newRating });
+      }
     }
-    setRatings((prevRatings) => ({
-      ...prevRatings,
-      [memberId]: newRating,
-    }));
   };
 
   const handleDownload = async (memberId: string): Promise<void> => {
@@ -203,7 +220,13 @@ const BuilderView: FC = () => {
               </IconButton>
               <Rating
                 name={`rating-${memberId}`}
-                value={ratings[memberId] || 0}
+                value={
+                  candidateRatings?.find(
+                    (dataObj) =>
+                      dataObj.data.memberId === memberId &&
+                      dataObj.creator === context.memberId,
+                  )?.data.rating || 0
+                }
                 onChange={(event, newValue) =>
                   handleRatingChange(memberId, newValue)
                 }
@@ -214,7 +237,7 @@ const BuilderView: FC = () => {
         </Box>
         <Select
           value={selectedType}
-          onChange={(e) => handleTypeChange(e.target.value)}
+          onChange={(e) => handleTypeChange(e.target.value as SelectedTypeKeys)}
           displayEmpty
           sx={{ mr: 2 }}
         >
@@ -229,7 +252,7 @@ const BuilderView: FC = () => {
             ),
           )}
         </Select>
-        {dataArray.length > 0 && (
+        {dataArray && dataArray.length > 0 && (
           <Table>
             <TableHead>
               <TableRow>
