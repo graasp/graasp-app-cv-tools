@@ -4,8 +4,7 @@ import JSZip from 'jszip';
 
 import React, { FC, useEffect, useState } from 'react';
 
-import { useLocalContext } from '@graasp/apps-query-client';
-import { AppData } from '@graasp/apps-query-client/dist/types';
+import { AppData, useLocalContext } from '@graasp/apps-query-client';
 
 import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from '@mui/icons-material/Visibility';
