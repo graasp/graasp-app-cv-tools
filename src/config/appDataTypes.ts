@@ -9,6 +9,7 @@ enum APP_DATA_TYPES {
   REFERENCES_INFO = 'referencesInfo',
   CV_STATUS_INFO = 'cvStatusInfo',
   SUBMISSION_STATUS = ' submissionStatus',
+  CANDIDATE_RATE_INFO = 'candidateRateInfo',
 }
 
 enum APP_DATA_VISIBILITY {

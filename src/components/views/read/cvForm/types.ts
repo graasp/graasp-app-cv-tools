@@ -77,7 +77,7 @@ export type CVInfoObj = {
   educationInfo: EducationInfoObj[];
   workInfo: WorkExperienceObj[];
   skillsInfo: SkillsObj[];
-  portfolioInfo: PortfolioObj[];
+  projectsInfo: PortfolioObj[];
   motivationInfo: MotivationObj;
   referencesInfo: ReferencesObj[];
   cvStatusInfo: CvStatusObj;

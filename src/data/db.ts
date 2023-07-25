@@ -6,6 +6,7 @@
 import { v4 } from 'uuid';
 
 import type { Database, LocalContext, Member } from '@graasp/apps-query-client';
+import { AppDataVisibility } from '@graasp/apps-query-client';
 
 import { APP_DATA_TYPES } from '../config/appDataTypes';
 import { MOCK_SETTING_KEY } from '../config/appSettingTypes';
@@ -15,7 +16,7 @@ import { REACT_APP_API_HOST } from '../config/env';
 export const mockContext: LocalContext = {
   apiHost: REACT_APP_API_HOST,
   permission: 'admin',
-  context: 'player',
+  context: 'builder',
   itemId: '1234-1234-123456-8123-123456',
   memberId: 'mock-member-id',
 };
@@ -51,6 +52,7 @@ const buildDatabase = (
       creator: mockMembers[1].id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      visibility: AppDataVisibility.MEMBER,
     },
     {
       id: v4(),
@@ -63,6 +65,30 @@ const buildDatabase = (
       creator: mockMembers[1].id,
       createdAt: new Date(Date.now() - 1500).toISOString(),
       updatedAt: new Date(Date.now() - 1500).toISOString(),
+      visibility: AppDataVisibility.MEMBER,
+    },
+    {
+      id: v4(),
+      data: {
+        firstName: 'string',
+        lastName: 'string',
+        birthDate: '2003-09-20',
+        gender: 'string',
+        emailAddress: 'string',
+        phoneNum: 'string',
+        address: 'string',
+        profileLinks: 'string',
+        personalLink: 'string',
+        personalPic: 'string',
+        saved: true,
+      },
+      memberId: mockMembers[0].id,
+      type: APP_DATA_TYPES.PERSONAL_INFO,
+      itemId: appContext.itemId || '',
+      creator: mockMembers[1].id,
+      createdAt: new Date(Date.now() - 1500).toISOString(),
+      updatedAt: new Date(Date.now() - 1500).toISOString(),
+      visibility: AppDataVisibility.MEMBER,
     },
   ],
   appActions: [],

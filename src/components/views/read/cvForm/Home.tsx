@@ -83,7 +83,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
             parsedData.skillsInfo.forEach((skillItem) => {
               handleSkillsPost(skillItem);
             });
-            parsedData.portfolioInfo.forEach((projectItem) => {
+            parsedData.projectsInfo.forEach((projectItem) => {
               handleProjectsPost(projectItem);
             });
             parsedData.referencesInfo.forEach((referenceItem) => {
