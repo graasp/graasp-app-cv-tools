@@ -280,13 +280,23 @@ const BuilderView: FC = () => {
             <TableBody>
               {dataArray?.map((dataObject, index) => (
                 <React.Fragment key={index}>
-                  {Array.isArray(dataObject) &&
+                  {Array.isArray(dataObject) ? (
                     dataObject.map((item: any) => (
                       <TableRow key={item.id}>
                         <TableCell>{item.memberId}</TableCell>
                         <TableCell>{item.data}</TableCell>
                       </TableRow>
-                    ))}
+                    ))
+                  ) : (
+                    <TableRow key={dataObject.id}>
+                      <TableCell>{dataObject.memberId}</TableCell>
+                      {Object.entries(dataObject.data).map(([key, value]) => (
+                        <TableCell key={index}>
+                          {key}: {value as React.ReactNode}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )}
                 </React.Fragment>
               ))}
             </TableBody>
