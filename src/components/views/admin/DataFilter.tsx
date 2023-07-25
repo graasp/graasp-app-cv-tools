@@ -4,21 +4,24 @@ interface DataGrouped {
   [memberId: string]: AppData[];
 }
 interface Props {
-  dataObject: any[];
+  dataObject: AppData[] | undefined;
   targetType: string;
 }
-const DataFilter = ({ dataObject, targetType }: Props): DataGrouped => {
-  const dataFiltered = dataObject.flatMap((obj) =>
-    obj.filter((item: any) => item.type === targetType && item.data),
+const DataFilter = ({
+  dataObject,
+  targetType,
+}: Props): DataGrouped | undefined => {
+  const dataGrouped = dataObject?.reduce<{ [key: string]: AppData[] }>(
+    (acc, item) => {
+      if (item.memberId in acc) {
+        acc[item.memberId].push(item);
+      } else {
+        acc[item.memberId] = [item];
+      }
+      return acc;
+    },
+    {},
   );
-  const dataGrouped = dataFiltered.reduce((acc, item) => {
-    if (item.memberId in acc) {
-      acc[item.memberId].push(item);
-    } else {
-      acc[item.memberId] = [item];
-    }
-    return acc;
-  }, {});
 
   return dataGrouped;
 };

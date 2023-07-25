@@ -300,6 +300,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
   const description =
     'For this part, you are supposed to fill all the required fields with your information, you can also upload a personal picture to have on your Cv.';
   // Flex-wrap: wrap;
+  const locale = navigator.language;
+  console.log(locale);
   return (
     <Box>
       <Box>

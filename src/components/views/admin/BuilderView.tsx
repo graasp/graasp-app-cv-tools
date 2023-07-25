@@ -41,7 +41,7 @@ const BuilderView: FC = () => {
     postAppData({ data: newdata, type: APP_DATA_TYPES.CANDIDATE_RATE_INFO });
   };
   const groupedData = appDataArray.groupBy((data) => data.type).toJS() as {
-    [key in `${APP_DATA_TYPES}`]: AppData[];
+    [key in `${APP_DATA_TYPES}`]?: AppData[];
   };
   type SelectedTypeKeys =
     | 'personalInfo'
@@ -69,7 +69,7 @@ const BuilderView: FC = () => {
     setSelectedType(value);
   };
 
-  const dataArray: AppData[] = groupedData[selectedType];
+  const dataArray = groupedData[selectedType];
   // Construct the 'cv' object with filtered and grouped data
   const candidatesCv: { [key: string]: { [key: string]: any } } = {};
 
@@ -82,17 +82,19 @@ const BuilderView: FC = () => {
       targetType: type,
     });
 
-    Object.keys(typeDataByMemberId).forEach((memberId) => {
-      if (memberId in candidatesCv) {
-        candidatesCv[memberId][type] = typeDataByMemberId[memberId].map(
-          (item) => item.data,
-        );
-      } else {
-        candidatesCv[memberId] = {
-          [type]: typeDataByMemberId[memberId].map((item) => item.data),
-        };
-      }
-    });
+    if (typeDataByMemberId) {
+      Object.keys(typeDataByMemberId).forEach((memberId) => {
+        if (memberId in candidatesCv) {
+          candidatesCv[memberId][type] = typeDataByMemberId[memberId].map(
+            (item) => item.data,
+          );
+        } else {
+          candidatesCv[memberId] = {
+            [type]: typeDataByMemberId[memberId].map((item) => item.data),
+          };
+        }
+      });
+    }
   });
 
   const [candidateRatings, setCandidateRatings] =
@@ -198,6 +200,21 @@ const BuilderView: FC = () => {
       saveAs(content, 'candidates-cv.zip');
     });
   };
+  const candidateRates = (candidateId: string): number => {
+    const rates = candidateRatings
+      ?.filter((dataObj) => dataObj.data.memberId === candidateId)
+      ?.map((dataObj) => dataObj.data.rating)
+      .toArray();
+    if (rates) {
+      const cumSumRates = rates.reduce(
+        (sum: number, rating: number) => sum + rating,
+        0,
+      );
+      const meanRates = cumSumRates / rates.length;
+      return meanRates;
+    }
+    return 0;
+  };
   return (
     <Box>
       <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
@@ -231,6 +248,7 @@ const BuilderView: FC = () => {
                 }
                 size="medium"
               />
+              <Typography>{candidateRates(memberId)}</Typography>
             </Box>
           ))}
         </Box>
