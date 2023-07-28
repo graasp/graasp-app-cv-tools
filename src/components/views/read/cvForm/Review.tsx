@@ -116,7 +116,7 @@ const Review: FC<Props> = ({ homeStep, prevStep }) => {
   };
   const title = 'Review';
   const description =
-    'For this part, and the final part of the your progress, as a final step, and after filling all the required fields from previous sections, select the template or uploaded your custom CV, all you can do here is that you can review the filled information, and confirm that they are as you are expecting, thn you can download the pdf file from the Download button, as well as a json file which contains all of your input data, to use next time, so no need to fill up the fields again, if there is no changes, finally you can click on Submit to state that you are done. your CV.';
+    'Please follow the following description. For this part, and the final part of the your progress, as a final step, and after filling all the required fields from previous sections, select the template or uploaded your custom CV, all you can do here is that you can review the filled information, and confirm that they are as you are expecting, thn you can download the pdf file from the Download button, as well as a json file which contains all of your input data, to use next time, so no need to fill up the fields again, if there is no changes, finally you can click on Submit to state that you are done. your CV.';
   return (
     <Box>
       <Description title={title} description={description} />

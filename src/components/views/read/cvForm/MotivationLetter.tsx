@@ -67,7 +67,7 @@ const MotivationLetter: FC<Props> = ({ nextStep, prevStep }) => {
   const mapping = [{ key: 'motivationLetter', label: 'Motivation Letter' }];
   const title = 'Self Motivation';
   const description =
-    'For this part you can add a personal motivation, what are your goals wishing to achieve in your career, etc.';
+    'Please fill the fields according to the following description. For this part you can add a personal motivation, what are your goals wishing to achieve in your career, etc.';
   return (
     <Box>
       <Box>

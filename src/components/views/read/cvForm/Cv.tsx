@@ -209,18 +209,11 @@ const Template: FC<Props> = ({ nextStep, prevStep }) => {
     }
     nextStep();
   };
-
+  const description =
+    "Please fill the fields according to the following description. For this part you can either pickup and select the template that you would like to have on your CV applied on the information you provided in the previous sections, by making sure the Generated CV is checked, then click on Select, or upload your own custom CV, by uploading the file first, and making sure it's in pdf format, then make sure that Custom CV is checked, then Save and proceed to next section by clicking on Next.";
   return (
     <Box>
-      <Typography sx={{ m: '0.5rem' }}>
-        For this part you can either pickup and select the template that you
-        would like to have on your CV applied on the information you provided in
-        the previous sections, by making sure the &quot;Generated CV&quot; is
-        checked, then click on Select, or upload your own custom CV, by
-        uploading the file first, and making sure it&apos;s in pdf format, then
-        make sure that &quot;Custom CV&quot; is checked, then Save and proceed
-        to next section by clicking on Next.
-      </Typography>
+      <Typography sx={{ m: '0.5rem' }}>{description}</Typography>
       <FormControl>
         <RadioGroup value={radioValue} onChange={handleChange}>
           <FormControlLabel

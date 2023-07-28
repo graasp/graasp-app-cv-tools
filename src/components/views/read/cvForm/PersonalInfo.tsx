@@ -298,10 +298,8 @@ const PersonalInfo: FC<Props> = ({ nextStep, prevStep, onError }) => {
   };
   const title = 'Personal Details';
   const description =
-    'For this part, you are supposed to fill all the required fields with your information, you can also upload a personal picture to have on your Cv.';
+    'Please ensure that all mandatory fields are accurately completed with your pertinent information. Additionally, you have the option to upload a personal photograph to be included in your Curriculum Vitae (CV).';
   // Flex-wrap: wrap;
-  const locale = navigator.language;
-  console.log(locale);
   return (
     <Box>
       <Box>

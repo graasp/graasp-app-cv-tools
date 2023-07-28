@@ -2,7 +2,7 @@ import saveAs from 'file-saver';
 import { List } from 'immutable';
 import JSZip from 'jszip';
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useState } from 'react';
 
 import { AppData, useLocalContext } from '@graasp/apps-query-client';
 
@@ -12,11 +12,13 @@ import {
   Box,
   IconButton,
   MenuItem,
+  Paper,
   Rating,
   Select,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   Typography,
@@ -28,6 +30,7 @@ import { APP_DATA_TYPES } from '../../../config/appDataTypes';
 import { useAppDataContext } from '../../context/AppDataContext';
 import { TEMPLATES } from '../read/cvForm/constants';
 import FirstTemplate from '../read/cvForm/templates/FirstTemplate';
+import { CVInfoObj } from '../read/cvForm/types';
 import DataFilter from './DataFilter';
 import { CandidateRateObj } from './types';
 
@@ -79,7 +82,6 @@ const BuilderView: FC = () => {
 
     const typeDataByMemberId = DataFilter({
       dataObject: dataObj,
-      targetType: type,
     });
 
     if (typeDataByMemberId) {
@@ -96,7 +98,6 @@ const BuilderView: FC = () => {
       });
     }
   });
-
   const [candidateRatings, setCandidateRatings] =
     useState<List<AppData & { data: CandidateRateObj }>>();
 
@@ -270,37 +271,37 @@ const BuilderView: FC = () => {
           )}
         </Select>
         {dataArray && dataArray.length > 0 && (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Member ID</TableCell>
-                <TableCell>Data</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {dataArray?.map((dataObject, index) => (
-                <React.Fragment key={index}>
-                  {Array.isArray(dataObject) ? (
-                    dataObject.map((item: any) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.memberId}</TableCell>
-                        <TableCell>{item.data}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow key={dataObject.id}>
-                      <TableCell>{dataObject.memberId}</TableCell>
-                      {Object.entries(dataObject.data).map(([key, value]) => (
-                        <TableCell key={index}>
-                          {key}: {value as React.ReactNode}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Member ID</TableCell>
+                  <TableCell>Data</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Object.keys(candidatesCv).map((candidateId: string) => {
+                  const dataToRender = candidatesCv[candidateId][selectedType];
+                  return (
+                    <Fragment key={candidateId}>
+                      <TableCell>{candidateId}</TableCell>
+                      <TableCell>
+                        {dataToRender.map((obj: any) => (
+                          <Box key={obj.id}>
+                            {Object.entries(obj).map(([key, value]) => (
+                              <Typography key={key}>
+                                {key}: {value as React.ReactNode}
+                              </Typography>
+                            ))}
+                          </Box>
+                        ))}
+                      </TableCell>
+                    </Fragment>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Box>
     </Box>

@@ -242,8 +242,8 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
 
     if (isValid && allSaved) {
       if (skillsData.size === 0) {
-        handleSkillsPost({ title: 'Tech Skills', skills: [] });
-        handleSkillsPost({ title: 'Lang Skills', skills: [] });
+        handleSkillsPost({ title: 'Technological Skills', skills: [] });
+        handleSkillsPost({ title: 'Languages Skills', skills: [] });
         handleSkillsPost({ title: 'Other Skills', skills: [] });
       }
       nextStep();
@@ -266,7 +266,7 @@ const WorkExperience: FC<Props> = ({ nextStep, prevStep, onError }) => {
   ];
   const title = 'Work Experience';
   const description =
-    'For this part you can add as many Experiences as you like, you can also remove any Experience you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
+    'Please fill the fields according to the following description. For this part you can add as many Experiences as you like, you can also remove any Experience you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>
