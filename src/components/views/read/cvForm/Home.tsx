@@ -136,7 +136,7 @@ const Home: FC<Props> = ({ nextStep, reviewStep }) => {
   };
   const title = 'Get Started';
   const description =
-    'You can start creating your own CV by clicking on Create and do whatever you are asked to fill and provide, and you can upload a file of your data which match the structure of the valid file you can upload';
+    "To initiate the process of compiling your curriculum vitae (CV), kindly select the 'Create' button. Subsequently, please ensure meticulous completion of all the required fields and provision of relevant details as prompted. Additionally, applicants may opt to upload a document containing their credentials, which must adhere to the specified format for valid file submission";
   return (
     <Box m={2} p={1} border="1px solid gray" borderRadius={2}>
       <Stack spacing={2}>

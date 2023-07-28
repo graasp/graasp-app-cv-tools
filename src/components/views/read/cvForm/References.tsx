@@ -259,7 +259,7 @@ const References: FC<Props> = ({ nextStep, prevStep, onError }) => {
   ];
   const title = 'References';
   const description =
-    'For this part you can add as many References as you like and done, you can also remove any Reference you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
+    'Please fill the fields according to the following description. For this part you can add as many References as you like and done, you can also remove any Reference you would like to remove from your application, modify the information by clicking on edit, fill up all the required fields, and when done editing just click on done button.';
   return (
     <Box>
       <Box>

@@ -30,19 +30,12 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
 
       test('personalInfo', 'Invalid personal info field rules', () => {
         enforce(dataObj.personalInfo.firstName).isNotEmpty();
-
         enforce(dataObj.personalInfo.firstName).shorterThan(30);
-
         enforce(dataObj.personalInfo.lastName).isNotEmpty();
-
         enforce(dataObj.personalInfo.lastName).shorterThan(30);
-
         enforce(dataObj.personalInfo.birthDate).isNotEmpty();
-
         enforce(dataObj.personalInfo.emailAddress).isNotEmpty();
-
         enforce(dataObj.personalInfo.phoneNum).isNotEmpty();
-
         enforce(dataObj.personalInfo.profileLinks).isNotEmpty();
       });
 
@@ -62,23 +55,14 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('country').isKeyOf(dataObj.educationInfo[0]);
           enforce('saved').isKeyOf(dataObj.educationInfo[0]);
         });
-      }
-      if (dataObj.educationInfo.length > 0) {
         test('educationInfo', 'Invalid education info field rules', () => {
           enforce(dataObj.educationInfo[0].degree).isNotEmpty();
-
           enforce(dataObj.educationInfo[0].institutionName).isNotEmpty();
-
           enforce(dataObj.educationInfo[0].institutionName).shorterThan(80);
-
           enforce(dataObj.educationInfo[0].major).isNotEmpty();
-
           enforce(dataObj.educationInfo[0].major).shorterThan(50);
-
           enforce(dataObj.educationInfo[0].startDate).isNotEmpty();
-
           enforce(dataObj.educationInfo[0].endDate).isNotEmpty();
-
           enforce(dataObj.educationInfo[0].country).isNotEmpty();
         });
       }
@@ -99,9 +83,6 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('keyAchievements').isKeyOf(dataObj.workInfo[0]);
           enforce('saved').isKeyOf(dataObj.workInfo[0]);
         });
-      }
-
-      if (dataObj.workInfo.length > 0) {
         test('workInfo', 'Invalid work info field rules', () => {
           enforce(dataObj.workInfo[0].jobTitle).isNotEmpty();
           enforce(dataObj.workInfo[0].jobTitle).shorterThan(50);
@@ -126,30 +107,27 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
         });
       }
 
-      test('portfolioInfo', 'Portfolio info is required', () => {
-        enforce('portfolioInfo').isKeyOf(dataObj);
+      test('projectsInfo', 'Projects info is required', () => {
+        enforce('projectsInfo').isKeyOf(dataObj);
       });
 
-      if (dataObj.portfolioInfo.length > 0) {
-        test('portfolioInfo', 'Invalid portoflio info structure', () => {
-          enforce('id').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('projectTitle').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('projectDescription').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('startDate').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('endDate').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('projectLink').isKeyOf(dataObj.portfolioInfo[0]);
-          enforce('saved').isKeyOf(dataObj.portfolioInfo[0]);
+      if (dataObj.projectsInfo.length > 0) {
+        test('projectsInfo', 'Invalid Projects info structure', () => {
+          enforce('id').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('projectTitle').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('projectDescription').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('startDate').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('endDate').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('projectLink').isKeyOf(dataObj.projectsInfo[0]);
+          enforce('saved').isKeyOf(dataObj.projectsInfo[0]);
         });
-      }
-
-      if (dataObj.portfolioInfo.length > 0) {
-        test('portfolioInfo', 'Invalid portoflio info field rules', () => {
-          enforce(dataObj.portfolioInfo[0].projectTitle).isNotEmpty();
-          enforce(dataObj.portfolioInfo[0].projectTitle).shorterThan(100);
-          enforce(dataObj.portfolioInfo[0].projectDescription).isNotEmpty();
-          enforce(dataObj.portfolioInfo[0].projectDescription).shorterThan(500);
-          enforce(dataObj.portfolioInfo[0].startDate).isNotEmpty();
-          enforce(dataObj.portfolioInfo[0].endDate).isNotEmpty();
+        test('projectsInfo', 'Invalid projects info field rules', () => {
+          enforce(dataObj.projectsInfo[0].projectTitle).isNotEmpty();
+          enforce(dataObj.projectsInfo[0].projectTitle).shorterThan(100);
+          enforce(dataObj.projectsInfo[0].projectDescription).isNotEmpty();
+          enforce(dataObj.projectsInfo[0].projectDescription).shorterThan(500);
+          enforce(dataObj.projectsInfo[0].startDate).isNotEmpty();
+          enforce(dataObj.projectsInfo[0].endDate).isNotEmpty();
         });
       }
 
@@ -175,9 +153,6 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
           enforce('referenceEmail').isKeyOf(dataObj.referencesInfo[0]);
           enforce('saved').isKeyOf(dataObj.referencesInfo[0]);
         });
-      }
-
-      if (dataObj.referencesInfo.length > 0) {
         test('referencesInfo', 'Invalid references info field rules', () => {
           enforce(dataObj.referencesInfo[0].referenceName).isNotEmpty();
           enforce(dataObj.referencesInfo[0].referenceName).shorterThan(50);
@@ -197,7 +172,7 @@ const Validation = ({ type, data }: Props): SuiteRunResult | null => {
       test('cvStatusInfo', 'Invalid cv status info structure', () => {
         enforce('selectedTemplateId').isKeyOf(dataObj.cvStatusInfo);
         enforce('customCv').isKeyOf(dataObj.cvStatusInfo);
-        enforce.optional('fileUrl').isKeyOf(dataObj.cvStatusInfo);
+        // enforce.optional('fileUrl').isKeyOf(dataObj.cvStatusInfo);
       });
     });
     const result = suite(data);

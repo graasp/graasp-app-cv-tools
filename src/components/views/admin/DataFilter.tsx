@@ -5,12 +5,8 @@ interface DataGrouped {
 }
 interface Props {
   dataObject: AppData[] | undefined;
-  targetType: string;
 }
-const DataFilter = ({
-  dataObject,
-  targetType,
-}: Props): DataGrouped | undefined => {
+const DataFilter = ({ dataObject }: Props): DataGrouped | undefined => {
   const dataGrouped = dataObject?.reduce<{ [key: string]: AppData[] }>(
     (acc, item) => {
       if (item.memberId in acc) {
